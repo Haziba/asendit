@@ -1,0 +1,7 @@
+<h1>Add Route Set</h1>
+
+<%= form_with model: @route_set do |form| %>
+  <%= form.select "Colour", [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]] %>
+  <%= form.date_field "Added" %>
+  <%= form.submit %>
+<% end %>

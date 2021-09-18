@@ -1,0 +1,15 @@
+<h1>Edit Route Sets</h1>
+
+<%= link_to "Add Route Set", add_route_set_path %>
+
+<table>
+  <tbody>
+    <% @route_sets.each do |route_set| %>
+      <tr>
+        <td>route_set.color</td>
+        <td>route_set.added</td>
+        <td><button>Edit</button>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

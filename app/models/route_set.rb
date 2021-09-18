@@ -1,0 +1,2 @@
+class RouteSet < ApplicationRecord
+end
