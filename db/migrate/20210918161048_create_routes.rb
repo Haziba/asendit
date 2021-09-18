@@ -4,7 +4,6 @@ class CreateRoutes < ActiveRecord::Migration[6.1]
       t.text :color
       t.integer :pos_x
       t.integer :pos_y
-      t.integer :id
       t.datetime :added
       t.integer :floor
 

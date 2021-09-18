@@ -1,4 +1,54 @@
-<h2>Hello World</h2>
-<p>
-  The time is now: <%= Time.now %>
-</p>
+<h2>Let's Climb Some Shit</h2>
+
+<select id="mode">
+  <option>
+    Edit Floor
+  </option>
+  <option>
+    Record Session
+  </option>
+</select>
+
+<div id="map" style="position: relative">
+  <img src="/GroundFloor.png" id="floorBackground" />
+</div>
+
+<script>
+  const $mode = $('#mode')
+
+  $('#floorBackground').click(me => {
+    if($mode.val() != "Edit Floor")
+      return
+
+    $.post({
+      url: "/routes",
+      data: {
+        color: "black",
+        posX: me.offsetX,
+        posY: me.offsetY,
+        floor: 1
+      },
+      success: data => addRoute
+    }).then(data => { console.log(data); addRoute(data) })
+  })
+
+  const $map = $('#map')
+  const routes = []
+
+  const addRoute = route => {
+    console.log(route)
+    route.$elem = $(`<div class="route" style="left: ${route.pos_x}px; top: ${route.pos_y}px">⭕</div>`)
+    $map.append(route.$elem)
+    routes.push(route)
+  }
+
+  $.ajax({
+    url: "/routes",
+    type: "get",
+    data: "",
+    success: function(data) {
+      data.forEach(addRoute)
+    },
+    error: function(data) {console.log("Error!", data)}
+  })
+</script>
