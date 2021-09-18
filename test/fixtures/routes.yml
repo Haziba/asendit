@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  color: MyText
+  pos_x: 1
+  pos_y: 1
+  id: 1
+  added: 2021-09-18 17:10:48
+
+two:
+  color: MyText
+  pos_x: 1
+  pos_y: 1
+  id: 1
+  added: 2021-09-18 17:10:48
