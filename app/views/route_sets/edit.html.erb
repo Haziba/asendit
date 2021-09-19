@@ -1,0 +1,54 @@
+<h1>Edit <%= @route_set.name %></h1>
+
+<select id="tool">
+  <option>Add</option>
+  <option>Remove</option>
+</select>
+
+<div id="map" style="position: relative">
+  <img src="/GroundFloor.png" id="floorBackground" />
+</div>
+
+<script>
+  const $tool = $('#tool')
+
+  $('#floorBackground').click(me => {
+    if($tool.val() != 'Add')
+      return
+
+    $.post({
+      url: "/routes",
+      data: {
+        posX: me.offsetX,
+        posY: me.offsetY,
+        floor: 1,
+        routeSet: <%= @route_set.id %>
+      },
+      success: data => addRoute
+    }).then(addRoute)
+  })
+
+  const $map = $('#map')
+  const routes = []
+
+  const addRoute = route => {
+    route.$elem = $(`<div class="route" style="left: ${route.pos_x}px; top: ${route.pos_y}px">⭕</div>`)
+    route.$elem.click(() => clickRoute(route))
+    $map.append(route.$elem)
+    routes.push(route)
+  }
+
+  const clickRoute = route => {
+    if($tool.val() != 'Remove')
+      return
+    $.ajax({
+      url: `/routes/${route.id}`,
+      method: 'delete'
+    })
+    route.$elem.remove()
+    routes.splice(routes.indexOf(route), 1)
+  }
+
+  <%= raw @routes.to_json %>.forEach(addRoute)
+
+</script>

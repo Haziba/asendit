@@ -6,9 +6,8 @@
   <tbody>
     <% @route_sets.each do |route_set| %>
       <tr>
-        <td>route_set.color</td>
-        <td>route_set.added</td>
-        <td><button>Edit</button>
+        <td><%= route_set.name %></td>
+        <td><%= link_to "Edit", edit_route_set_path(route_set.id) %></td>
       </tr>
     <% end %>
   </tbody>

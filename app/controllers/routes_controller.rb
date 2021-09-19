@@ -1,10 +1,10 @@
 class RoutesController < ApplicationController
   def create
     route = Route.new(
-      color: params["color"],
       pos_x: params["posX"],
       pos_y: params["posY"],
       floor: params["floor"],
+      route_set: RouteSet.find(params["routeSet"]),
       added: Time.now
     )
     route.save
@@ -12,7 +12,10 @@ class RoutesController < ApplicationController
     render json: route, status: :ok
   end
 
-  def index
-    render json: Route.all
+  def destroy
+    route = Route.find(params[:id])
+    route.destroy!
+
+    render body: :nothing, status: :ok
   end
 end
