@@ -49,6 +49,6 @@
     routes.splice(routes.indexOf(route), 1)
   }
 
-  <%= raw @routes.to_json %>.forEach(addRoute)
+  <%= raw @route_set.routes.to_json %>.forEach(addRoute)
 
 </script>

@@ -1,0 +1,82 @@
+<h1>New Climb</h1>
+
+<select id="routeSets">
+  <% @active_route_sets.each do |route_set| %>
+  <option value="<%= route_set.id %>">
+    <%= route_set.name %>
+  </option>
+  <% end %>
+</select>
+
+<%= form_with url: climbs_path do |form| %>
+  <%= form.hidden_field :climber, value: "harry" %>
+  <%= form.hidden_field :route_states %>
+  <%= form.submit "Done", { id: "done" } %>
+<% end %>
+
+<div id="map" style="position: relative">
+  <img src="/GroundFloor.png" id="floorBackground" />
+</div>
+
+<script>
+  const $map = $('#map')
+  const $routeSets = $('#routeSets')
+  const $done = $('#done')
+  const $routeStates = $('#route_states')
+  const routeSets = <%= raw @routes.to_json %>
+  let $routes = []
+
+  const changeRoute = () => {
+    $routes.forEach($route => {
+      $route.remove()
+    })
+    $routes = []
+
+    const newRoutes = routeSets[$routeSets.val()]
+    newRoutes.forEach(addRoute)
+  }
+
+  const addRoute = route => {
+    const $route = $(`<div class="route" style="left: ${route.pos_x}px; top: ${route.pos_y}px">${icon(route.completed)}</div>`)
+    $route.click(() => clickRoute(route))
+    route.$elem = $route
+    $map.append($route)
+    $routes.push($route)
+  }
+
+  const clickRoute = route => {
+    if(route.completed === undefined)
+      route.completed = true
+    else if(route.completed)
+      route.completed = false
+    else if(route.completed === false)
+      route.completed = undefined
+
+    route.$elem.text(icon(route.completed))
+
+    updateRouteStates()
+  }
+
+  const icon = state => {
+    switch(state) {
+      case true:
+        return '✔'
+      case false:
+        return '❌'
+      default:
+        return '🟡'
+    }
+  }
+
+  const updateRouteStates = () => {
+    const routeStates = Object.keys(routeSets).map(routeSetId => {
+      return {id: routeSetId, states: routeSets[routeSetId].map(route => ({id: route.id, completed: route.completed}))}
+    })
+
+    $routeStates.val(JSON.stringify(routeStates))
+  }
+
+  $routeSets.change(changeRoute)
+  changeRoute()
+  updateRouteStates()
+</script>

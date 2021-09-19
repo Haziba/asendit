@@ -2,6 +2,6 @@
 
 <%= form_with model: @route_set do |form| %>
   <%= form.select "Colour", [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]] %>
-  <%= form.date_field "Added" %>
+  <%= form.date_field "Added", value: Time.now.strftime('%Y-%m-%d') %>
   <%= form.submit %>
 <% end %>
