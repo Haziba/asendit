@@ -20,4 +20,8 @@ class ClimbsController < ApplicationController
   def show
     @climb = Climb.find(params[:id])
   end
+
+  def index
+    @climbs = Climb.all.order(updated_at: :desc)
+  end
 end

@@ -1,1 +1,6 @@
+<%
+@title = "#{@climb.emoji} (#{@climb.updated_at.strftime('%Y-%m-%d')})"
+@back_url = climbs_path
+%>
+
 <%= @climb.to_json %>

@@ -1,17 +1,17 @@
-<div class="row">
-  <select id="routeSets" class="w-50 form-control">
+<%
+@title = "Climb That Shit"
+@back_url = climbs_path
+@extra_header = button_to "Done", climbs_path, { class: "btn btn-success btn-sm" }
+%>
+
+<div class="row mx-1">
+  <select id="routeSets" class="form-control">
     <% @active_route_sets.each do |route_set| %>
     <option value="<%= route_set.id %>">
       <%= route_set.name %>
     </option>
     <% end %>
   </select>
-
-  <%= form_with url: climbs_path, class: "w-25" do |form| %>
-    <%= form.hidden_field :climber, value: "harry" %>
-    <%= form.hidden_field :route_states %>
-    <%= form.submit "Done", { id: "done", class: "btn btn-success" } %>
-  <% end %>
 </div>
 
 <div id="map" style="position: relative">
@@ -22,7 +22,7 @@
   const $map = $('#map')
   const $routeSets = $('#routeSets')
   const $done = $('#done')
-  const $routeStates = $('#route_states')
+  const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
   const routeSets = <%= raw @routes.to_json %>
   let $routes = []
 
@@ -75,6 +75,10 @@
 
     $routeStates.val(JSON.stringify(routeStates))
   }
+
+  const $form = $('[action="<%= climbs_path %>"]')
+  $form.append($routeStates)
+  $form.append($('<input type="hidden" value="harry" name="climber" id="climber" />'))
 
   $routeSets.change(changeRoute)
   changeRoute()
