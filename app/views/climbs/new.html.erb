@@ -1,18 +1,18 @@
-<h1>New Climb</h1>
+<div class="row">
+  <select id="routeSets" class="w-50 form-control">
+    <% @active_route_sets.each do |route_set| %>
+    <option value="<%= route_set.id %>">
+      <%= route_set.name %>
+    </option>
+    <% end %>
+  </select>
 
-<select id="routeSets">
-  <% @active_route_sets.each do |route_set| %>
-  <option value="<%= route_set.id %>">
-    <%= route_set.name %>
-  </option>
+  <%= form_with url: climbs_path, class: "w-25" do |form| %>
+    <%= form.hidden_field :climber, value: "harry" %>
+    <%= form.hidden_field :route_states %>
+    <%= form.submit "Done", { id: "done", class: "btn btn-success" } %>
   <% end %>
-</select>
-
-<%= form_with url: climbs_path do |form| %>
-  <%= form.hidden_field :climber, value: "harry" %>
-  <%= form.hidden_field :route_states %>
-  <%= form.submit "Done", { id: "done" } %>
-<% end %>
+</div>
 
 <div id="map" style="position: relative">
   <img src="/GroundFloor.png" id="floorBackground" />

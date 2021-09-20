@@ -1,13 +1,11 @@
-<h1>Edit Route Sets</h1>
+<% @extra_header = link_to "Add", add_route_set_path, { class: "btn btn-primary btn-block btn-sm" } %>
 
-<%= link_to "Add Route Set", add_route_set_path %>
-
-<table>
+<table class="table">
   <tbody>
     <% @route_sets.each do |route_set| %>
       <tr>
         <td><%= route_set.name %></td>
-        <td><%= link_to "Edit", edit_route_set_path(route_set.id) %></td>
+        <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
       </tr>
     <% end %>
   </tbody>

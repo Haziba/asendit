@@ -1,10 +1,13 @@
 class WelcomeController < ApplicationController
-  def climb
-    @route_sets = [{"id": 123, "name": "Route 1"}, {"id": 456, "name": "Route 2"}]
+  def index
+    @title = "Let's Climb Some Shit"
   end
 
   def edit_route_sets
     @route_sets = RouteSet.all
+
+    @title = "Route Sets"
+    @back_url = root_path
   end
 
   def add_route_set_save
