@@ -69,9 +69,18 @@
   }
 
   const updateRouteStates = () => {
+    const status = {
+      undefined: 'not_attempted',
+      false: 'failed',
+      true: 'sent'
+    }
+
     const routeStates = Object.keys(routeSets).map(routeSetId => {
-      return {id: routeSetId, states: routeSets[routeSetId].map(route => ({id: route.id, completed: route.completed}))}
-    })
+      return routeSets[routeSetId].map(route => ({
+        routeId: route.id,
+        status: status[route.completed]
+      }))
+    }).flat()
 
     $routeStates.val(JSON.stringify(routeStates))
   }

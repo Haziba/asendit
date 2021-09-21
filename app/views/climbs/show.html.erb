@@ -1,6 +1,33 @@
 <%
-@title = "#{@climb.emoji} (#{@climb.updated_at.strftime('%Y-%m-%d')})"
+@title = "#{@climb.emoji} (#{@climb.updated_at.strftime("#{@climb.updated_at.day.ordinalize} %b")})"
 @back_url = climbs_path
 %>
 
-<%= @climb.to_json %>
+
+<table>
+  <thead>
+    <th>Colour</th>
+    <th>Attempted</th>
+    <th>Success Rate</th>
+    <th>New Wins</th>
+  </thead>
+
+  <tbody>
+    <% @route_sets.each do |route_set| %>
+    <tr>
+      <td>
+        <%= route_set.color.titleize %>
+      </td>
+      <td>
+        <%= attempted_routes(route_set) %>
+      </td>
+      <td>
+        <%= success_rate(route_set) %>
+      </td>
+      <td>
+        <%= new_wins(route_set) %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,4 +1,6 @@
 class Climb < ApplicationRecord
+  has_many :route_states
+
   def emoji
     case climber
     when "harry"
