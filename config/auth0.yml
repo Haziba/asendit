@@ -1,0 +1,5 @@
+# ./config/auth0.yml
+development:
+  auth0_domain: shrill-hat-2743.us.auth0.com
+  auth0_client_id: 9WK1xVxjodv58HVwdIfBjisusg4yB4nR
+  auth0_client_secret: gY334cTJDXHoE8Y_eQGZ-78SNNYnGxihwEiVgnho1WqgKnlpbgGwbZ3ZdXKmc_Ht
