@@ -87,7 +87,6 @@
 
   const $form = $('[action="<%= climbs_path %>"]')
   $form.append($routeStates)
-  $form.append($('<input type="hidden" value="harry" name="climber" id="climber" />'))
 
   $routeSets.change(changeRoute)
   changeRoute()

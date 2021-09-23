@@ -1,4 +1,6 @@
 class ClimbsController < ApplicationController
+  include Secured
+
   def new
     @active_route_sets = RouteSet.all
     @routes = RouteSet.all.map { |route_set| [route_set.id, route_set.routes] }.to_h
@@ -6,7 +8,7 @@ class ClimbsController < ApplicationController
 
   def create
     climb = Climb.new(
-      climber: params["climber"],
+      climber: "#{session[:userinfo]["nickname"]}-#{session[:userinfo]["sub"]}",
       route_states: JSON.parse(params["route_states"]).map do |route_state|
         RouteState.new(
           route_id: route_state["routeId"],

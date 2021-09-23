@@ -1,4 +1,5 @@
 class WelcomeController < ApplicationController
+
   def index
     @title = "Let's Climb Some Shit"
   end
@@ -7,7 +8,7 @@ class WelcomeController < ApplicationController
     @route_sets = RouteSet.all
 
     @title = "Route Sets"
-    @back_url = root_path
+    @back_url = menu_path
   end
 
   def add_route_set_save

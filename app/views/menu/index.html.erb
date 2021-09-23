@@ -1,0 +1,4 @@
+<%= link_to 'Climbs', climbs_path, { class: "btn btn-lg btn-block btn-secondary w-100 m-1" } %>
+<% if @user["admin"] %>
+  <%= link_to 'Edit Route Sets', edit_route_sets_path, { class: "btn btn-lg btn-block btn-secondary w-100 m-1" } %>
+<% end %>

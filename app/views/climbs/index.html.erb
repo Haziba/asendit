@@ -1,6 +1,6 @@
 <%
 @title = "Climbs"
-@back_url = root_path
+@back_url = menu_path
 @extra_header = link_to "Add", new_climb_path, { class: "btn btn-primary btn-sm" }
 %>
 
@@ -8,8 +8,7 @@
   <tbody>
     <% @climbs.map do |climb| %>
     <tr>
-      <td><%= climb.emoji %></td>
-      <td><%= climb.updated_at %></td>
+      <td><%= "#{climb.updated_at.strftime("#{climb.updated_at.day.ordinalize} %b")}" %></td>
       <td><%= link_to "View", climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
     </tr>
     <% end %>
