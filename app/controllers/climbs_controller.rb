@@ -8,7 +8,7 @@ class ClimbsController < ApplicationController
 
   def create
     climb = Climb.new(
-      climber: "#{session[:userinfo]["nickname"]}-#{session[:userinfo]["sub"]}",
+      climber: climber_name,
       route_states: JSON.parse(params["route_states"]).map do |route_state|
         RouteState.new(
           route_id: route_state["routeId"],
@@ -27,6 +27,10 @@ class ClimbsController < ApplicationController
   end
 
   def index
-    @climbs = Climb.all.order(updated_at: :desc)
+    @climbs = Climb.where(climber: climber_name).order(updated_at: :desc)
+  end
+
+  def climber_name
+    "#{session[:userinfo]["nickname"]}-#{session[:userinfo]["sub"]}"
   end
 end
