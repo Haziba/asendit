@@ -1,4 +1,8 @@
-<% @extra_header = link_to "Add", add_route_set_path, { class: "btn btn-primary btn-block btn-sm" } %>
+<% 
+@title = "Route Sets"
+@back_url = menu_path
+@extra_header = link_to "Add", new_route_set_path, { class: "btn btn-primary btn-block btn-sm" } 
+%>
 
 <table class="table">
   <tbody>
