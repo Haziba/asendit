@@ -10,6 +10,7 @@
       <tr>
         <td><%= route_set.name %></td>
         <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
+	<td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
       </tr>
     <% end %>
   </tbody>

@@ -16,4 +16,9 @@ class RouteSetsController < ApplicationController
   def index
     @route_sets = RouteSet.all
   end
+
+  def destroy
+    RouteSet.find(params[:id]).destroy
+    redirect_to route_sets_path
+  end
 end
