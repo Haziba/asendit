@@ -5,13 +5,13 @@ module ClimbsHelper
   end
 
   def attempted_routes(route_set)
-    chosen_routes = @routes.select { |route| route.route_set_id == route_set.id }
+    chosen_routes = @routes[route_set.id]
     chosen_route_states = @climb.route_states.select { |route_state| chosen_routes.map(&:id).include?(route_state.route_id) }
     "#{chosen_route_states.count { |route_state| route_state.status != "not_attempted" }}/#{chosen_route_states.count}"
   end
 
   def success_rate(route_set)
-    chosen_routes = @routes.select { |route| route.route_set_id == route_set.id }
+    chosen_routes = @routes[route_set.id]
     chosen_route_states = @climb.route_states.select { |route_state| chosen_routes.map(&:id).include?(route_state.route_id) }
 
     attempted = chosen_route_states.count { |route_state| route_state.status != "not_attempted" }
@@ -22,9 +22,8 @@ module ClimbsHelper
     "#{((succeeded.to_f / attempted.to_f) * 100).to_i}%"
   end
 
-  def new_wins(route_set)
+  def new_wins
     previous_climbs = Climb.where(climber: @climb.climber).where('created_at < ?', @climb.created_at)
-    pp previous_climbs.map(&:route_states)
     sent_route_ids = previous_climbs
       .map(&:route_states)
       .flatten
@@ -33,8 +32,11 @@ module ClimbsHelper
       .uniq
 
     @climb.route_states
-      .select { |route_state| Route.find(route_state.route_id).route_set_id == route_set.id }
       .select { |route_state| route_state.status == "sent" }
-      .count { |route_state| !sent_route_ids.include?(route_state.route_id) }
+      .select { |route_state| !sent_route_ids.include?(route_state.route_id) }
+  end
+
+  def new_wins_count_for_set(route_set)
+    new_wins.count { |win| Route.find(win.route_id).route_set_id == route_set.id }
   end
 end

@@ -22,8 +22,8 @@ class ClimbsController < ApplicationController
 
   def show
     @climb = Climb.find(params[:id])
-    @routes = Route.find(@climb.route_states.map(&:route_id))
-    @route_sets = RouteSet.find(@routes.map(&:route_set_id).uniq)
+    @routes = RouteSet.all.map { |route_set| [route_set.id, route_set.routes] }.to_h
+    @route_sets = RouteSet.find(@routes.keys)
   end
 
   def edit
