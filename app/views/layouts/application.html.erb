@@ -50,16 +50,16 @@ $('body').on('click', '[data-toggle]', me => {
   const $toggleTarget = $(($(me.currentTarget).data('target')))
 
   if($toggleTarget.is(':visible')) {
-    $toggleTarget.slideUp(250)
+    $toggleTarget.slideUp(250).closest('.card').removeClass('open')
     return
   }
 
   $($(me.currentTarget))
     .closest('.accordion')
     .find('[data-toggle]')
-    .each((_, toggle) => $($(toggle).data('target')).slideUp(250))
+    .each((_, toggle) => $($(toggle).data('target')).slideUp(250).closest('.card').removeClass('open'))
 
   $toggleTarget
-    .slideDown(250)
+    .slideDown(250).closest('.card').addClass('open')
 })
 </script>

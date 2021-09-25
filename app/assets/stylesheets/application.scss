@@ -26,6 +26,19 @@ html, body {
 
   .card {
     border-radius: initial;
+
+    h5::before {
+      display: inline-block;
+      content: '▶';
+      transition: .25s all;
+    }
+
+    &.open h5::before {
+      //content: '🔽'
+      -webkit-transform: rotate(90deg);  /* to support Safari and Android browser */
+      -ms-transform: rotate(90deg);      /* to support IE 9 */
+      transform: rotate(90deg);
+    }
   }
 
   table {
