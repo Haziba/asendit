@@ -13,14 +13,9 @@
     <div id="collapseCurrent" class="collapse show">
       <table class="table">
         <tbody>
-          <% @active_route_sets.each do |route_set| %>
-          <tr>
-            <td><%= route_set.name %></td>
-            <td><%= link_to "History", route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
-            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm #{admin_user ? "" : "disabled"}" } %></td>
-            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm", disabled: !admin_user %></td>
-          </tr>
-          <% end %>
+        <% @active_route_sets.each do |route_set| %>
+          <%= render "route_sets/index_row.html.erb", route_set: route_set %>
+        <% end %>
         </tbody>
       </table>
     </div>
@@ -35,14 +30,9 @@
     <div id="collapsePrevious" class="collapse">
       <table class="table">
         <tbody>
-          <% @old_route_sets.each do |route_set| %>
-          <tr>
-            <td><%= route_set.name %></td>
-            <td><%= link_to "History", route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
-            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm #{admin_user ? "" : "disabled"}" } %></td>
-            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm", disabled: !admin_user %></td>
-          </tr>
-          <% end %>
+        <% @old_route_sets.each do |route_set| %>
+          <%= render "route_sets/index_row.html.erb", route_set: route_set %>
+        <% end %>
         </tbody>
       </table>
     </div>
