@@ -1,6 +1,8 @@
 class RouteSetsController < ApplicationController
   include Secured
 
+  before_action :admin_only, only: [:new, :create, :edit, :update, :destroy]
+
   def create
     route_set = RouteSet.new(
       color: params["colour"],
@@ -34,5 +36,9 @@ class RouteSetsController < ApplicationController
   def destroy
     RouteSet.find(params[:id]).destroy
     redirect_to route_sets_path
+  end
+
+  def admin_only
+    redirect_to route_sets_path unless session[:userinfo]["admin"]
   end
 end

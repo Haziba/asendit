@@ -1,6 +1,8 @@
 class ClimbsController < ApplicationController
   include Secured
 
+  before_action :check_auth, only: [:new, :create, :edit, :update, :destroy]
+
   def new
     @active_route_sets = RouteSet.all
     @routes = RouteSet.all.map { |route_set| [route_set.id, route_set.routes] }.to_h
@@ -52,5 +54,9 @@ class ClimbsController < ApplicationController
   def destroy
     Climb.find(params[:id]).destroy
     redirect_to climbs_path
+  end
+
+  def check_auth
+    redirect_to climbs_path unless Climb.find(params[:id]).climber == session[:userinfo]["id"]
   end
 end

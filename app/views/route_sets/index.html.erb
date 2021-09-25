@@ -1,7 +1,7 @@
 <%
 @title = "Route Sets"
 @back_url = menu_path
-@extra_header = link_to "Add", new_route_set_path, { class: "btn btn-primary btn-block btn-sm" }
+@extra_header = link_to "Add", new_route_set_path, { class: "btn btn-primary btn-block btn-sm #{admin_user ? "" : "disabled"}" }
 %>
 
 <div class="accordion" id="accordionExample">
@@ -17,8 +17,8 @@
           <tr>
             <td><%= route_set.name %></td>
             <td><%= link_to "History", route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
-            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
-            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
+            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm #{admin_user ? "" : "disabled"}" } %></td>
+            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm", disabled: !admin_user %></td>
           </tr>
           <% end %>
         </tbody>
@@ -39,8 +39,8 @@
           <tr>
             <td><%= route_set.name %></td>
             <td><%= link_to "History", route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
-            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
-            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
+            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm #{admin_user ? "" : "disabled"}" } %></td>
+            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm", disabled: !admin_user %></td>
           </tr>
           <% end %>
         </tbody>
