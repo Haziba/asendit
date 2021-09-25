@@ -1,17 +1,49 @@
-<% 
+<%
 @title = "Route Sets"
 @back_url = menu_path
-@extra_header = link_to "Add", new_route_set_path, { class: "btn btn-primary btn-block btn-sm" } 
+@extra_header = link_to "Add", new_route_set_path, { class: "btn btn-primary btn-block btn-sm" }
 %>
 
-<table class="table">
-  <tbody>
-    <% @route_sets.each do |route_set| %>
-      <tr>
-        <td><%= route_set.name %></td>
-        <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
-	<td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="accordion" id="accordionExample">
+  <div class="card">
+    <div class="card-header" data-toggle="collapse" data-target="#collapseCurrent">
+      <h5>Current Sets</h5>
+    </div>
+
+    <div id="collapseCurrent" class="collapse show">
+      <table class="table">
+        <tbody>
+          <% @active_route_sets.each do |route_set| %>
+          <tr>
+            <td><%= route_set.name %></td>
+            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
+            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <% if @old_route_sets.any? %>
+  <div class="card">
+    <div class="card-header" data-toggle="collapse" data-target="#collapsePrevious">
+      <h5>Previous Sets</h5>
+    </div>
+
+    <div id="collapsePrevious" class="collapse">
+      <table class="table">
+        <tbody>
+          <% @old_route_sets.each do |route_set| %>
+          <tr>
+            <td><%= route_set.name %></td>
+            <td><%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %></td>
+            <td><%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% end %>
+</div>
