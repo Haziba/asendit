@@ -6,7 +6,8 @@ class Auth0Controller < ApplicationController
     # Refer to https://github.com/auth0/omniauth-auth0#authentication-hash for complete information on 'omniauth.auth' contents.
     auth_info = request.env['omniauth.auth']
     session[:userinfo] = auth_info['extra']['raw_info']
-    
+
+    session[:userinfo]["id"] = "#{session[:userinfo]["nickname"]}-#{session[:userinfo]["sub"]}"
     session[:userinfo]["admin"] = true if session[:userinfo]["sub"] == "google-oauth2|117779992736146613352"
 
     # Redirect to the URL you want after successful auth
