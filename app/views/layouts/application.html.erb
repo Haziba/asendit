@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>aSendIt</title>
+    <title>aSENDit</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -15,7 +15,7 @@
       <div class="navbar navbar-dark bg-dark box-shadow">
         <div class="container">
           <div class="row w-100 text-center navbar-brand m-0">
-            <strong>aSendIt</strong>
+            <strong>aSENDit</strong>
           </div>
         </div>
       </div>
@@ -23,17 +23,17 @@
 
     <main>
       <div class="container py-2">
-        <div class="row mt-2 mb-4">
+        <div class="row mt-2 mb-2">
           <% if @back_url %>
           <div class="w-25">
-            <%= link_to "<Back", @back_url, { class: "btn btn-secondary btn-sm" } %>
+            <%= link_to "< Back", @back_url, { class: "btn btn-secondary btn-sm" } %>
           </div>
           <% end %>
           <h2 class="<%= @back_url ? "w-50" : "w-100" %> text-center">
             <%= @title %>
           </h2>
           <% if @extra_header %>
-          <div class="w-25">
+          <div class="w-25 text-end">
             <%= @extra_header %>
           </div>
           <% end %>

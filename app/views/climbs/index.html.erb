@@ -4,15 +4,19 @@
 @extra_header = link_to "Add", new_climb_path, { class: "btn btn-primary btn-sm" }
 %>
 
-<table class="table">
-  <tbody>
-    <% @climbs.map do |climb| %>
-    <tr>
-      <td><%= "#{climb.created_at.strftime("#{climb.created_at.day.ordinalize} %b")}" %></td>
-      <td><%= link_to "View", climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
-      <td><%= link_to "Edit", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
-      <td><%= button_to "Delete", climb, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+<% if @climbs.any? %>
+  <div class="card">
+    <table class="table">
+      <tbody>
+        <% @climbs.map do |climb| %>
+        <tr>
+          <td><%= "#{climb.created_at.strftime("#{climb.created_at.day.ordinalize} %b")}" %></td>
+          <td><%= link_to "View", climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
+          <td><%= link_to "Edit", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
+          <td><%= button_to "Delete", climb, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -4,18 +4,20 @@
 @extra_header = button_to "Done", @climb, method: :patch, class: "btn btn-primary btn-sm"
 %>
 
-<div class="row mx-1">
-  <select id="routeSets" class="form-control">
-    <% @active_route_sets.each do |route_set| %>
-    <option value="<%= route_set.id %>">
-      <%= route_set.name %>
-    </option>
-    <% end %>
-  </select>
-</div>
+<div class="card">
+  <div class="row mx-1">
+    <select id="routeSets" class="form-control">
+      <% @active_route_sets.each do |route_set| %>
+      <option value="<%= route_set.id %>">
+        <%= route_set.name %>
+      </option>
+      <% end %>
+    </select>
+  </div>
 
-<div id="map" style="position: relative">
-  <img src="/GroundFloor.png" id="floorBackground" />
+  <div id="map" class="map">
+    <img src="/GroundFloor.png" id="floorBackground" />
+  </div>
 </div>
 
 <script>
@@ -59,7 +61,7 @@
     }
 
     const addRoute = route => {
-      const $route = $(`<div class="route" style="left: ${route.pos_x}px; top: ${route.pos_y}px">${icon(route.completed)}</div>`)
+      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.status)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $map.append($route)

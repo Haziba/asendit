@@ -3,16 +3,18 @@
 @back_url = route_sets_path
 %>
 
-<%= form_with url: route_sets_path, model: @route_set do |f| %>
-  <div class="mb-3">
-    <%= f.label :colour, { class: "form-label" } %>
-    <%= f.select :colour, [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]], {}, { class: "form-select" } %>
-  </div>
+<div class="card">
+  <%= form_with url: route_sets_path, model: @route_set do |f| %>
+    <div class="mb-3">
+      <%= f.label :colour, { class: "form-label" } %>
+      <%= f.select :colour, [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]], {}, { class: "form-select" } %>
+    </div>
 
-  <div class="mb-3">
-    <%= f.label :added, { class: "form-label" } %>
-    <%= f.date_field :added, value: Time.now.strftime('%Y-%m-%d'), class: "form-control" %>
-  </div>
+    <div class="mb-3">
+      <%= f.label :added, { class: "form-label" } %>
+      <%= f.date_field :added, value: Time.now.strftime('%Y-%m-%d'), class: "form-control" %>
+    </div>
 
-  <%= f.submit "Add", class: "btn btn-primary" %>
-<% end %>
+    <%= f.submit "Add", class: "btn btn-success" %>
+  <% end %>
+</div>

@@ -1,7 +1,7 @@
 class ClimbsController < ApplicationController
   include Secured
 
-  before_action :check_auth, only: [:new, :create, :edit, :update, :destroy]
+  before_action :check_auth, only: [:edit, :update, :destroy]
 
   def new
     @active_route_sets = RouteSet.all

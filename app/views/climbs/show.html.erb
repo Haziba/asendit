@@ -25,7 +25,7 @@
 
     <div id="collapse-<%= i %>" class="collapse">
       <div class="card-body">
-        <div id="map-<%= route_set.id %>" style="position: relative">
+        <div id="map-<%= route_set.id %>" class="map">
           <img src="/GroundFloor.png" id="floorBackground" />
         </div>
       </div>
@@ -36,7 +36,7 @@
 
 <script>
   $(() => {
-    const $map = $('#map')
+    const $map = $('.map')
     const $routeSets = $('#routeSets')
     const $done = $('#done')
     const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
@@ -63,7 +63,7 @@
     }
 
     const addRoute = (route, routeSet) => {
-      const $route = $(`<div class="route" style="left: ${route.pos_x}px; top: ${route.pos_y}px">${icon(route.status)}</div>`)
+      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.status)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $('#map-' + routeSet).append($route)

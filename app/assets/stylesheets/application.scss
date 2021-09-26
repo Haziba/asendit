@@ -16,8 +16,83 @@
 
 @import "bootstrap";
 
+@font-face {
+    font-family: Metropolis;
+    src: url("fonts/Metropolis-Regular.otf") format("opentype");
+}
+
+body {
+  background-color: rgb(70, 69, 90);
+  font-family: Metropolis !important;
+  color: rgb(70, 69, 90) !important;
+}
+
+.btn {
+  color: rgb(70, 69, 90) !important;
+}
+
+h2 {
+  font-size: 30px;
+  color: rgb(244, 245, 242);
+}
+
+.navbar {
+  strong {
+    color: rgb(70, 69, 90) !important;
+    font-size: 32px;
+  }
+  background-color: #ADADB1 !important;
+  padding: 0px;
+}
+
+.btn {
+  text-transform: uppercase !important;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.btn-success {
+  background-color: rgb(104, 170, 105) !important;
+  border-color: rgb(104, 170, 105) !important;
+}
+
+.btn-primary, .btn-secondary {
+  background-color: #a5b5c7 !important;
+  border-color: #a5b5c7 !important;
+}
+
+.btn-danger {
+  background-color: rgb(170, 101, 117) !important;
+  border-color: rgb(170, 101, 117) !important;
+}
+
+.card {
+  border-radius: initial;
+  margin-left: -13px;
+  margin-right: -13px;
+  padding: 12px 12px 24px 12px;
+  background-color: #ADADB1 !important;
+}
+
+.map {
+  position: relative;
+
+  img {
+    max-width: 100%;
+  }
+}
+
 html, body {
   overflow-x: hidden;
+}
+
+.card table {
+  margin-bottom: 0px;
+  color: rgb(70, 69, 90) !important;
+
+  tr:last-child td {
+    border-bottom: none;
+  }
 }
 
 .accordion {
@@ -25,11 +100,15 @@ html, body {
   margin-right: -13px;
 
   .card {
-    border-radius: initial;
+    padding: initial;
+    margin-left: initial;
+    margin-right: initial;
 
     h5::before {
       display: inline-block;
-      content: '▶';
+      content: '>';
+      margin-right: 10px;
+      font-weight: bolder;
       transition: .25s all;
     }
 
@@ -39,9 +118,5 @@ html, body {
       -ms-transform: rotate(90deg);      /* to support IE 9 */
       transform: rotate(90deg);
     }
-  }
-
-  table {
-    margin-bottom: 0px;
   }
 }
