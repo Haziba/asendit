@@ -61,7 +61,7 @@
     }
 
     const addRoute = route => {
-      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.status)}</div>`)
+      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.completed)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $map.append($route)
