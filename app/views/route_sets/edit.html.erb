@@ -22,11 +22,15 @@
       if($tool.val() != 'Add')
         return
 
+      const $mapImg = $('#floorBackground')
+      const widthRatio = $mapImg[0].naturalWidth / $mapImg.width()
+      const heightRatio = $mapImg[0].naturalHeight / $mapImg.height()
+
       $.post({
         url: "/routes",
         data: {
-          posX: me.offsetX,
-          posY: me.offsetY,
+          posX: me.offsetX * widthRatio,
+          posY: me.offsetY * heightRatio,
           floor: 1,
           routeSet: <%= @route_set.id %>
         },
