@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  resources :climbs
+  resources :climbs do
+    get "/share", to: "climb_share#show"
+  end
   resources :route_sets
   resources :routes
 

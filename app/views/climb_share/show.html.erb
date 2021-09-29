@@ -1,0 +1,92 @@
+<%
+@title = "#{@climb.created_at.strftime("#{@climb.created_at.day.ordinalize} %b")}"
+%>
+
+<div class="accordion" id="accordionExample">
+  <% @route_sets.each_with_index do |route_set, i| %>
+  <div class="card">
+    <div class="card-header" data-toggle="collapse" data-target="#collapse-<%= i %>">
+      <h5 class="mb-0 d-flex justify-content-between">
+        <div>
+          <%= route_set.color.titleize %>
+        </div>
+        <div>
+          <%= attempted_routes(route_set) %>
+        </div>
+        <div>
+          <%= success_rate(route_set) %>✔
+        </div>
+        <div>
+          <%= new_wins_count_for_set(route_set) %>⭐
+        </div>
+      </h5>
+    </div>
+
+    <div id="collapse-<%= i %>" class="collapse">
+      <div class="card-body">
+        <div id="map-<%= route_set.id %>" class="map">
+          <img src="/GroundFloor.png" id="floorBackground" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>
+
+<script>
+  $(() => {
+    const $map = $('.map')
+    const $routeSets = $('#routeSets')
+    const $done = $('#done')
+    const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
+    const routeSets = <%= raw @routes.to_json %>
+    const newWins = <%= raw new_wins.to_json %>
+
+    const initRouteStates = () => {
+      const initialRouteStates = <%= raw @climb.route_states.to_json %>
+      Object.keys(routeSets).forEach(routeSetKey => {
+        routeSets[routeSetKey].forEach(route => {
+          const newWin = newWins.filter(newWin => newWin.route_id == route.id)[0]
+
+          if(newWin) {
+            route.status = 'new_win'
+            return
+          }
+
+          const routeState = initialRouteStates.filter(initialRouteState => initialRouteState.route_id == route.id)[0]
+
+          if(routeState)
+            route.status = routeState.status
+        })
+      })
+    }
+
+    const addRoute = (route, routeSet) => {
+      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.status)}</div>`)
+      $route.click(() => clickRoute(route))
+      route.$elem = $route
+      $('#map-' + routeSet).append($route)
+    }
+
+    const setRoute = (routeSet) => {
+      const newRoutes = routeSets[routeSet]
+      newRoutes.forEach(newRoute => addRoute(newRoute, routeSet))
+    }
+
+    const icon = status => {
+      switch(status) {
+        case 'new_win':
+          return '⭐'
+        case 'sent':
+          return '✔'
+        case 'failed':
+          return '❌'
+        default:
+          return '🟡'
+      }
+    }
+
+    initRouteStates()
+    Object.keys(routeSets).forEach(routeSet => setRoute(routeSet))
+  })
+</script>
