@@ -37,6 +37,7 @@ module ClimbsHelper
   end
 
   def new_wins_count_for_set(route_set)
-    new_wins.count { |win| Route.find(win.route_id).route_set_id == route_set.id }
+    routes = Route.find(new_wins.map(&:route_id))
+    new_wins.count { |win| routes.select { |route| route.id == win.route_id }.first.route_set_id == route_set.id }
   end
 end
