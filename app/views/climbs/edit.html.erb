@@ -27,6 +27,7 @@
     const $done = $('#done')
     const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
     const routeSets = <%= raw @routes.to_json %>
+    const previousStates = <%= raw previous_states.to_json %>
     let $routes = []
 
     const initRouteStates = () => {
@@ -38,14 +39,7 @@
           if(!routeState)
             return
 
-          switch(routeState.status) {
-            case "sent":
-              route.completed = true
-              break
-            case "failed":
-              route.completed = false
-              break
-          }
+          route.status = routeState.status
         })
       })
     }
@@ -61,7 +55,7 @@
     }
 
     const addRoute = route => {
-      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.completed)}</div>`)
+      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $map.append($route)
@@ -69,40 +63,40 @@
     }
 
     const clickRoute = route => {
-      if(route.completed === undefined)
-        route.completed = true
-      else if(route.completed)
-        route.completed = false
-      else if(route.completed === false)
-        route.completed = undefined
+      const statusOrder = ['failed', 'sent', 'flashed']
+      const nextStatusIndex = statusOrder.indexOf(route.status) + 1
+      route.status = statusOrder[nextStatusIndex]
 
-      route.$elem.text(icon(route.completed))
+      route.$elem.text(icon(route))
 
       updateRouteStates()
     }
 
-    const icon = state => {
-      switch(state) {
-        case true:
+    const icon = route => {
+      switch(route.status) {
+        case 'flashed':
+          return '⚡'
+        case 'sent':
           return '✔'
-        case false:
+        case 'failed':
           return '❌'
-        default:
+      }
+
+      switch(previousStates[route.id]) {
+        case 'sent':
+          return '🟢'
+        case 'failed':
           return '🟡'
+        default:
+          return '🔴'
       }
     }
 
     const updateRouteStates = () => {
-      const status = {
-        undefined: 'not_attempted',
-        false: 'failed',
-        true: 'sent'
-      }
-
       const routeStates = Object.keys(routeSets).map(routeSetId => {
         return routeSets[routeSetId].map(route => ({
           routeId: route.id,
-          status: status[route.completed]
+          status: route.status || 'not_attempted'
         }))
       }).flat()
 

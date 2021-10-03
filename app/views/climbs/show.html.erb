@@ -42,19 +42,13 @@
     const $done = $('#done')
     const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
     const routeSets = <%= raw @routes.to_json %>
+    const previousStates = <%= raw previous_states.to_json %>
     const newWins = <%= raw new_wins.to_json %>
 
     const initRouteStates = () => {
       const initialRouteStates = <%= raw @climb.route_states.to_json %>
       Object.keys(routeSets).forEach(routeSetKey => {
         routeSets[routeSetKey].forEach(route => {
-          const newWin = newWins.filter(newWin => newWin.route_id == route.id)[0]
-
-          if(newWin) {
-            route.status = 'new_win'
-            return
-          }
-
           const routeState = initialRouteStates.filter(initialRouteState => initialRouteState.route_id == route.id)[0]
 
           if(routeState)
@@ -64,7 +58,7 @@
     }
 
     const addRoute = (route, routeSet) => {
-      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.status)}</div>`)
+      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $('#map-' + routeSet).append($route)
@@ -75,16 +69,30 @@
       newRoutes.forEach(newRoute => addRoute(newRoute, routeSet))
     }
 
-    const icon = status => {
-      switch(status) {
-        case 'new_win':
-          return '⭐'
+    const icon = route => {
+      const newWin = newWins.filter(newWin => newWin.route_id == route.id)[0]
+      let icon = ''
+
+      if(newWin)
+        icon = '⭐'
+
+      switch(route.status) {
+        case 'flashed':
+          console.log('flashed', newWins, route.id)
+          return `${icon}⚡`
         case 'sent':
-          return '✔'
+          return `${icon}✔`
         case 'failed':
           return '❌'
-        default:
+      }
+
+      switch(previousStates[route.id]) {
+        case 'sent':
+          return '🟢'
+        case 'failed':
           return '🟡'
+        default:
+          return '🔴'
       }
     }
 

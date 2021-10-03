@@ -9,7 +9,10 @@ class ClimbsController < ApplicationController
       .group_by(&:color)
       .map { |key, value| value.first }
       .sort { |route_set| route_set.added.to_i }
-    @routes = @active_route_sets.map { |route_set| [route_set.id, route_set.routes] }.to_h
+
+    @routes = @active_route_sets
+      .map { |route_set| [route_set.id, route_set.routes] }
+      .to_h
   end
 
   def create
@@ -40,6 +43,7 @@ class ClimbsController < ApplicationController
       .group_by(&:color)
       .map { |key, value| value.first }
       .sort { |route_set| route_set.added.to_i }
+
     @routes = @active_route_sets.map { |route_set| [route_set.id, route_set.routes] }.to_h
   end
 
