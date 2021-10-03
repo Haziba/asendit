@@ -1,6 +1,7 @@
 <%
-@title = "#{@climb.created_at.strftime("#{@climb.created_at.day.ordinalize} %b")}"
+@title = "#{@climb.name}"
 @back_url = climbs_path
+@extra_header = "<button id='share' class='btn btn-sm btn-secondary'>Share</button>"
 %>
 
 <div class="accordion" id="accordionExample">
@@ -89,5 +90,12 @@
 
     initRouteStates()
     Object.keys(routeSets).forEach(routeSet => setRoute(routeSet))
+
+    $('#share').click(() => {
+      navigator.share({
+        title: 'aSENDit Climb <%= @climb.name %>',
+        url: '<%= climb_share_url(@climb) %>'
+      })
+    })
   })
 </script>
