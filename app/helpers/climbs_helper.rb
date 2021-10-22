@@ -1,4 +1,11 @@
 module ClimbsHelper
+  def route_attempt_percentages(route_states)
+    routes = Route.find(route_states.select(&:tried?).map(&:route_id))
+    route_sets = RouteSet.find(routes.map(&:route_set_id).uniq)
+
+    route_sets.map { |route_set| [route_set.color, (routes.count { |route| route.route_set_id == route_set.id }.to_f * 100) / routes.count.to_f] }
+  end
+
   def route_set_by_route_id(route_id)
     route = Route.find(route_id)
     RouteSet.find(route.route_set_id)
