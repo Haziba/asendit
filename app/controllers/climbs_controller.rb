@@ -18,10 +18,11 @@ class ClimbsController < ApplicationController
   def create
     climb = Climb.new(
       climber: session[:userinfo]["id"],
-      route_states: JSON.parse(params["route_states"]).map do |route_state|
-        RouteState.new(
-          route_id: route_state["routeId"],
-          status: route_state["status"])
+      route_state_json: JSON.parse(params["route_states"]).map do |route_state|
+        RouteStatus.new(
+          route_state["routeId"],
+          route_state["status"]
+        )
       end
     )
     climb.save
@@ -49,10 +50,10 @@ class ClimbsController < ApplicationController
 
   def update
     climb = Climb.find(params[:id])
-    climb.route_states = JSON.parse(params["route_states"]).map do |route_state|
-      RouteState.new(
-        route_id: route_state["routeId"],
-        status: route_state["status"])
+    climb.route_state_json = JSON.parse(params["route_states"]).map do |route_state|
+      RouteStatus.new(
+        route_state["routeId"],
+        route_state["status"])
     end
     climb.save
 
