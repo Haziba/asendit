@@ -1,7 +1,7 @@
 <%
 @title = "Climbs"
 @back_url = menu_path
-@extra_header = link_to "Add", new_climb_path, { class: "btn btn-primary btn-sm" }
+@extra_header = button_to "Add", climbs_path(method: :post), { class: "btn btn-primary btn-sm" }
 %>
 
 <% if @climbs.any? %>
@@ -11,18 +11,26 @@
         <% @climbs.map do |climb| %>
         <tr>
           <td><%= "#{climb.created_at.strftime("#{climb.created_at.day.ordinalize} %b")}" %></td>
-          <td><%= climb.route_states.count(&:success?) %>/<%= climb.route_states.count(&:tried?) %> (<%= climb.success_percentage %>)</td>
-          <td>
-            <div class="climb-wheel">
-              <div class="pie">
-                <% offset = 0 %>
-                <% route_attempt_percentages(climb.route_states).each do |route_set_name, percentage| %>
-                  <div class="pie__segment" style="--offset: <%= offset %>; --value: <%= percentage %>; --bg: <%= route_set_name.split(' ').first %>;<%= percentage >= 50 ? " --over50: 1": nil %>"></div>
-                  <% offset += percentage %>
-                <% end %>
+          <% if climb.route_states.count(&:tried?) > 0 %>
+            <td>
+              <%= climb.route_states.count(&:success?) %>/<%= climb.route_states.count(&:tried?) %> (<%= climb.success_percentage %>)
+            </td>
+            <td>
+              <div class="climb-wheel">
+                <div class="pie">
+                  <% offset = 0 %>
+                  <% route_attempt_percentages(climb.route_states).each do |route_set_name, percentage| %>
+                    <div class="pie__segment" style="--offset: <%= offset %>; --value: <%= percentage %>; --bg: <%= route_set_name.split(' ').first %>;<%= percentage >= 50 ? " --over50: 1": nil %>"></div>
+                    <% offset += percentage %>
+                  <% end %>
+                </div>
               </div>
-            </div>
-          </td>
+            </td>
+          <% else %>
+            <td colspan="2" style="text-align: center">
+              None Set
+            </td>
+          <% end %>
           <td><%= link_to "View", climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
           <td><%= link_to "Edit", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
           <td><%= button_to "Delete", climb, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>

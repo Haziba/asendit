@@ -3,31 +3,33 @@ class ClimbsController < ApplicationController
 
   before_action :check_auth, only: [:edit, :update, :destroy]
 
-  def new
-    @active_route_sets = RouteSet.all
+  def create
+    current_climb = Climb.where(climber: session[:userinfo]["id"], current: true).first
+    
+    return redirect_to(edit_climb_path(current_climb)) if current_climb != nil
+
+    routes = RouteSet.all
       .order(added: :desc)
       .group_by(&:color)
       .map { |key, value| value.first }
       .sort { |route_set| route_set.added.to_i }
+      .map(&:routes)
+      .flatten
 
-    @routes = @active_route_sets
-      .map { |route_set| [route_set.id, route_set.routes] }
-      .to_h
-  end
-
-  def create
     climb = Climb.new(
       climber: session[:userinfo]["id"],
-      route_state_json: JSON.parse(params["route_states"]).map do |route_state|
+      route_state_json: routes.map do |route_state|
         RouteStatus.new(
           route_state["routeId"],
           route_state["status"]
         )
-      end
+      end,
+      current: true
     )
+
     climb.save
 
-    redirect_to climb_path(climb.id)
+    redirect_to(edit_climb_path(climb))
   end
 
   def show
@@ -50,14 +52,19 @@ class ClimbsController < ApplicationController
 
   def update
     climb = Climb.find(params[:id])
-    climb.route_state_json = JSON.parse(params["route_states"]).map do |route_state|
+    climb.route_state_json = params["route_states"].to_unsafe_h.map do |index, route_state|
       RouteStatus.new(
-        route_state["routeId"],
-        route_state["status"])
+        route_state["routeId"].to_i,
+        route_state["status"]
+      )
     end
     climb.save
+  end
 
-    redirect_to climb_path(climb.id)
+  def complete
+    climb = Climb.find(params[:climb_id])
+    climb.update_attribute(:current, false)
+    redirect_to climb_path(climb)
   end
 
   def index

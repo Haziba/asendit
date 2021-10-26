@@ -1,7 +1,7 @@
 <%
 @title = "Climb That Shit"
 @back_url = climbs_path
-@extra_header = button_to "Done", @climb, method: :patch, class: "btn btn-primary btn-sm"
+@extra_header = button_to "Done", { action: "complete", climb_id: @climb.id }, method: :post, class: "btn btn-primary btn-sm"
 %>
 
 <div class="card">
@@ -25,7 +25,6 @@
     const $map = $('#map')
     const $routeSets = $('#routeSets')
     const $done = $('#done')
-    const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
     const routeSets = <%= raw @routes.to_json %>
     const previousStates = <%= raw previous_states.to_json %>
     let $routes = []
@@ -69,8 +68,40 @@
 
       route.$elem.text(icon(route))
 
-      updateRouteStates()
+      updateServer()
     }
+
+    const debounce = (func, wait, immediate) => {
+      var timeout;
+      return function () {
+        var context = this, args = arguments;
+        var later = function () {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      };
+    };
+
+    const updateServer = debounce(() => {
+      const routeStates = Object.keys(routeSets).map(routeSetId => 
+        routeSets[routeSetId].map(route => ({
+          routeId: route.id,
+          status: route.status || 'not_attempted'
+        }))
+      ).flat()
+
+      $.ajax({
+        url: '<%= climb_path(@climb) %>', 
+        data: {
+          route_states: routeStates
+        },
+        method: 'patch'
+      })
+    }, 1000)
 
     const icon = route => {
       switch(route.status) {
@@ -92,23 +123,8 @@
       }
     }
 
-    const updateRouteStates = () => {
-      const routeStates = Object.keys(routeSets).map(routeSetId => {
-        return routeSets[routeSetId].map(route => ({
-          routeId: route.id,
-          status: route.status || 'not_attempted'
-        }))
-      }).flat()
-
-      $routeStates.val(JSON.stringify(routeStates))
-    }
-
-    const $form = $('[action="<%= climb_path(@climb) %>"]')
-    $form.append($routeStates)
-
     $routeSets.change(changeRoute)
     initRouteStates()
     changeRoute()
-    updateRouteStates()
   })
 </script>
