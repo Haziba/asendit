@@ -9,7 +9,7 @@
     <input type="date" value="<%= @climb.climbed_at %>" class="form-control" id="climbedAt">
   </div>
 
-  <div class="row mx-1 mb-1">
+  <div class="row mx-1 mb-1" id="routeSetsContainer">
     <select id="routeSets" class="form-control">
       <% @active_route_sets.each do |route_set| %>
       <option value="<%= route_set.id %>">
@@ -133,5 +133,21 @@
     $routeSets.change(changeRoute)
     initRouteStates()
     changeRoute()
+  })
+
+  $(() => {
+    const $routeSetsContainer = $('#routeSetsContainer')
+    const routeSetContainerTop = $routeSetsContainer[0].getBoundingClientRect().y + document.documentElement.scrollTop - 10
+    $('#routeSets').css({ maxWidth: $routeSetsContainer.width() })
+
+    const updateFixedRouteSet = () => {
+      if(document.documentElement.scrollTop > routeSetContainerTop)
+        $routeSetsContainer.addClass('fix-to-top')
+      else
+        $routeSetsContainer.removeClass('fix-to-top')
+    }
+
+    $(document).scroll(updateFixedRouteSet)
+    updateFixedRouteSet()
   })
 </script>

@@ -49,3 +49,14 @@
     box-sizing: border-box;
   }
 }
+
+#routeSetsContainer.fix-to-top {
+  height: 40px;
+
+  #routeSets {
+    position: fixed;
+    top: 10px;
+    z-index: 1;
+    width: 100%;
+  }
+}
