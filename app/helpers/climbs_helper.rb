@@ -30,7 +30,7 @@ module ClimbsHelper
   end
 
   def new_wins
-    previous_climbs = Climb.where(climber: @climb.climber).where('created_at < ?', @climb.created_at)
+    previous_climbs = Climb.where(climber: @climb.climber).where('climbed_at < ?', @climb.climbed_at)
     sent_route_ids = previous_climbs
       .map(&:route_states)
       .flatten

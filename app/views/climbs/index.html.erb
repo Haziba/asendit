@@ -10,7 +10,7 @@
       <tbody>
         <% @climbs.map do |climb| %>
         <tr>
-          <td><%= "#{climb.created_at.strftime("#{climb.created_at.day.ordinalize} %b")}" %></td>
+          <td><%= "#{climb.name}" %></td>
           <% if climb.route_states.count(&:tried?) > 0 %>
             <td>
               <%= climb.route_states.count(&:success?) %>/<%= climb.route_states.count(&:tried?) %> (<%= climb.success_percentage %>)

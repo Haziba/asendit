@@ -17,6 +17,7 @@ class ClimbsController < ApplicationController
       .flatten
 
     climb = Climb.new(
+      climbed_at: Time.now,
       climber: session[:userinfo]["id"],
       route_state_json: routes.map do |route_state|
         RouteStatus.new(

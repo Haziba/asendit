@@ -1,6 +1,6 @@
 class Climb < ApplicationRecord
   def name
-    created_at.strftime("#{created_at.day.ordinalize} %b")
+    climbed_at.strftime("#{climbed_at.day.ordinalize} %b")
   end
 
   def success_percentage
