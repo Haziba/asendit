@@ -5,7 +5,11 @@
 %>
 
 <div class="card">
-  <div class="row mx-1">
+  <div class="row mx-1 mb-1">
+    <input type="date" value="<%= @climb.climbed_at %>" class="form-control" id="climbedAt">
+  </div>
+
+  <div class="row mx-1 mb-1">
     <select id="routeSets" class="form-control">
       <% @active_route_sets.each do |route_set| %>
       <option value="<%= route_set.id %>">
@@ -24,6 +28,7 @@
   $(() => {
     const $map = $('#map')
     const $routeSets = $('#routeSets')
+    const $climbedAt = $('#climbedAt')
     const $done = $('#done')
     const routeSets = <%= raw @routes.to_json %>
     const previousStates = <%= raw previous_states.to_json %>
@@ -97,6 +102,7 @@
       $.ajax({
         url: '<%= climb_path(@climb) %>', 
         data: {
+          climbed_at: $climbedAt.val(),
           route_states: routeStates
         },
         method: 'patch'
@@ -123,6 +129,7 @@
       }
     }
 
+    $climbedAt.change(updateServer)
     $routeSets.change(changeRoute)
     initRouteStates()
     changeRoute()
