@@ -40,6 +40,16 @@ class ClimbsController < ApplicationController
     @route_sets = RouteSet.find(@routes.keys)
   end
 
+  def current
+    current_climb = Climb.where(climber: session[:userinfo]["id"], current: true).first
+
+    if(current_climb)
+      redirect_to edit_climb_path(current_climb.id)
+    else
+      redirect_to index_climb_path
+    end
+  end
+
   def edit
     @climb = Climb.find(params[:id])
     @active_route_sets = RouteSet.all
