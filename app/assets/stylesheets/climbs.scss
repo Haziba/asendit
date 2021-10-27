@@ -60,3 +60,20 @@
     width: 100%;
   }
 }
+
+#map {
+  border-radius: 10px;
+  overflow: hidden;
+
+  &.pink {
+    background-color: pink;
+  }
+
+  &.black {
+    background-color: black;
+  }
+
+  &.blue {
+    background-color: blue;
+  }
+}

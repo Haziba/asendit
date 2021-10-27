@@ -20,7 +20,8 @@
   </div>
 
   <div id="map" class="map">
-    <img src="/GroundFloor.png" id="floorBackground" />
+    <div id="floorBackgroundColour"></div>
+    <img src="/GroundFloor.png" id="floorBackground" style="opacity: 0.8; background-color: pink" />
   </div>
 </div>
 
@@ -56,6 +57,11 @@
 
       const newRoutes = routeSets[$routeSets.val()]
       newRoutes.forEach(addRoute)
+
+      if($routeSets.data('val'))
+        $map.removeClass($routeSets.data('val'))
+      $routeSets.data('val', $routeSets.find('option:selected').text().trim().split(' ')[0].toLowerCase())
+      $map.addClass($routeSets.data('val'))
     }
 
     const addRoute = route => {
