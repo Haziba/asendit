@@ -31,9 +31,11 @@
               None Set
             </td>
           <% end %>
-          <td><%= link_to "View", climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
-          <td><%= link_to "Edit", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %></td>
-          <td><%= button_to "Delete", climb, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %></td>
+          <td class="actions">
+            <%= link_to "👁", climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %>
+            <%= link_to "✏️", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %>
+            <%= button_to "🗑", climb, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %>
+          </td>
         </tr>
         <% end %>
       </tbody>
