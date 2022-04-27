@@ -12,7 +12,7 @@ module DatDepot
     config.load_defaults 6.1
 
     config.assets.enabled = true
-    config.assets.paths << Rails.root.join("app", "assets", "fonts")  # Ensure fonts path is included
+    config.assets.paths << Rails.root.join("app", "assets", "fonts")
 
     # Configuration for the application, engines, and railties goes here.
     #
