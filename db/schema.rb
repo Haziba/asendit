@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_26_161231) do
+ActiveRecord::Schema.define(version: 2022_08_10_215742) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,11 +24,19 @@ ActiveRecord::Schema.define(version: 2021_10_26_161231) do
     t.date "climbed_at"
   end
 
+  create_table "places", force: :cascade do |t|
+    t.text "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "route_sets", force: :cascade do |t|
     t.text "color"
     t.datetime "added"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "place_id"
+    t.index ["place_id"], name: "index_route_sets_on_place_id"
   end
 
   create_table "route_states", force: :cascade do |t|
@@ -52,4 +60,13 @@ ActiveRecord::Schema.define(version: 2021_10_26_161231) do
     t.index ["route_set_id"], name: "index_routes_on_route_set_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.text "reference"
+    t.bigint "place_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["place_id"], name: "index_users_on_place_id"
+  end
+
+  add_foreign_key "route_sets", "places"
 end
