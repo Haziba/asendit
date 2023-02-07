@@ -10,14 +10,14 @@
     <input type="date" value="<%= @climb.climbed_at %>" class="form-control" id="climbedAt">
   </div>
 
-  <div class="row mx-1 mb-1" id="routeSetsContainer">
-    <select id="routeSets" class="form-control">
-      <% @active_route_sets.each do |route_set| %>
-      <option value="<%= route_set.id %>">
-        <%= route_set.name %>
-      </option>
-      <% end %>
-    </select>
+  <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer">
+    <% @active_route_sets.each do |route_set| %>
+      <button style="background-color: <%= route_set.color %>" data-route-set-id="<%= route_set.id %>" data-colour="<%= route_set.color %>" class="btn">
+        <span>
+          <%= route_set.color.titleize %>
+        </span>
+      </button>
+    <% end %>
   </div>
 
   <div id="map" class="map">
@@ -29,11 +29,12 @@
 <script>
   $(() => {
     const $map = $('#map')
-    const $routeSets = $('#routeSets')
+    const $routeSets = $('#routeSetsContainer > button')
     const $climbedAt = $('#climbedAt')
     const $done = $('#done')
     const routeSets = <%= raw @routes.to_json %>
     const previousStates = <%= raw previous_states.to_json %>
+    let $currentRouteSetBtn = null
     let $routes = []
 
     const initRouteStates = () => {
@@ -50,19 +51,28 @@
       })
     }
 
-    const changeRoute = () => {
+    const changeRoute = (e) => {
       $routes.forEach($route => {
         $route.remove()
       })
       $routes = []
 
-      const newRoutes = routeSets[$routeSets.val()]
+      if($currentRouteSetBtn) {
+        $map.removeClass($currentRouteSetBtn.data('colour'))
+        $currentRouteSetBtn.removeClass('current')
+        $currentRouteSetBtn.removeAttr('disabled')
+      }
+
+      $currentRouteSetBtn = e ? $(e.currentTarget) : $($routeSets[0])
+      const routeSetId = $currentRouteSetBtn.data('routeSetId')
+      const colour = $currentRouteSetBtn.data('colour')
+
+      const newRoutes = routeSets[routeSetId]
       newRoutes.forEach(addRoute)
 
-      if($routeSets.data('val'))
-        $map.removeClass($routeSets.data('val'))
-      $routeSets.data('val', $routeSets.find('option:selected').text().trim().split(' ')[0].toLowerCase())
-      $map.addClass($routeSets.data('val'))
+      $map.addClass(colour)
+      $currentRouteSetBtn.addClass('current')
+      $currentRouteSetBtn.attr('disabled', true)
     }
 
     const addRoute = route => {
@@ -137,7 +147,7 @@
     }
 
     $climbedAt.change(updateServer)
-    $routeSets.change(changeRoute)
+    $routeSets.click(changeRoute)
     initRouteStates()
     changeRoute()
   })
