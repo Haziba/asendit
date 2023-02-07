@@ -17,6 +17,14 @@ class RouteSetsController < ApplicationController
     @route_set = RouteSet.find(params[:id])
   end
 
+  def update
+    @route_set = RouteSet.find(params[:id])
+
+    @route_set.update(expires_at: Date.parse(params[:route_set][:expires_at]))
+
+    redirect_to edit_route_set_path(@route_set)
+  end
+
   def index
     @active_route_sets = RouteSet.all
       .order(added: :desc)
