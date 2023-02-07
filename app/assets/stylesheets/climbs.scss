@@ -50,14 +50,33 @@
   }
 }
 
-#routeSetsContainer.fix-to-top {
-  height: 40px;
+#routeSetsContainer {
+  &.fix-to-top {
+    height: 40px;
 
-  #routeSets {
-    position: fixed;
-    top: 10px;
-    z-index: 1;
-    width: 100%;
+    #routeSets {
+      position: fixed;
+      top: 10px;
+      z-index: 1;
+      width: 100%;
+    }
+  }
+
+  flex-wrap: initial;
+
+  button {
+    flex-shrink: 1;
+    border-radius: 0px;
+
+    &:first-child {
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+
+    &:last-child {
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
   }
 }
 
@@ -75,5 +94,13 @@
 
   &.blue {
     background-color: blue;
+  }
+
+  &.red {
+    background-color: red;
+  }
+
+  &.green {
+    background-color: green;
   }
 }
