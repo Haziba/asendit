@@ -4,6 +4,17 @@
 %>
 
 <div class="card">
+  <%= form_with url: route_set_path(@route_set), method: :patch, model: @route_set do |f| %>
+    <div class="mb-3">
+      <%= f.label :expires_at, { class: "form-label" } %>
+      <%= f.date_field :expires_at, value: @route_set.expires_at, class: "form-control" %>
+    </div>
+
+    <%= f.submit "Edit", class: "btn btn-success" %>
+  <% end %>
+
+  <hr />
+
   <select id="tool" class="mb-2 form-control">
     <option>Add</option>
     <option>Remove</option>
