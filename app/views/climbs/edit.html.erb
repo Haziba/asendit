@@ -6,8 +6,9 @@
 %>
 
 <div class="card">
-  <div class="row mx-1 mb-1">
-    <input type="date" value="<%= @climb.climbed_at %>" class="form-control" id="climbedAt">
+  <div class="row mx-1 mb-1 flex flex-row justify-content-between">
+    <input type="date" value="<%= @climb.climbed_at %>" class="form-control w-50" id="climbedAt">
+    <button class="btn bg-white w-25 visually-hidden" id="lock">🔓</button>
   </div>
 
   <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer">
@@ -32,6 +33,7 @@
     const $routeSets = $('#routeSetsContainer > button')
     const $climbedAt = $('#climbedAt')
     const $done = $('#done')
+    const $lock = $('#lock')
     const routeSets = <%= raw @routes.to_json %>
     const previousStates = <%= raw previous_states.to_json %>
     let $currentRouteSetBtn = null
@@ -52,6 +54,9 @@
     }
 
     const changeRoute = (e) => {
+      if(isLocked())
+        return
+
       $routes.forEach($route => {
         $route.remove()
       })
@@ -84,6 +89,9 @@
     }
 
     const clickRoute = route => {
+      if(isLocked())
+          return
+
       const statusOrder = ['failed', 'sent', 'flashed']
       const nextStatusIndex = statusOrder.indexOf(route.status) + 1
       route.status = statusOrder[nextStatusIndex]
@@ -91,6 +99,30 @@
       route.$elem.text(icon(route))
 
       updateServer()
+    }
+
+    const toggleLock = () => {
+      $lock.attr('disabled', 'disabled')
+
+      if(isLocked()) {
+        $lock.wakeLock.release().then(() => {
+          $lock.wakeLock = null
+          $lock.removeAttr('disabled')
+          $lock.text('🔓')
+          $map.css('opacity', 1)
+        })
+      } else {
+        navigator.wakeLock.request('screen').then(lock => {
+          $lock.wakeLock = lock
+          $lock.removeAttr('disabled')
+          $lock.text('🔒')
+          $map.css('opacity', 0.1)
+        })
+      }
+    }
+
+    const isLocked = () => {
+      return !!$lock.wakeLock
     }
 
     const debounce = (func, wait, immediate) => {
@@ -150,6 +182,11 @@
     $routeSets.click(changeRoute)
     initRouteStates()
     changeRoute()
+
+    if('wakeLock' in navigator) {
+      $lock.removeClass('visually-hidden')
+      $lock.click(toggleLock)
+    }
   })
 
   $(() => {
