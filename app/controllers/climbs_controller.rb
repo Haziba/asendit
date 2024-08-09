@@ -46,7 +46,7 @@ class ClimbsController < ApplicationController
     if(current_climb)
       redirect_to edit_climb_path(current_climb.id)
     else
-      redirect_to index_climb_path
+      redirect_to climbs_path
     end
   end
 
