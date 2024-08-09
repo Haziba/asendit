@@ -50,6 +50,7 @@ module ClimbsHelper
 
   def previous_states
     Climb.where(climber: @climb ? @climb.climber : session[:userinfo]["id"])
+      .reject { |climb| climb == @climb }
       .map(&:route_states)
       .flatten
       .group_by(&:route_id)
