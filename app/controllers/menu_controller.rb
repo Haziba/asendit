@@ -2,7 +2,7 @@ class MenuController < ApplicationController
   include Secured
 
   def index
-    @title = "Let's Climb Some Shit"
+    @title = "Let's Climb"
     @user = session[:userinfo]
   end
 end
