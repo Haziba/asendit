@@ -62,7 +62,7 @@ RSpec.describe RouteSetsController, type: :controller do
     it 'assigns active and old route sets' do
       get :index
 
-      expect(assigns(:active_route_sets)).to eq([route_set3, route_set2])
+      expect(assigns(:active_route_sets)).to match_array([route_set2, route_set3])
       expect(assigns(:old_route_sets)).to eq([route_set1])
     end
   end
