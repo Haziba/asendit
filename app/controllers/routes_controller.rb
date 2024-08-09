@@ -16,6 +16,6 @@ class RoutesController < ApplicationController
     route = Route.find(params[:id])
     route.destroy!
 
-    render body: :nothing, status: :ok
+    head :ok
   end
 end
