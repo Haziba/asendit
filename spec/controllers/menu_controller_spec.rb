@@ -9,7 +9,7 @@ RSpec.describe MenuController, type: :controller do
       end
 
       it 'sets the @title instance variable' do
-        expect(assigns(:title)).to eq("Let's Climb")
+        expect(assigns(:title)).to eq("Let's not Climb")
       end
 
       it 'sets the @user instance variable with session userinfo' do
