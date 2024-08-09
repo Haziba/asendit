@@ -25,7 +25,7 @@
     </header>
 
     <main>
-      <% if(climb_in_progress && !@hide_current_climb_link) %>
+      <% if(climb_in_progress? && !@hide_current_climb_link) %>
       <div id="goToCurrentClimb">
         <%= link_to "Go to current climb >", climbs_current_path %>
       </div>
