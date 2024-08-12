@@ -102,6 +102,24 @@ html, body {
   margin-bottom: 0px;
   color: rgb(70, 69, 90) !important;
 
+  tr {
+    display: flex;
+    width: 100%;
+
+    td {
+      flex: 1;
+
+      &.actions {
+        display: inline-flex;
+        flex: initial;
+
+        a.btn {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+
   tr:last-child td {
     border-bottom: none;
   }
@@ -152,4 +170,8 @@ html, body {
     color: rgb(244, 245, 242);
     text-decoration: none;
   }
+}
+
+.table {
+  --bs-table-bg: none !important;
 }
