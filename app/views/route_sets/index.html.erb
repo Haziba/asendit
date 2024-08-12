@@ -14,7 +14,7 @@
       <table class="table">
         <tbody>
         <% @active_route_sets.each do |route_set| %>
-          <%= render "route_sets/index_row.html.erb", route_set: route_set %>
+          <%= render "route_sets/index_row", route_set: route_set %>
         <% end %>
         </tbody>
       </table>
@@ -31,7 +31,7 @@
       <table class="table">
         <tbody>
         <% @old_route_sets.each do |route_set| %>
-          <%= render "route_sets/index_row.html.erb", route_set: route_set %>
+          <%= render "route_sets/index_row", route_set: route_set %>
         <% end %>
         </tbody>
       </table>
