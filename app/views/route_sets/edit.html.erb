@@ -4,7 +4,7 @@
 %>
 
 <div class="card">
-  <select id="tool" class="mb-2 form-control">
+  <select id="tool" class="mb-2 form-control" data-test="add-or-remove">
     <option>Add</option>
     <option>Remove</option>
   </select>
@@ -42,7 +42,7 @@
     const routes = []
 
     const addRoute = route => {
-      route.$elem = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">⭕</div>`)
+      route.$elem = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">⭕</div>`)
       route.$elem.click(() => clickRoute(route))
       $map.append(route.$elem)
       routes.push(route)

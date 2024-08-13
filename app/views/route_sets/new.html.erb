@@ -7,12 +7,12 @@
   <%= form_with url: route_sets_path, model: @route_set do |f| %>
     <div class="mb-3">
       <%= f.label :colour, { class: "form-label" } %>
-      <%= f.select :colour, [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]], {}, { class: "form-select" } %>
+      <%= f.select :colour, [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]], {}, { class: "form-select", data: { test: 'color-picker' } } %>
     </div>
 
     <div class="mb-3">
       <%= f.label :added, { class: "form-label" } %>
-      <%= f.date_field :added, value: Time.now.strftime('%Y-%m-%d'), class: "form-control" %>
+      <%= f.date_field :added, value: Time.now.strftime('%Y-%m-%d'), class: "form-control", data: { test: 'added' } %>
     </div>
 
     <%= f.submit "Add", class: "btn btn-success" %>
