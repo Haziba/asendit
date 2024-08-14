@@ -22,7 +22,7 @@ class RouteSetsController < ApplicationController
       .order(added: :desc)
       .group_by(&:color)
       .map { |key, value| value.first }
-      .sort { |route_set| route_set.added.to_i }
+      .sort_by { |route_set| -route_set.added.to_i }
     @old_route_sets = RouteSet.where.not(id: @active_route_sets.map(&:id)).sort { |route_set| route_set.added.to_i }
   end
 

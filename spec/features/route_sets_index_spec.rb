@@ -21,7 +21,7 @@ RSpec.feature "RouteSets#Index", type: :feature do
       expect(page).to have_selector('.btn', text: 'ADD', class: 'disabled')
     end
 
-    scenario 'Lists correct current sets' do
+    scenario 'Lists correct current sets', :focus do
       within('[data-test=current-sets] table tbody') do
         within('tr:nth-child(1)') do
           expect(page).to have_content(new_blue_set.name)
