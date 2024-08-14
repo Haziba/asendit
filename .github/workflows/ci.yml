@@ -50,5 +50,8 @@ jobs:
           cp config/database.yml.ci config/database.yml
           bundle exec rails db:create db:schema:load
 
+      - name: Generate random seed
+        run: echo "RANDOM_SEED=$(shuf -i 1-99999 -n 1)" >> $GITHUB_ENV
+
       - name: Run tests
-        run: bundle exec rspec
+        run: bundle exec rspec --seed $RANDOM_SEED
