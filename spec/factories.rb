@@ -1,4 +1,21 @@
 FactoryBot.define do
+  factory :route_set_colour_set_colour do
+    association :route_set_colour_set
+    colour { "Green" }
+    map_tint_colour { "green" }
+  end
+
+  factory :route_set_colour_set do
+    association :place
+    description { "August 2024" }
+    route_set_colour_set_colours { [create(:route_set_colour_set_colour)] }
+  end
+
+  factory :place do
+    name { "Test Gym" }
+    route_set_colour_sets { [create(:route_set_colour_set)] }
+  end
+
   factory :climb do
     climber { "Test Climber" }
     current { false }
