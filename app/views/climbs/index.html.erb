@@ -1,7 +1,7 @@
 <%
 @title = "Climbs"
 @back_url = menu_path
-@extra_header = button_to "Add", climbs_path(method: :post), { class: "btn btn-primary btn-sm" }
+@extra_header = button_to "Add", climbs_path(method: :post), { class: "btn btn-primary btn-sm", data: { test: 'add' } }
 %>
 
 <% if @climbs.any? %>
@@ -9,7 +9,7 @@
     <table id="climbs" class="table">
       <tbody>
         <% @climbs.map do |climb| %>
-        <tr>
+        <tr data-test="climb-<%= climb.id %>">
           <td><%= "#{climb.name}" %></td>
           <% if climb.route_states.count(&:tried?) > 0 %>
             <td>
@@ -32,9 +32,9 @@
             </td>
           <% end %>
           <td class="actions">
-            <%= link_to "👁", climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %>
-            <%= link_to "✏️", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm" } %>
-            <%= button_to "🗑", climb, method: :delete, data: {confirm: "Are you sure?"}, class: "btn btn-danger btn-sm" %>
+            <%= link_to "👁", climb_path(climb.id), { class: "btn btn-secondary btn-sm", data: { test: 'show' } } %>
+            <%= link_to "✏️", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm", data: { test: 'edit' } } %>
+            <%= button_to "🗑", climb, method: :delete, data: {confirm: "Are you sure?", test: 'delete'}, class: "btn btn-danger btn-sm" %>
           </td>
         </tr>
         <% end %>

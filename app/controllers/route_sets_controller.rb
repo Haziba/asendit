@@ -36,7 +36,6 @@ class RouteSetsController < ApplicationController
 
   def show
     @route_states = Climb.where(climber: session[:userinfo]["id"]).map(&:route_states).flatten
-
     @climbed_routes = Route.find(@route_states.map(&:route_id)).select { |route| route.route_set_id == params[:id].to_i }
     @route_set = RouteSet.find(params[:id])
   end

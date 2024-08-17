@@ -4,7 +4,7 @@
 
 <div class="accordion" id="accordionExample">
   <% @route_sets.each_with_index do |route_set, i| %>
-  <div class="card">
+    <div class="card" data-test="route-set-<%= route_set.id %>">
     <div class="card-header" data-toggle="collapse" data-target="#collapse-<%= i %>">
       <h5 class="mb-0 d-flex justify-content-between">
         <div>
@@ -24,7 +24,7 @@
 
     <div id="collapse-<%= i %>" class="collapse">
       <div class="card-body">
-        <div id="map-<%= route_set.id %>" class="map">
+        <div id="map-<%= route_set.id %>" class="map" data-test="map">
           <img src="/GroundFloor.png" id="floorBackground" />
         </div>
       </div>

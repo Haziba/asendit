@@ -1,7 +1,7 @@
 <%
 @title = "Climb!"
 @back_url = climbs_path
-@extra_header = button_to "Done", { action: "complete", climb_id: @climb.id }, method: :post, class: "btn btn-primary btn-sm"
+@extra_header = button_to "Done", { action: "complete", climb_id: @climb.id }, method: :post, class: "btn btn-primary btn-sm", data: { test: 'complete' }
 @hide_current_climb_link = true
 %>
 
@@ -11,7 +11,7 @@
     <button class="btn bg-white w-25 visually-hidden" id="lock">🔓</button>
   </div>
 
-  <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer">
+  <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer" data-test="route-set-picker">
     <% @active_route_sets.each do |route_set| %>
       <button style="background-color: <%= route_set.color %>" data-route-set-id="<%= route_set.id %>" data-colour="<%= route_set.color %>" class="btn">
         <span>
@@ -81,7 +81,7 @@
     }
 
     const addRoute = route => {
-      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route)}</div>`)
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $map.append($route)

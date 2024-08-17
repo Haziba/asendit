@@ -55,7 +55,7 @@ JS
       find('[data-test=add-or-remove]').select('Remove')
       find("[data-route-id='#{route.id}']", visible: :all).click
       expect(page).to_not have_selector('.route', visible: :all)
-      expect(Route.all).to be_empty
+      expect(Route.where(id: route.id)).to be_empty
     end
   end
 
