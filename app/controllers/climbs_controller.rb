@@ -1,13 +1,14 @@
 class ClimbsController < ApplicationController
   include Secured
 
-  before_action :check_auth, only: [:edit, :update, :destroy]
+  before_action :check_auth, only: [:show, :edit, :update, :destroy]
 
   def create
     current_climb = Climb.where(climber: session[:userinfo]["id"], current: true).first
     
     return redirect_to(edit_climb_path(current_climb)) if current_climb != nil
 
+    # todo: Move to a form object
     routes = RouteSet.all
       .order(added: :desc)
       .group_by(&:color)
@@ -19,12 +20,6 @@ class ClimbsController < ApplicationController
     climb = Climb.new(
       climbed_at: Time.now,
       climber: session[:userinfo]["id"],
-      route_state_json: routes.map do |route_state|
-        RouteStatus.new(
-          route_state["routeId"],
-          route_state["status"]
-        )
-      end,
       current: true
     )
 
@@ -56,7 +51,7 @@ class ClimbsController < ApplicationController
       .order(added: :desc)
       .group_by(&:color)
       .map { |key, value| value.first }
-      .sort { |route_set| route_set.added.to_i }
+      .sort_by { |route_set| -route_set.added.to_i }
 
     @routes = @active_route_sets.map { |route_set| [route_set.id, route_set.routes] }.to_h
   end
