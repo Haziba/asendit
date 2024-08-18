@@ -1,0 +1,8 @@
+<tr data-test="route-set-<%= route_set.id %>">
+  <td><%= route_set.name %></td>
+  <td class="actions">
+    <%= link_to "History", route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %>
+    <%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm #{admin_user? ? "" : "disabled"}" } %>
+    <%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?", test: 'delete-button'}, class: "btn btn-danger btn-sm", disabled: !admin_user? %>
+  </td>
+</tr>
