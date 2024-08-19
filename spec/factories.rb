@@ -1,19 +1,27 @@
 FactoryBot.define do
   factory :route_set_colour_set_colour do
-    association :route_set_colour_set
     colour { "Green" }
     map_tint_colour { "green" }
+    association :route_set_colour_set
   end
 
   factory :route_set_colour_set do
-    association :place
     description { "August 2024" }
-    route_set_colour_set_colours { [create(:route_set_colour_set_colour)] }
+    active { true }
+    place
+
+    after(:create) do |route_set_colour_set|
+      create_list(:route_set_colour_set_colour, 3, route_set_colour_set: route_set_colour_set)
+    end
   end
 
   factory :place do
     name { "Test Gym" }
-    route_set_colour_sets { [create(:route_set_colour_set)] }
+    user
+
+    after(:create) do |place|
+      create_list(:route_set_colour_set, 3, place: place)
+    end
   end
 
   factory :climb do
@@ -47,5 +55,9 @@ FactoryBot.define do
     status { "sent" }
 
     initialize_with { new(route_id, status) }
+  end
+
+  factory :user do
+    reference { 'test@test.com' }
   end
 end

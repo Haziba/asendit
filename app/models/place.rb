@@ -1,3 +1,4 @@
 class Place < ApplicationRecord
-  has_many :route_set_colour_sets
+  has_many :colour_sets, class_name: 'RouteSetColourSet'
+  belongs_to :user
 end

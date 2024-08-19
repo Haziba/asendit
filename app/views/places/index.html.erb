@@ -1,0 +1,13 @@
+<%
+  @title = "Places"
+  @back_url = menu_path
+  @extra_header = link_to "Add", new_place_path, { class: "btn btn-primary btn-block btn-sm", data: { test: 'add' } }
+%>
+
+<table class="table">
+  <tbody>
+  <% @places.each do |place| %>
+    <%= render "places/index_row", place: place %>
+  <% end %>
+  </tbody>
+</table>
