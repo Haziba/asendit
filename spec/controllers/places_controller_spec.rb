@@ -30,6 +30,11 @@ RSpec.describe PlacesController, type: :controller do
     context 'when logged in' do
       include_context 'logged_in'
 
+      it 'assigns a new NewPlaceForm to @place_form' do
+        get :new
+        expect(assigns(:place_form)).to be_a(NewPlaceForm)
+      end
+
       it 'renders the new template' do
         get :new
         expect(response).to render_template(:new)
@@ -49,25 +54,35 @@ RSpec.describe PlacesController, type: :controller do
       include_context 'logged_in'
 
       let!(:user) { create(:user, reference: climber) }
-      let(:place_params) { { name: 'New Place' } }
+      let(:valid_params) { { name: 'Cool Place' } }
 
       before do
         user.save
       end
 
-      it 'creates a new place with the correct attributes' do
-        expect {
-          post :create, params: place_params
-        }.to change(Place, :count).by(1)
+      context 'with valid attributes' do
+        it 'creates a new place and redirects to places index' do
+          expect_any_instance_of(NewPlaceForm).to receive(:save).and_return(true)
 
-        new_place = Place.last
-        expect(new_place.name).to eq('New Place')
-        expect(new_place.user).to eq(user)
+          post :create, params: { new_place_form: valid_params }
+
+          expect(assigns(:place_form)).to be_a(NewPlaceForm)
+          expect(assigns(:place_form).name).to eq('Cool Place')
+          expect(assigns(:place_form).user).to eq(user)
+          expect(response).to redirect_to(places_path)
+        end
       end
 
-      it 'redirects to the places index' do
-        post :create, params: place_params
-        expect(response).to redirect_to(places_path)
+      context 'with invalid attributes' do
+        it 'does not save the place and re-renders the new template with unprocessable entity status' do
+          expect_any_instance_of(NewPlaceForm).to receive(:save).and_return(false)
+
+          post :create, params: { new_place_form: { name: '' } }
+
+          expect(assigns(:place_form)).to be_a(NewPlaceForm)
+          expect(response).to render_template(:new)
+          expect(response.status).to eq(422)
+        end
       end
     end
 

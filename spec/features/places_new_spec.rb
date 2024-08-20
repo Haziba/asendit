@@ -18,14 +18,22 @@ RSpec.feature 'Places#new', type: :feature do
     scenario 'submitting the form creates a place' do
       name = 'Cool Place'
 
-      fill_in 'name', with: name
+      fill_in 'new_place_form_name', with: name
       expect {
         find('[type=submit]').click
       }.to change(Place, :count).by(1)
 
-      expect(Place.last.name).to eq(name)
-
       expect(page).to have_current_path("/places")
+      expect(Place.last.name).to eq(name)
+    end
+
+    scenario 'unable to submit form with name less than 4 characters' do
+      name = 'Sho'
+
+      fill_in 'new_place_form_name', with: name
+      expect {
+        find('[type=submit]').click
+      }.to_not change(Place, :count)
     end
   end
 
