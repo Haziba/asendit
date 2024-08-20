@@ -26,6 +26,59 @@ RSpec.describe PlacesController, type: :controller do
     end
   end
 
+  describe 'GET #new' do
+    context 'when logged in' do
+      include_context 'logged_in'
+
+      it 'renders the new template' do
+        get :new
+        expect(response).to render_template(:new)
+      end
+    end
+
+    context 'when anonymous' do
+      it 'redirects to root' do
+        get :new
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe 'POST #create' do
+    context 'when logged in' do
+      include_context 'logged_in'
+
+      let!(:user) { create(:user, reference: climber) }
+      let(:place_params) { { name: 'New Place' } }
+
+      before do
+        user.save
+      end
+
+      it 'creates a new place with the correct attributes' do
+        expect {
+          post :create, params: place_params
+        }.to change(Place, :count).by(1)
+
+        new_place = Place.last
+        expect(new_place.name).to eq('New Place')
+        expect(new_place.user).to eq(user)
+      end
+
+      it 'redirects to the places index' do
+        post :create, params: place_params
+        expect(response).to redirect_to(places_path)
+      end
+    end
+
+    context 'when anonymous' do
+      it 'redirects to root' do
+        post :create, params: {}
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
   describe 'POST #choose' do
     let(:place) { create(:place) }
 

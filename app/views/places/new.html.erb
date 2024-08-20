@@ -1,0 +1,15 @@
+<%
+  @title = "Add Place"
+  @back_url = places_path
+%>
+
+<div class="card">
+  <%= form_with url: places_path, model: @place do |f| %>
+    <div class="mb-3">
+      <%= f.label :name, { class: "form-label" } %>
+      <%= f.text_field :name, class: 'form-control', data: { test: 'name' } %>
+    </div>
+
+    <%= f.submit "Add", class: "btn btn-success" %>
+  <% end %>
+</div>
