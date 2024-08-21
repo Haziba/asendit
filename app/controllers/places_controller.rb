@@ -19,6 +19,10 @@ class PlacesController < ApplicationController
     end
   end
 
+  def edit
+    @edit_place_form = EditPlaceForm.new(place: Place.find(params[:id]))
+  end
+
   def choose
     User.me(session).update(place_id: params[:place_id])
     redirect_to menu_path

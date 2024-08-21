@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :routes
   resources :places do
     post '/choose', to: 'places#choose'
+    resources :colour_sets
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
