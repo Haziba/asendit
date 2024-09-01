@@ -1,0 +1,25 @@
+<%
+  @title = "#{@place.name}"
+  @back_url = places_path
+%>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @place.colour_sets.each do |colour_set| %>
+        <tr>
+          <td><%= colour_set.description %></td>
+          <td>
+            <%= link_to "Edit", edit_place_colour_set_path(colour_set), class: "btn btn-primary" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

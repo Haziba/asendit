@@ -28,6 +28,10 @@ class PlacesController < ApplicationController
     redirect_to menu_path
   end
 
+  def show
+    @place = Place.find(params[:id])
+  end
+
   private
 
   def new_place_params
