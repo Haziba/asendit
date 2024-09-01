@@ -20,6 +20,12 @@ class ColourSetsController < ApplicationController
     end
   end
 
+  def destroy
+    @colour_set = RouteSetColourSet.find(params[:id])
+    @colour_set.update(deleted: true)
+    redirect_to place_path
+  end
+
   private
 
   def colour_set_params

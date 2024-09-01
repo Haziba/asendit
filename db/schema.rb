@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_31_230812) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_01_082212) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,6 +38,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_31_230812) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "grade"
+    t.boolean "deleted", default: false
     t.index ["route_set_colour_set_id"], name: "index_route_set_colour_set_colours_on_route_set_colour_set_id"
   end
 
@@ -47,6 +48,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_31_230812) do
     t.bigint "place_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "deleted", default: false
     t.index ["place_id"], name: "index_route_set_colour_sets_on_place_id"
   end
 
