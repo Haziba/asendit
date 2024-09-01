@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_20_063412) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_31_230812) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,6 +37,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_20_063412) do
     t.bigint "route_set_colour_set_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "grade"
     t.index ["route_set_colour_set_id"], name: "index_route_set_colour_set_colours_on_route_set_colour_set_id"
   end
 
