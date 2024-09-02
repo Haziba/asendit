@@ -4,7 +4,7 @@
 %>
 
 <div class="card">
-  <%= form_with url: route_sets_path, model: @route_set do |f| %>
+  <%= form_with url: place_route_sets_path, model: @route_set do |f| %>
     <div class="mb-3">
       <%= f.label :colour, { class: "form-label" } %>
       <%= f.select :colour, [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]], {}, { class: "form-select", data: { test: 'color-picker' } } %>

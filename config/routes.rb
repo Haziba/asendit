@@ -5,12 +5,18 @@ Rails.application.routes.draw do
     post "/complete", to: "climbs#complete"
   end
 
-  resources :route_sets
+  resources :route_sets, except: [:new, :create]
   resources :routes
+
   resources :places do
     post '/choose', to: 'places#choose'
     resources :colour_sets do
       resources :colours, controller: 'colour_set_colours'
+    end
+    resources :route_sets do
+      member do
+        patch :update, constraints: { format: :json }
+      end
     end
   end
 

@@ -1,7 +1,7 @@
 <%
 @title = "Route Sets"
 @back_url = menu_path
-@extra_header = link_to "Add", new_route_set_path, { class: "btn btn-primary btn-block btn-sm #{admin_user? ? "" : "disabled"}" }
+@extra_header = link_to "Add", new_place_route_set_path(place.id), { class: "btn btn-primary btn-block btn-sm #{admin_user? ? "" : "disabled"}" }
 %>
 
 <div class="accordion" id="accordionExample">

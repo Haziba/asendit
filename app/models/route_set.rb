@@ -1,4 +1,5 @@
 class RouteSet < ApplicationRecord
+  belongs_to :place
   has_many :routes
   
   def name

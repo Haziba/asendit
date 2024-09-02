@@ -36,6 +36,7 @@ FactoryBot.define do
   factory :route_set do
     color { "red" }
     added { Time.now }
+    place
     created_at { Time.now }
     updated_at { Time.now }
   end
@@ -59,5 +60,8 @@ FactoryBot.define do
 
   factory :user do
     reference { 'test@test.com' }
+    after(:create) do |user|
+      create(:place, user: user)
+    end
   end
 end

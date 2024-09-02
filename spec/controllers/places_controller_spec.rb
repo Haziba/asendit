@@ -9,7 +9,7 @@ RSpec.describe PlacesController, type: :controller do
 
       it 'assigns all places to @places' do
         get :index
-        expect(assigns(:places)).to match_array(places)
+        expect(assigns(:places)).to match_array(Place.all)
       end
 
       it 'renders the index template' do

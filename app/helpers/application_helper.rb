@@ -8,4 +8,8 @@ module ApplicationHelper
 
     Climb.where(climber: session[:userinfo]["id"], current: true).exists?
   end
+
+  def place
+    @place ||= User.me(session).place
+  end
 end
