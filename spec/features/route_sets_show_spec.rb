@@ -10,6 +10,10 @@ RSpec.feature "RouteSets#show", type: :feature do
   context 'when logged in' do
     include_context 'logged_in'
 
+    before do
+      logged_in_user.update(place: route_set.place)
+    end
+
     context 'when the user has climbs on this route set' do
       let!(:climb) { create(:climb, climber: climber, route_state_json: [
         build(:route_status, route_id: route_1.id, status: 'sent'),

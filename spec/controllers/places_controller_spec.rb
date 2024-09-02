@@ -68,7 +68,7 @@ RSpec.describe PlacesController, type: :controller do
 
           expect(assigns(:place_form)).to be_a(NewPlaceForm)
           expect(assigns(:place_form).name).to eq('Cool Place')
-          expect(assigns(:place_form).user).to eq(user)
+          expect(assigns(:place_form).user.reference).to eq(user.reference)
           expect(response).to redirect_to(places_path)
         end
       end

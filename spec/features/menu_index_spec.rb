@@ -30,9 +30,8 @@ RSpec.feature "Menu#Index", type: :feature do
   context 'when logged in without a place set' do
     include_context 'logged_in'
 
-    let!(:user) { create(:user, reference: climber, place: nil) }
-
     before do
+      allow_any_instance_of(User).to receive(:place).and_return(nil)
       visit '/menu'
     end
 

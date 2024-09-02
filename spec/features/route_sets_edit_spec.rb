@@ -4,7 +4,7 @@ RSpec.feature 'RouteSets#edit', type: :feature do
   context 'when logged in as admin' do
     include_context 'logged_in', admin: true
 
-    let!(:route_set) { create(:route_set) }
+    let!(:route_set) { create(:route_set, place: logged_in_user.place) }
     let!(:route) { create(:route, route_set: route_set, pos_x: 100, pos_y: 150) }
 
     before do
@@ -61,7 +61,11 @@ JS
 
   context 'when logged in as non admin' do
     include_context 'logged_in', admin: false
-    include_context 'a protected page', '/route_sets/new', return_path: '/route_sets'
+    include_context 'a protected page', '/places/1/route_sets/new', return_path: '/route_sets'
+
+    before do
+      logged_in_user.update(place: create(:place))
+    end
   end
 
   context 'when anonymous' do

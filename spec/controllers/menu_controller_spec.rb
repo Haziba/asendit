@@ -28,7 +28,7 @@ RSpec.describe MenuController, type: :controller do
     end
 
     context 'when the user is logged in and not at a place' do
-      let!(:user) { create(:user, reference: '1234', place: nil)}
+      let!(:user) { create(:user, :without_place, reference: '1234') }
 
       before do
         allow(controller).to receive(:session).and_return(userinfo: { "id" => user.reference, "name" => "Test User" })

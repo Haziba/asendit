@@ -4,8 +4,11 @@ RSpec.feature 'RouteSets#new', type: :feature do
   context 'when logged in as admin' do
     include_context 'logged_in', admin: true
 
+    let!(:place) { create(:place) }
+
     before do
-      visit '/route_sets/new'
+      logged_in_user.update(place: place)
+      visit "/places/#{place.id}/route_sets/new"
     end
 
     scenario 'page renders as expected' do
@@ -25,7 +28,13 @@ RSpec.feature 'RouteSets#new', type: :feature do
 
   context 'when logged in as non admin' do
     include_context 'logged_in', admin: false
-    include_context 'a protected page', '/route_sets/new', return_path: '/route_sets'
+    include_context 'a protected page', "/places/1/route_sets/new", return_path: '/route_sets'
+
+    let!(:place) { create(:place) }
+
+    before do
+      logged_in_user.update(place: place)
+    end
   end
 
   context 'when anonymous' do

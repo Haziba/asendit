@@ -1,15 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe RouteSetsController, type: :controller do
-  let(:admin_user) { { "id" => "1234", "admin" => true } }
-  let(:non_admin_user) { { "id" => "1234", "admin" => false } }
+  let(:place) { create(:place) }
+  let(:user) { create(:user) }
+  let(:admin_user) { { "id" => user.reference, "admin" => true } }
+  let(:non_admin_user) { { "id" => user.reference, "admin" => false } }
 
   describe 'POST #create' do
     context 'as an admin' do
       before { allow(controller).to receive(:session).and_return(userinfo: admin_user) }
 
       it 'creates a new route set and redirects to edit path' do
-        post :create, params: { colour: 'red', added: '2023-08-08' }
+        post :create, params: { colour: 'red', added: '2023-08-08', place_id: place.id }
 
         route_set = RouteSet.last
         expect(route_set.color).to eq('red')
@@ -22,7 +24,7 @@ RSpec.describe RouteSetsController, type: :controller do
       before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
 
       it 'does not allow creating a route set and redirects to index' do
-        post :create, params: { colour: 'red', added: '2023-08-08' }
+        post :create, params: { colour: 'red', added: '2023-08-08', place_id: place.id }
 
         expect(RouteSet.count).to eq(0)
         expect(response).to redirect_to(route_sets_path)
@@ -53,9 +55,10 @@ RSpec.describe RouteSetsController, type: :controller do
   end
 
   describe 'GET #index' do
-    let!(:route_set1) { create(:route_set, added: 3.day.ago, color: 'red') }
-    let!(:route_set2) { create(:route_set, added: 2.days.ago, color: 'red') }
-    let!(:route_set3) { create(:route_set, added: 1.days.ago, color: 'blue') }
+    let!(:route_set1) { create(:route_set, added: 3.day.ago, color: 'red', place: user.place) }
+    let!(:route_set2) { create(:route_set, added: 2.days.ago, color: 'red', place: user.place) }
+    let!(:route_set3) { create(:route_set, added: 1.days.ago, color: 'blue', place: user.place) }
+    let!(:other_place_route_set) { create(:route_set, added: 1.days.ago, color: 'blue', place: create(:place)) }
 
     before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
 
@@ -71,10 +74,10 @@ RSpec.describe RouteSetsController, type: :controller do
     let!(:route_set) { create(:route_set) }
     let!(:route1) { create(:route, route_set: route_set) }
     let!(:route2) { create(:route, route_set: route_set) }
-    let!(:climb) { create(:climb, route_state_json: [{ "route_id" => route1.id, "status" => "sent" }]) }
+    let!(:climb) { create(:climb, climber: user.reference, route_state_json: [{ "route_id" => route1.id, "status" => "sent" }]) }
 
     before do
-      allow(controller).to receive(:session).and_return(userinfo: { "id" => climb.climber })
+      allow(controller).to receive(:session).and_return(userinfo: non_admin_user)
       get :show, params: { id: route_set.id }
     end
 

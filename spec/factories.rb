@@ -60,8 +60,24 @@ FactoryBot.define do
 
   factory :user do
     reference { 'test@test.com' }
-    after(:create) do |user|
-      create(:place, user: user)
+
+    transient do
+      without_place { false }
+    end
+
+    trait :without_place do
+      place { nil }
+
+      transient do
+        without_place { true }
+      end
+    end
+
+    after(:create) do |user, evaluator|
+      unless evaluator.without_place
+        create(:place, user: user) unless Place.any?
+        user.update(place: Place.first)
+      end
     end
   end
 end

@@ -1,12 +1,13 @@
 require 'rails_helper'
 
 RSpec.feature "RouteSets#Index", type: :feature do
-  let!(:old_blue_set) { create(:route_set, color: 'blue', added: Date.today - 1.year) }
-  let!(:new_blue_set) { create(:route_set, color: 'blue', added: Date.today) }
-  let!(:red_set) { create(:route_set, color: 'red', added: Date.today - 1.day) }
-
   context 'when logged in' do
     include_context 'logged_in', admin: false
+
+    let!(:old_blue_set) { create(:route_set, color: 'blue', added: Date.today - 1.year, place: logged_in_user.place) }
+    let!(:new_blue_set) { create(:route_set, color: 'blue', added: Date.today, place: logged_in_user.place) }
+    let!(:red_set) { create(:route_set, color: 'red', added: Date.today - 1.day, place: logged_in_user.place) }
+    let!(:not_place_set) { create(:route_set, color: 'other-place-colour', place: create(:place)) }
 
     before do
       visit '/route_sets'
@@ -51,10 +52,19 @@ RSpec.feature "RouteSets#Index", type: :feature do
         end
       end
     end
+
+    scenario 'Doesnt list other place sets' do
+      expect(page).not_to have_content('other-place-colour')
+    end
   end
 
   context 'when logged in as admin' do
     include_context 'logged_in', admin: true
+
+    let!(:old_blue_set) { create(:route_set, color: 'blue', added: Date.today - 1.year, place: logged_in_user.place) }
+    let!(:new_blue_set) { create(:route_set, color: 'blue', added: Date.today, place: logged_in_user.place) }
+    let!(:red_set) { create(:route_set, color: 'red', added: Date.today - 1.day, place: logged_in_user.place) }
+    let!(:not_place_set) { create(:route_set, color: 'other-place-colour', place: create(:place)) }
 
     before do
       visit '/route_sets'
@@ -67,7 +77,7 @@ RSpec.feature "RouteSets#Index", type: :feature do
     scenario 'Has disabled add button' do
       add_button = find('.btn', text: 'ADD')
       add_button.click
-      expect(page).to have_current_path('/route_sets/new')
+      expect(page).to have_current_path("/places/#{logged_in_user.place.id}/route_sets/new")
     end
 
     scenario 'Lists correct current sets' do

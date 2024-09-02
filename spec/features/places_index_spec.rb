@@ -24,17 +24,14 @@ RSpec.feature 'Places#index', type: :feature do
   context 'when logged in' do
     include_context 'logged_in', admin: false
 
-    let!(:user) { create(:user, reference: climber) }
-    let!(:users_place) { create(:place, user: user) }
     let!(:not_users_place) { create(:place) }
-    let!(:places) { [users_place, not_users_place] }
 
     before do
       visit '/places'
     end
 
     scenario 'places are listed and selectable' do
-      places.each do |place|
+      Place.all.each do |place|
         expect(page).to have_selector("[data-test='place-#{place.id}']", text: place.name)
       end
     end
@@ -45,13 +42,22 @@ RSpec.feature 'Places#index', type: :feature do
       end
 
       expect(page).to have_current_path('/menu')
-      user.reload
-      expect(user.place).to eq(not_users_place)
+      logged_in_user.reload
+      expect(logged_in_user.place).to eq(not_users_place)
     end
 
-    scenario 'edit button available on places that are owned by user' do
-      within("[data-test='place-#{users_place.id}']") do
-        expect(page).to have_selector('[data-test=edit]')
+    context 'when user has a place set' do
+      before do
+        logged_in_user.update(place: create(:place))
+        logged_in_user.place.update(user: logged_in_user)
+
+        visit '/places'
+      end
+
+      scenario 'edit button available on places that are owned by user' do
+        within("[data-test='place-#{logged_in_user.place.id}']") do
+          expect(page).to have_selector('[data-test=edit]')
+        end
       end
     end
 
