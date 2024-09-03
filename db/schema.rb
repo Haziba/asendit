@@ -107,5 +107,4 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_03_083112) do
   add_foreign_key "route_set_colour_set_colours", "route_set_colour_sets"
   add_foreign_key "route_set_colour_sets", "places"
   add_foreign_key "route_sets", "places"
-  add_foreign_key "route_sets", "route_set_colour_set_colours"
 end

@@ -12,7 +12,7 @@
   </div>
 
   <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer" data-test="route-set-picker">
-    <% @active_route_sets.each do |route_set| %>
+    <% @climb.route_sets.each do |route_set| %>
       <button style="background-color: <%= route_set.route_set_colour_set_colour.map_tint_colour %>" data-route-set-id="<%= route_set.id %>" data-colour="<%= route_set.route_set_colour_set_colour.id %>" class="btn">
         <span>
           <%= route_set.route_set_colour_set_colour.colour.titleize %>

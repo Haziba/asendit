@@ -28,12 +28,9 @@ class RouteSetsController < ApplicationController
   end
 
   def index
-    @active_route_sets = RouteSet.where(place: @place)
-      .order(added: :desc)
-      .group_by(&:route_set_colour_set_colour_id)
-      .map { |key, value| value.first }
+    @active_route_sets = @place.active_colour_set.colours.map(&:active_route_set)
       .sort_by { |route_set| -route_set.added.to_i }
-    @old_route_sets = RouteSet.where(place: @place).where.not(id: @active_route_sets.map(&:id)).sort { |route_set| route_set.added.to_i }
+    @old_route_sets = @place.active_colour_set.colours.map(&:past_route_sets).flatten
   end
 
   def show

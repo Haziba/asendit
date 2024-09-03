@@ -54,7 +54,7 @@ RSpec.describe ColourSetsController, type: :controller do
       colour_set.reload
       expect(colour_set.active).to be_truthy
       previously_active_colour_set.reload
-      expect(colour_set.active).to be_falsey
+      expect(previously_active_colour_set.active).to be_falsey
     end
   end
 end

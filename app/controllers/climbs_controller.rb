@@ -8,14 +8,6 @@ class ClimbsController < ApplicationController
     
     return redirect_to(edit_climb_path(current_climb)) if current_climb != nil
 
-    routes = RouteSet.all
-      .order(added: :desc)
-      .group_by(&:route_set_colour_set_colour_id)
-      .map { |key, value| value.first }
-      .sort { |route_set| route_set.added.to_i }
-      .map(&:routes)
-      .flatten
-
     active_colour_set = User.me(session).place.active_colour_set
     active_colours = active_colour_set.colours
     active_route_sets = active_colours.map(&:active_route_set).reject { |r_s| r_s.nil? }
