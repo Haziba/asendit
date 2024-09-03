@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_01_183912) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_02_220012) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,7 +59,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_01_183912) do
     t.datetime "updated_at", null: false
     t.bigint "place_id", null: false
     t.date "expires_at"
+    t.bigint "route_set_colour_set_colour_id"
     t.index ["place_id"], name: "index_route_sets_on_place_id"
+    t.index ["route_set_colour_set_colour_id"], name: "index_route_sets_on_route_set_colour_set_colour_id"
   end
 
   create_table "route_states", force: :cascade do |t|
@@ -94,4 +96,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_01_183912) do
   add_foreign_key "route_set_colour_set_colours", "route_set_colour_sets"
   add_foreign_key "route_set_colour_sets", "places"
   add_foreign_key "route_sets", "places"
+  add_foreign_key "route_sets", "route_set_colour_set_colours"
 end

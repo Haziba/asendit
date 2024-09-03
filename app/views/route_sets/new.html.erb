@@ -6,8 +6,13 @@
 <div class="card">
   <%= form_with url: place_route_sets_path, model: @route_set do |f| %>
     <div class="mb-3">
+      <%= f.label :colour_set, { class: "form-label" } %>
+      <%= f.select :colour_set, @place.colour_sets.map { |colour_set| [colour_set.description, colour_set.id] }, {}, { class: "form-select", data: { test: 'color-set-picker' } } %>
+    </div>
+
+    <div class="mb-3">
       <%= f.label :colour, { class: "form-label" } %>
-      <%= f.select :colour, [["Green", "green"], ["White", "white"], ["Blue", "blue"], ["Black", "black"], ["Red", "red"], ["Pink", "pink"]], {}, { class: "form-select", data: { test: 'color-picker' } } %>
+      <%= f.select :colour, [], {}, { class: "form-select", data: { test: 'color-picker' } } %>
     </div>
 
     <div class="mb-3">
@@ -18,3 +23,22 @@
     <%= f.submit "Add", class: "btn btn-success" %>
   <% end %>
 </div>
+
+<script>
+  const colourSetMapping = <%= raw @place.colour_sets.map { |colour_set| [colour_set.id, colour_set.colours.map { |colour| [colour.colour, colour.id] }] }.to_h.to_json %>;
+  
+  const updateColourPicker = () => {
+    const colourSetId = $('[name=colour_set]').val();
+    const colours = colourSetMapping[colourSetId];
+    const $colourPicker = $('[name=colour]');
+
+    $colourPicker.empty();
+    colours.forEach(([colour, id]) => {
+      $colourPicker.append(`<option value="${id}">${colour}</option>`);
+    });
+  }
+
+  $('[name=colour_set]').change(updateColourPicker);
+
+  updateColourPicker();
+</script>

@@ -11,10 +11,10 @@ RSpec.describe RouteSetsController, type: :controller do
       before { allow(controller).to receive(:session).and_return(userinfo: admin_user) }
 
       it 'creates a new route set and redirects to edit path' do
-        post :create, params: { colour: 'red', added: '2023-08-08', place_id: place.id }
+        post :create, params: { colour: place.colour_sets.first.colours.first.id.to_s, added: '2023-08-08', place_id: place.id }
 
         route_set = RouteSet.last
-        expect(route_set.color).to eq('red')
+        expect(route_set.route_set_colour_set_colour).to eq(place.colour_sets.first.colours.first)
         expect(route_set.added.to_s).to eq('2023-08-08 00:00:00 UTC')
         expect(response).to redirect_to(edit_route_set_path(route_set.id))
       end

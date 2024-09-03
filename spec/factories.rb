@@ -1,12 +1,12 @@
 FactoryBot.define do
   factory :route_set_colour_set_colour do
-    colour { "Green" }
-    map_tint_colour { "green" }
+    colour { Faker::Lorem.sentence }
+    map_tint_colour { Faker::Lorem.sentence }
     association :route_set_colour_set
   end
 
   factory :route_set_colour_set do
-    description { "August 2024" }
+    description { Faker::Lorem.sentence }
     active { true }
     place
 
@@ -34,7 +34,7 @@ FactoryBot.define do
   end
 
   factory :route_set do
-    color { "red" }
+    route_set_colour_set_colour
     added { Time.now }
     place
     created_at { Time.now }

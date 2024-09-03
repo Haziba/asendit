@@ -63,3 +63,5 @@ gem 'bootstrap'
 
 gem 'omniauth-auth0'
 gem 'omniauth-rails_csrf_protection'
+
+gem "faker", "~> 3.4"

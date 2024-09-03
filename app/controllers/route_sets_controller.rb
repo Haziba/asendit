@@ -6,7 +6,7 @@ class RouteSetsController < ApplicationController
 
   def create
     route_set = RouteSet.new(
-      color: params["colour"],
+      route_set_colour_set_colour_id: params["colour"],
       added: params["added"],
       place_id: @place.id
     )
