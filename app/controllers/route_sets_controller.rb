@@ -30,7 +30,7 @@ class RouteSetsController < ApplicationController
   def index
     @active_route_sets = RouteSet.where(place: @place)
       .order(added: :desc)
-      .group_by(&:color)
+      .group_by(&:route_set_colour_set_colour_id)
       .map { |key, value| value.first }
       .sort_by { |route_set| -route_set.added.to_i }
     @old_route_sets = RouteSet.where(place: @place).where.not(id: @active_route_sets.map(&:id)).sort { |route_set| route_set.added.to_i }

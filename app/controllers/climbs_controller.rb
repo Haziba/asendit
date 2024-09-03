@@ -11,7 +11,7 @@ class ClimbsController < ApplicationController
     # todo: Move to a form object
     routes = RouteSet.all
       .order(added: :desc)
-      .group_by(&:color)
+      .group_by(&:route_set_colour_set_colour_id)
       .map { |key, value| value.first }
       .sort { |route_set| route_set.added.to_i }
       .map(&:routes)
@@ -49,9 +49,9 @@ class ClimbsController < ApplicationController
     @climb = Climb.find(params[:id])
     @active_route_sets = RouteSet.all
       .order(added: :desc)
-      .group_by(&:color)
+      .group_by(&:route_set_colour_set_colour_id)
       .map { |key, value| value.first }
-      .sort_by { |route_set| route_set.color }
+      .sort_by { |route_set| route_set.route_set_colour_set_colour_id }
 
     @routes = @active_route_sets.map { |route_set| [route_set.id, route_set.routes] }.to_h
   end

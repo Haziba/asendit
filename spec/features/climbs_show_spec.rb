@@ -6,9 +6,14 @@ RSpec.feature 'Climbs#show', type: :feature do
 
     include_context 'logged_in'
 
-    let!(:route_set_green) { create(:route_set, color: 'Green') }
-    let!(:route_set_blue) { create(:route_set, color: 'Blue') }
-    let!(:route_set_red) { create(:route_set, color: 'Red') }
+    let!(:colour_set) { create(:route_set_colour_set, place: logged_in_user.place) }
+    let!(:colour_green) { create(:route_set_colour_set_colour, colour: 'green', route_set_colour_set: colour_set) }
+    let!(:colour_red) { create(:route_set_colour_set_colour, colour: 'red', route_set_colour_set: colour_set) }
+    let!(:colour_blue) { create(:route_set_colour_set_colour, colour: 'blue', route_set_colour_set: colour_set) }
+
+    let!(:route_set_green) { create(:route_set, route_set_colour_set_colour: colour_green) }
+    let!(:route_set_blue) { create(:route_set, route_set_colour_set_colour: colour_blue) }
+    let!(:route_set_red) { create(:route_set, route_set_colour_set_colour: colour_red) }
 
     let!(:route_set_green_route_1) { create(:route, route_set: route_set_green) }
     let!(:route_set_green_route_2) { create(:route, route_set: route_set_green) }
@@ -41,7 +46,7 @@ RSpec.feature 'Climbs#show', type: :feature do
 
     scenario 'route set headers contain correct info' do
       within("[data-test='route-set-#{route_set_green.id}']", visible: :all) do
-        expect(page).to have_content(route_set_green.color)
+        expect(page).to have_content(route_set_green.route_set_colour_set_colour.colour.titleize)
         expect(page).to have_content(attempted_routes(route_set_green))
         expect(page).to have_content(success_rate(route_set_green))
         expect(page).to have_content(new_wins_count_for_set(route_set_green))

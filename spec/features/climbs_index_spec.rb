@@ -4,9 +4,13 @@ RSpec.feature 'Climbs#index', type: :feature do
   context 'when logged in' do
     include_context 'logged_in'
 
-    let!(:route_set_red) { create(:route_set, color: 'red') }
-    let!(:route_set_old_red) { create(:route_set, color: 'red', added: Date.yesterday) }
-    let!(:route_set_green) { create(:route_set, color: 'green') }
+    let!(:colour_set) { create(:route_set_colour_set, place: logged_in_user.place) }
+    let!(:colour_green) { create(:route_set_colour_set_colour, colour: 'green', route_set_colour_set: colour_set) }
+    let!(:colour_red) { create(:route_set_colour_set_colour, colour: 'red', route_set_colour_set: colour_set) }
+
+    let!(:route_set_red) { create(:route_set, route_set_colour_set_colour: colour_red) }
+    let!(:route_set_old_red) { create(:route_set, route_set_colour_set_colour: colour_red, added: Date.yesterday) }
+    let!(:route_set_green) { create(:route_set, route_set_colour_set_colour: colour_green) }
     let!(:route_red) { create(:route, route_set_id: route_set_red.id) }
     let!(:route_old_red) { create(:route, route_set_id: route_set_old_red.id) }
     let!(:route_green) { create(:route, route_set_id: route_set_green.id) }

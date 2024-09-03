@@ -4,9 +4,13 @@ RSpec.feature 'Climbs#edit', type: :feature do
   context 'when logged in as the climb\'s climber' do
     include_context 'logged_in'
 
-    let!(:route_set_green) { create(:route_set, added: Date.yesterday, color: 'Green') }
-    let!(:route_set_old_green) { create(:route_set, added: Date.yesterday - 1.day, color: 'Green') }
-    let!(:route_set_red) { create(:route_set, added: Date.today, color: 'Red') }
+    let!(:colour_set) { create(:route_set_colour_set, place: logged_in_user.place) }
+    let!(:colour_green) { create(:route_set_colour_set_colour, colour: 'green', route_set_colour_set: colour_set) }
+    let!(:colour_red) { create(:route_set_colour_set_colour, colour: 'red', route_set_colour_set: colour_set) }
+
+    let!(:route_set_green) { create(:route_set, added: Date.yesterday, route_set_colour_set_colour: colour_green) }
+    let!(:route_set_old_green) { create(:route_set, added: Date.yesterday - 1.day, route_set_colour_set_colour: colour_green) }
+    let!(:route_set_red) { create(:route_set, added: Date.today, route_set_colour_set_colour: colour_red) }
 
     let!(:route_set_green_route_1) { create(:route, route_set: route_set_green) }
     let!(:route_set_green_route_2) { create(:route, route_set: route_set_green) }
@@ -27,8 +31,8 @@ RSpec.feature 'Climbs#edit', type: :feature do
 
     scenario 'only newest sets per colour are options' do
       within('[data-test=route-set-picker]') do
-        expect(page).to have_selector("button[data-route-set-id='#{route_set_green.id}'][data-colour='#{route_set_green.color}']")
-        expect(page).to have_selector("button[data-route-set-id='#{route_set_red.id}'][data-colour='#{route_set_red.color}']")
+        expect(page).to have_selector("button[data-route-set-id='#{route_set_green.id}'][data-colour='#{route_set_green.route_set_colour_set_colour.id}']")
+        expect(page).to have_selector("button[data-route-set-id='#{route_set_red.id}'][data-colour='#{route_set_red.route_set_colour_set_colour.id}']")
         expect(page).to_not have_selector("button[data-route-set-id='#{route_set_old_green.id}']")
       end
     end

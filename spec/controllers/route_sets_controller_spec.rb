@@ -55,10 +55,10 @@ RSpec.describe RouteSetsController, type: :controller do
   end
 
   describe 'GET #index' do
-    let!(:route_set1) { create(:route_set, added: 3.day.ago, color: 'red', place: user.place) }
-    let!(:route_set2) { create(:route_set, added: 2.days.ago, color: 'red', place: user.place) }
-    let!(:route_set3) { create(:route_set, added: 1.days.ago, color: 'blue', place: user.place) }
-    let!(:other_place_route_set) { create(:route_set, added: 1.days.ago, color: 'blue', place: create(:place)) }
+    let!(:route_set1) { create(:route_set, added: 3.day.ago, route_set_colour_set_colour: place.colour_sets.first.colours.first, place: user.place) }
+    let!(:route_set2) { create(:route_set, added: 2.days.ago, route_set_colour_set_colour: place.colour_sets.first.colours.first, place: user.place) }
+    let!(:route_set3) { create(:route_set, added: 1.days.ago, route_set_colour_set_colour: place.colour_sets.first.colours.last, place: user.place) }
+    let!(:other_place_route_set) { create(:route_set, added: 1.days.ago, route_set_colour_set_colour: create(:route_set_colour_set_colour), place: create(:place)) }
 
     before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
 
