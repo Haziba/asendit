@@ -16,9 +16,14 @@ class ClimbsController < ApplicationController
       .map(&:routes)
       .flatten
 
+    active_colour_set = User.me(session).place.active_colour_set
+    active_colours = active_colour_set.colours
+    active_route_sets = active_colours.map(&:active_route_set).reject { |r_s| r_s.nil? }
+
     climb = Climb.new(
       climbed_at: Time.now,
       climber: session[:userinfo]["id"],
+      route_sets: active_route_sets,
       current: true
     )
 

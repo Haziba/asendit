@@ -6,4 +6,8 @@ class Place < ApplicationRecord
   def active_colour_sets
     colour_sets.where(deleted: false)
   end
+
+  def active_colour_set
+    colour_sets.find_by(active: true)
+  end
 end

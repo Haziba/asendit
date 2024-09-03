@@ -7,7 +7,7 @@ FactoryBot.define do
 
   factory :route_set_colour_set do
     description { Faker::Lorem.sentence }
-    active { true }
+    active { false }
     place
 
     after(:create) do |route_set_colour_set|

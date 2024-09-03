@@ -1,4 +1,6 @@
 class Climb < ApplicationRecord
+  has_and_belongs_to_many :route_sets
+
   def name
     climbed_at.strftime("#{climbed_at.day.ordinalize} %b")
   end

@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe ClimbsController, type: :controller do
   let(:user_info) { { "id" => "1234" } }
   let(:another_user_info) { { "id" => "5678" } }
+  let!(:user) { create(:user, reference: user_info["id"]) }
 
   before do
     allow(controller).to receive(:session).and_return(userinfo: user_info)
@@ -19,8 +20,20 @@ RSpec.describe ClimbsController, type: :controller do
     end
 
     context 'when no current climb exists' do
-      let!(:route_set) { create(:route_set) }
-      let!(:route) { create(:route, route_set: route_set) }
+      let!(:place) { create(:place) }
+      let!(:other_place) { create(:place)}
+      let!(:active_colour_set) { create(:route_set_colour_set, place: place, active: true) }
+      let!(:inactive_colour_set) { create(:route_set_colour_set, place: place, active: false) }
+      let!(:active_other_place_colour_set) { create(:route_set_colour_set, place: other_place, active: true) }
+
+      let!(:active_route_set) { create(:route_set, added: Date.today, route_set_colour_set_colour: active_colour_set.colours.first) }
+      let!(:active_older_route_set) { create(:route_set, added: Date.yesterday, route_set_colour_set_colour: active_colour_set.colours.first) }
+      let!(:inactive_route_set) { create(:route_set, route_set_colour_set_colour: inactive_colour_set.colours.first) }
+      let!(:active_other_place_route_set) { create(:route_set, route_set_colour_set_colour: active_other_place_colour_set.colours.first) }
+
+      before do
+        user.update(place: place)
+      end
 
       it 'creates a new climb and redirects to its edit path' do
         expect {
@@ -29,6 +42,7 @@ RSpec.describe ClimbsController, type: :controller do
 
         climb = Climb.last
         expect(climb.current).to be true
+        expect(climb.route_sets).to eq([active_route_set])
         expect(response).to redirect_to(edit_climb_path(climb))
       end
     end

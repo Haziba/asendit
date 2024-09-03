@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_03_071812) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_03_083112) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,6 +21,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_03_071812) do
     t.boolean "current"
     t.json "route_state_json", default: []
     t.date "climbed_at"
+  end
+
+  create_table "climbs_route_sets", force: :cascade do |t|
+    t.bigint "climb_id", null: false
+    t.bigint "route_set_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["climb_id", "route_set_id"], name: "index_climbs_route_sets_on_climb_id_and_route_set_id", unique: true
+    t.index ["climb_id"], name: "index_climbs_route_sets_on_climb_id"
+    t.index ["route_set_id"], name: "index_climbs_route_sets_on_route_set_id"
   end
 
   create_table "places", force: :cascade do |t|
@@ -92,7 +102,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_03_071812) do
     t.index ["place_id"], name: "index_users_on_place_id"
   end
 
+  add_foreign_key "climbs_route_sets", "climbs"
+  add_foreign_key "climbs_route_sets", "route_sets"
   add_foreign_key "route_set_colour_set_colours", "route_set_colour_sets"
   add_foreign_key "route_set_colour_sets", "places"
   add_foreign_key "route_sets", "places"
+  add_foreign_key "route_sets", "route_set_colour_set_colours"
 end
