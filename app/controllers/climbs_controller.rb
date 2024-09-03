@@ -8,7 +8,6 @@ class ClimbsController < ApplicationController
     
     return redirect_to(edit_climb_path(current_climb)) if current_climb != nil
 
-    # todo: Move to a form object
     routes = RouteSet.all
       .order(added: :desc)
       .group_by(&:route_set_colour_set_colour_id)

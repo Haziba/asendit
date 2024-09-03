@@ -26,6 +26,13 @@ class ColourSetsController < ApplicationController
     redirect_to place_path
   end
 
+  def make_active
+    @colour_set = RouteSetColourSet.find(params[:colour_set_id])
+    RouteSetColourSet.all.update_all(active: false)
+    @colour_set.update(active: true)
+    redirect_to place_path(@colour_set.place)
+  end
+
   private
 
   def colour_set_params

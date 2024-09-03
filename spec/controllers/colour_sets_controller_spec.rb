@@ -44,4 +44,17 @@ RSpec.describe ColourSetsController, type: :controller do
       expect(colour_set.deleted).to be_truthy
     end
   end
+
+  describe "POST #make_active" do
+    let(:colour_set) { create(:route_set_colour_set) }
+    let(:previously_active_colour_set) { create(:route_set_colour_set, active: true) }
+
+    it "makes the colour set active" do
+      post :make_active, params: { colour_set_id: colour_set.id, place_id: place.id }
+      colour_set.reload
+      expect(colour_set.active).to be_truthy
+      previously_active_colour_set.reload
+      expect(colour_set.active).to be_falsey
+    end
+  end
 end

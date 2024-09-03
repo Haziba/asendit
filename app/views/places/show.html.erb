@@ -16,6 +16,7 @@
         <tr>
           <td><%= colour_set.description %></td>
           <td>
+            <%= button_to "Make Active", place_colour_set_make_active_path(colour_set_id: colour_set, place_id: @place.id), method: :post, class: "btn btn-success" %>
             <%= link_to "Edit", edit_place_colour_set_path(colour_set), class: "btn btn-primary" %>
             <%= link_to "Delete", place_colour_set_path(colour_set), method: :delete, data: { confirm: "Are you sure you want to delete this colour set?" }, class: "btn btn-danger" %>
           </td>
