@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_04_091412) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_04_160912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,27 +49,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_04_091412) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_places_on_user_id"
-  end
-
-  create_table "route_set_colour_set_colours", force: :cascade do |t|
-    t.string "colour", null: false
-    t.string "map_tint_colour"
-    t.bigint "route_set_colour_set_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "grade"
-    t.boolean "deleted", default: false
-    t.index ["route_set_colour_set_id"], name: "index_route_set_colour_set_colours_on_route_set_colour_set_id"
-  end
-
-  create_table "route_set_colour_sets", force: :cascade do |t|
-    t.text "description"
-    t.boolean "active", default: false
-    t.bigint "place_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "deleted", default: false
-    t.index ["place_id"], name: "index_route_set_colour_sets_on_place_id"
   end
 
   create_table "route_sets", force: :cascade do |t|
@@ -117,8 +96,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_04_091412) do
   add_foreign_key "climbs_route_sets", "climbs"
   add_foreign_key "climbs_route_sets", "route_sets"
   add_foreign_key "grades", "places"
-  add_foreign_key "route_set_colour_set_colours", "route_set_colour_sets"
-  add_foreign_key "route_set_colour_sets", "places"
   add_foreign_key "route_sets", "grades"
   add_foreign_key "route_sets", "places"
 end
