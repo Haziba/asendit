@@ -1,10 +1,10 @@
 <%
-  @title = "Edit #{@edit_place_form.place.name}"
+  @title = "Edit #{@place.name}"
   @back_url = places_path
 %>
 
 <div class="card">
-  <%= form_with url: places_path(@edit_place_form.place), method: :patch, model: @edit_place_form.place do |f| %>
+  <%= form_with url: place_path(@place), method: :patch, model: @place do |f| %>
     <div class="mb-3">
       <%= f.label :name, { class: "form-label" } %>
       <%= f.text_field :name, class: 'form-control', data: { test: 'name' }, required: true, minlength: '4' %>
@@ -15,15 +15,97 @@
 
   <hr />
 
-  <div>
-    <%= link_to 'Add', new_place_colour_set_path(place_id: @edit_place_form.place.id), class: "btn btn-primary btn-sm" %>
-    <% if @edit_place_form.place.colour_sets.any? %>
-      <% @edit_place_form.place.colour_sets.each do |colour_set| %>
-        <%= colour_set.description %>
-      <% end %>
-    <% else %>
-      No colour sets
-    <% end %>
+  <div class="alert alert-danger d-none" id="grade-error" role="alert">
+    <h4 class="alert-heading">Failed to create</h4>
+    <span id="error-message"></span>
   </div>
+
+  <table id='grades'>
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Grade</th>
+      <th>Tint</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td><input type="text" id="grade_name" class="form-control" /></td>
+      <td><input type="text" id="grade_grade" class="form-control" /></td>
+      <td><input type="color" id="grade_map_tint_colour" class="form-control" /></td>
+      <td><button id="add_grade" class="btn btn-secondary">+</button></td>
+    </tr>
+    <% @place.grades.each do |grade| %>
+      <tr data-grade-id=<%= grade.id %>>
+        <td><%= grade.name %></td>
+        <td><%= grade.grade %></td>
+        <td><%= grade.map_tint_colour %></td>
+        <td><button name='remove-grade' class='btn btn-secondary'>-</button></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
 </div>
 
+<script>
+  $(() => {
+      const $tbody = $('#grades tbody');
+      const $error = $('#grade-error');
+
+      $('#add_grade').click(() => {
+          $error.removeClass('d-block').addClass('d-none');
+
+          const grade = {
+            name: $('#grade_name').val(),
+            grade: $('#grade_grade').val(),
+            map_tint_colour: $('#grade_map_tint_colour').val()
+          }
+
+          $.ajax({
+            url: '<%= place_grades_path(place_id: @place.id) %>',
+            method: 'POST',
+            data: grade,
+            success: function(response) {
+              addGrade(grade);
+              $('#grade_name').val('');
+              $('#grade_grade').val('');
+            },
+            error: function(xhr, status, error) {
+              $error.removeClass('d-none').addClass('d-block');
+              $error.find('#error-message').text(JSON.stringify(xhr.responseJSON));
+            }
+          });
+      })
+
+      $(document).on('click', '[name=remove-grade]', (e) => {
+          $error.removeClass('d-block').addClass('d-none');
+          const $row = $(e.currentTarget).closest('tr');
+          const gradeId = $row.data('grade-id');
+          $.ajax({
+            url: '<%= place_grade_path(place_id: @place.id, id: "grade-id") %>'.replace('grade-id', gradeId),
+            method: 'DELETE',
+            success: function(response) {
+              $row.remove();
+            },
+            error: function(xhr, status, error) {
+              $error.removeClass('d-none').addClass('d-block');
+              $error.find('#error-message').text(JSON.stringify(xhr.responseJSON));
+            }
+          });
+      })
+
+      const addGrade = (grade) => {
+          const $elem = $(
+            `<tr data-grade-id='${grade.id}'>
+              <td>${grade.name}</td>
+              <td>${grade.grade}</td>
+              <td>${grade.map_tint_colour}</td>
+              <td><button name='remove-grade' class='btn btn-secondary'>-</button>
+              </td>
+            </tr>`);
+          $tbody.append($elem);
+          return $elem;
+      }
+  })
+</script>

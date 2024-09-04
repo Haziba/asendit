@@ -22,14 +22,10 @@ RSpec.describe ClimbsController, type: :controller do
     context 'when no current climb exists' do
       let!(:place) { create(:place) }
       let!(:other_place) { create(:place)}
-      let!(:active_colour_set) { create(:route_set_colour_set, place: place, active: true) }
-      let!(:inactive_colour_set) { create(:route_set_colour_set, place: place, active: false) }
-      let!(:active_other_place_colour_set) { create(:route_set_colour_set, place: other_place, active: true) }
 
-      let!(:active_route_set) { create(:route_set, added: Date.today, route_set_colour_set_colour: active_colour_set.colours.first) }
-      let!(:active_older_route_set) { create(:route_set, added: Date.yesterday, route_set_colour_set_colour: active_colour_set.colours.first) }
-      let!(:inactive_route_set) { create(:route_set, route_set_colour_set_colour: inactive_colour_set.colours.first) }
-      let!(:active_other_place_route_set) { create(:route_set, route_set_colour_set_colour: active_other_place_colour_set.colours.first) }
+      let!(:active_route_set) { create(:route_set, added: Date.today, grade: place.grades.first) }
+      let!(:active_older_route_set) { create(:route_set, added: Date.yesterday, grade: place.grades.first) }
+      let!(:active_other_place_route_set) { create(:route_set, grade: other_place.grades.first) }
 
       before do
         user.update(place: place)
@@ -82,7 +78,11 @@ RSpec.describe ClimbsController, type: :controller do
   end
 
   describe 'GET #edit' do
-    let!(:climb) { create(:climb, climber: user_info["id"]) }
+    let!(:place) { create(:place) }
+    let!(:user) { create(:user, reference: user_info["id"], place: place) }
+    let!(:added_route_set) { create(:route_set, grade: place.grades.first) }
+    let!(:first_route_set_for_grade) { create(:route_set, grade: place.grades.last) }
+    let!(:climb) { create(:climb, climber: user_info["id"], route_sets: [added_route_set]) }
 
     it 'assigns the requested climb to @climb' do
       get :edit, params: { id: climb.id }
@@ -93,6 +93,12 @@ RSpec.describe ClimbsController, type: :controller do
       get :edit, params: { id: climb.id }
       expect(assigns(:active_route_sets)).not_to be_nil
       expect(assigns(:routes)).not_to be_nil
+    end
+
+    it 'adds new route sets if the grade wasnt previously included' do
+      get :edit, params: { id: climb.id }
+      climb.reload
+      expect(climb.route_sets).to eq([added_route_set, first_route_set_for_grade])
     end
   end
 

@@ -20,7 +20,14 @@ class PlacesController < ApplicationController
   end
 
   def edit
-    @edit_place_form = EditPlaceForm.new(place: Place.find(params[:id]))
+    @place = Place.find(params[:id])
+  end
+
+  def update
+    @place = Place.find(params[:id])
+    @place.update(name: edit_place_params[:name])
+
+    redirect_to places_path
   end
 
   def choose
@@ -36,5 +43,9 @@ class PlacesController < ApplicationController
 
   def new_place_params
     params.require(:new_place_form).permit(:name)
+  end
+
+  def edit_place_params
+    params.require(:place).permit(:name)
   end
 end

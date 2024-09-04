@@ -13,9 +13,9 @@
 
   <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer" data-test="route-set-picker">
     <% @climb.route_sets.each do |route_set| %>
-      <button style="background-color: <%= route_set.route_set_colour_set_colour.map_tint_colour %>" data-route-set-id="<%= route_set.id %>" data-colour="<%= route_set.route_set_colour_set_colour.id %>" class="btn">
+      <button style="background-color: <%= route_set.grade.map_tint_colour %>; <%= 'color: white !important;' if colour_dark?(route_set.grade.map_tint_colour) %>" data-route-set-id="<%= route_set.id %>" data-grade="<%= route_set.grade.id %>" data-tint-colour="<%= route_set.grade.map_tint_colour %>" class="btn">
         <span>
-          <%= route_set.route_set_colour_set_colour.colour.titleize %>
+          <%= route_set.grade.name.titleize %>
         </span>
       </button>
     <% end %>
@@ -63,7 +63,6 @@
       $routes = []
 
       if($currentRouteSetBtn) {
-        $map.removeClass($currentRouteSetBtn.data('colour'))
         $currentRouteSetBtn.removeClass('current')
         $currentRouteSetBtn.removeAttr('disabled')
       }
@@ -75,7 +74,7 @@
       const newRoutes = routeSets[routeSetId]
       newRoutes.forEach(addRoute)
 
-      $map.addClass(colour)
+      $map.css('background-color', $currentRouteSetBtn.data('tint-colour'))
       $currentRouteSetBtn.addClass('current')
       $currentRouteSetBtn.attr('disabled', true)
     }

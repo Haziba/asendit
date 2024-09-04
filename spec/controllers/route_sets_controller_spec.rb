@@ -11,10 +11,10 @@ RSpec.describe RouteSetsController, type: :controller do
       before { allow(controller).to receive(:session).and_return(userinfo: admin_user) }
 
       it 'creates a new route set and redirects to edit path' do
-        post :create, params: { colour: place.colour_sets.first.colours.first.id.to_s, added: '2023-08-08', place_id: place.id }
+        post :create, params: { grade: place.grades.first.id, added: '2023-08-08', place_id: place.id }
 
         route_set = RouteSet.last
-        expect(route_set.route_set_colour_set_colour).to eq(place.colour_sets.first.colours.first)
+        expect(route_set.grade).to eq(place.grades.first)
         expect(route_set.added.to_s).to eq('2023-08-08 00:00:00 UTC')
         expect(response).to redirect_to(edit_route_set_path(route_set.id))
       end
@@ -55,10 +55,10 @@ RSpec.describe RouteSetsController, type: :controller do
   end
 
   describe 'GET #index' do
-    let!(:route_set1) { create(:route_set, added: 3.day.ago, route_set_colour_set_colour: place.colour_sets.first.colours.first, place: user.place) }
-    let!(:route_set2) { create(:route_set, added: 2.days.ago, route_set_colour_set_colour: place.colour_sets.first.colours.first, place: user.place) }
-    let!(:route_set3) { create(:route_set, added: 1.days.ago, route_set_colour_set_colour: place.colour_sets.first.colours.last, place: user.place) }
-    let!(:other_place_route_set) { create(:route_set, added: 1.days.ago, route_set_colour_set_colour: create(:route_set_colour_set_colour), place: create(:place)) }
+    let!(:route_set1) { create(:route_set, added: 3.day.ago, grade: user.place.grades.first, place: user.place) }
+    let!(:route_set2) { create(:route_set, added: 2.days.ago, grade: user.place.grades.first, place: user.place) }
+    let!(:route_set3) { create(:route_set, added: 1.days.ago, grade: user.place.grades.last, place: user.place) }
+    let!(:other_place_route_set) { create(:route_set, added: 1.days.ago, grade: create(:grade), place: create(:place)) }
 
     before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
 

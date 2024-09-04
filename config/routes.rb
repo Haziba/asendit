@@ -10,10 +10,7 @@ Rails.application.routes.draw do
 
   resources :places do
     post '/choose', to: 'places#choose'
-    resources :colour_sets do
-      post '/make-active', to: 'colour_sets#make_active'
-      resources :colours, controller: 'colour_set_colours'
-    end
+    resources :grades
     resources :route_sets do
       member do
         patch :update, constraints: { format: :json }

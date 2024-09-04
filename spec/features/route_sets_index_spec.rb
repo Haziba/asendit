@@ -4,15 +4,14 @@ RSpec.feature "RouteSets#Index", type: :feature do
   context 'when logged in' do
     include_context 'logged_in', admin: false
 
-    let!(:colour_set) { create(:route_set_colour_set, place: logged_in_user.place) }
-    let!(:colour_red) { create(:route_set_colour_set_colour, colour: 'red', route_set_colour_set: colour_set) }
-    let!(:colour_blue) { create(:route_set_colour_set_colour, colour: 'blue', route_set_colour_set: colour_set) }
-    let!(:other_colour) { create(:route_set_colour_set_colour, route_set_colour_set: create(:route_set_colour_set, place: create(:place))) }
+    let!(:grade_red) { create(:grade, name: 'red', place: logged_in_user.place) }
+    let!(:grade_blue) { create(:grade, name: 'blue', place: logged_in_user.place) }
+    let!(:grade_other) { create(:grade) }
 
-    let!(:old_blue_set) { create(:route_set, route_set_colour_set_colour: colour_blue, added: Date.today - 1.year, place: logged_in_user.place) }
-    let!(:new_blue_set) { create(:route_set, route_set_colour_set_colour: colour_blue, added: Date.today, place: logged_in_user.place) }
-    let!(:red_set) { create(:route_set, route_set_colour_set_colour: colour_red, added: Date.today - 1.day, place: logged_in_user.place) }
-    let!(:not_place_set) { create(:route_set, route_set_colour_set_colour: other_colour, place: other_colour.route_set_colour_set.place) }
+    let!(:old_blue_set) { create(:route_set, grade: grade_blue, added: Date.today - 1.year, place: logged_in_user.place) }
+    let!(:new_blue_set) { create(:route_set, grade: grade_blue, added: Date.today, place: logged_in_user.place) }
+    let!(:red_set) { create(:route_set, grade: grade_red, added: Date.today - 1.day, place: logged_in_user.place) }
+    let!(:not_place_set) { create(:route_set, grade: grade_other, place: grade_other.place) }
 
     before do
       visit '/route_sets'
@@ -66,16 +65,14 @@ RSpec.feature "RouteSets#Index", type: :feature do
   context 'when logged in as admin' do
     include_context 'logged_in', admin: true
 
-    let!(:colour_set) { create(:route_set_colour_set, place: logged_in_user.place) }
-    let!(:colour_red) { create(:route_set_colour_set_colour, colour: 'red', route_set_colour_set: colour_set) }
-    let!(:colour_blue) { create(:route_set_colour_set_colour, colour: 'blue', route_set_colour_set: colour_set) }
-    let!(:other_colour) { create(:route_set_colour_set_colour, route_set_colour_set: create(:route_set_colour_set)) }
+    let!(:grade_red) { create(:grade, name: 'red', place: logged_in_user.place) }
+    let!(:grade_blue) { create(:grade, name: 'blue', place: logged_in_user.place) }
+    let!(:grade_other) { create(:grade) }
 
-    let!(:old_blue_set) { create(:route_set, route_set_colour_set_colour: colour_blue, added: Date.today - 1.year, place: logged_in_user.place) }
-    let!(:new_blue_set) { create(:route_set, route_set_colour_set_colour: colour_blue, added: Date.today, place: logged_in_user.place) }
-    let!(:red_set) { create(:route_set, route_set_colour_set_colour: colour_red, added: Date.today - 1.day, place: logged_in_user.place) }
-    let!(:not_place_set) { create(:route_set, route_set_colour_set_colour: other_colour, place: other_colour.route_set_colour_set.place) }
-
+    let!(:old_blue_set) { create(:route_set, grade: grade_blue, added: Date.today - 1.year, place: logged_in_user.place) }
+    let!(:new_blue_set) { create(:route_set, grade: grade_blue, added: Date.today, place: logged_in_user.place) }
+    let!(:red_set) { create(:route_set, grade: grade_red, added: Date.today - 1.day, place: logged_in_user.place) }
+    let!(:not_place_set) { create(:route_set, grade: grade_other, place: grade_other.place) }
     before do
       visit '/route_sets'
     end

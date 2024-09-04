@@ -8,9 +8,7 @@ class ClimbsController < ApplicationController
     
     return redirect_to(edit_climb_path(current_climb)) if current_climb != nil
 
-    active_colour_set = User.me(session).place.active_colour_set
-    active_colours = active_colour_set.colours
-    active_route_sets = active_colours.map(&:active_route_set).reject { |r_s| r_s.nil? }
+    active_route_sets = User.me(session).place.grades.map(&:active_route_set).reject { |r_s| r_s.nil? }
 
     climb = Climb.new(
       climbed_at: Time.now,
@@ -43,12 +41,15 @@ class ClimbsController < ApplicationController
 
   def edit
     @climb = Climb.find(params[:id])
-    @active_route_sets = RouteSet.all
-      .order(added: :desc)
-      .group_by(&:route_set_colour_set_colour_id)
-      .map { |key, value| value.first }
-      .sort_by { |route_set| route_set.route_set_colour_set_colour_id }
 
+    grades_with_first_route_set = User.me(session).place.grades.reject { |grade| @climb.route_sets.map(&:grade).include?(grade) }.map(&:active_route_set).compact
+
+    if grades_with_first_route_set.any?
+      @climb.route_sets += grades_with_first_route_set
+      @climb.save!
+    end
+
+    @active_route_sets = @climb.route_sets
     @routes = @active_route_sets.map { |route_set| [route_set.id, route_set.routes] }.to_h
   end
 

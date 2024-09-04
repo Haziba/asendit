@@ -6,11 +6,11 @@ class RouteSetsController < ApplicationController
 
   def create
     route_set = RouteSet.new(
-      route_set_colour_set_colour_id: params["colour"],
+      grade_id: params["grade"],
       added: params["added"],
       place_id: @place.id
     )
-    route_set.save
+    route_set.save!
 
     redirect_to edit_route_set_path(id: route_set.id)
   end
@@ -28,9 +28,9 @@ class RouteSetsController < ApplicationController
   end
 
   def index
-    @active_route_sets = @place.active_colour_set.colours.map(&:active_route_set)
+    @active_route_sets = @place.grades.map(&:active_route_set).compact
       .sort_by { |route_set| -route_set.added.to_i }
-    @old_route_sets = @place.active_colour_set.colours.map(&:past_route_sets).flatten
+    @old_route_sets = @place.grades.map(&:past_route_sets).flatten.compact
   end
 
   def show

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_03_083112) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_04_091412) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -31,6 +31,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_03_083112) do
     t.index ["climb_id", "route_set_id"], name: "index_climbs_route_sets_on_climb_id_and_route_set_id", unique: true
     t.index ["climb_id"], name: "index_climbs_route_sets_on_climb_id"
     t.index ["route_set_id"], name: "index_climbs_route_sets_on_route_set_id"
+  end
+
+  create_table "grades", force: :cascade do |t|
+    t.bigint "place_id", null: false
+    t.string "name"
+    t.string "grade"
+    t.string "map_tint_colour"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["place_id"], name: "index_grades_on_place_id"
   end
 
   create_table "places", force: :cascade do |t|
@@ -69,6 +79,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_03_083112) do
     t.bigint "place_id", null: false
     t.date "expires_at"
     t.bigint "route_set_colour_set_colour_id"
+    t.bigint "grade_id"
+    t.index ["grade_id"], name: "index_route_sets_on_grade_id"
     t.index ["place_id"], name: "index_route_sets_on_place_id"
     t.index ["route_set_colour_set_colour_id"], name: "index_route_sets_on_route_set_colour_set_colour_id"
   end
@@ -104,7 +116,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_03_083112) do
 
   add_foreign_key "climbs_route_sets", "climbs"
   add_foreign_key "climbs_route_sets", "route_sets"
+  add_foreign_key "grades", "places"
   add_foreign_key "route_set_colour_set_colours", "route_set_colour_sets"
   add_foreign_key "route_set_colour_sets", "places"
+  add_foreign_key "route_sets", "grades"
   add_foreign_key "route_sets", "places"
 end

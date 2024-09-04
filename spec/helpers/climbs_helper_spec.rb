@@ -11,7 +11,7 @@ RSpec.describe ClimbsHelper, type: :helper do
 
   describe '#route_attempt_percentages' do
     it 'returns the correct percentages for route attempts' do
-      expect(helper.route_attempt_percentages(route_states)).to eq([[route_set1.route_set_colour_set_colour.colour, 100.0/3.0*2.0], [route_set2.route_set_colour_set_colour.colour, 100.0/3.0]])
+      expect(helper.route_attempt_percentages(route_states)).to eq([[route_set1.grade.name, 100.0/3.0*2.0], [route_set2.grade.name, 100.0/3.0]])
     end
   end
 

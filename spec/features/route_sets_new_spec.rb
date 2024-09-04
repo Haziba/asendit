@@ -18,27 +18,10 @@ RSpec.feature 'RouteSets#new', type: :feature do
     end
 
     scenario 'renders appropriate colour sets' do
-      expect(page).to have_selector('[data-test=color-set-picker]')
-      within('[data-test=color-set-picker]') do
-        expect(page).to have_selector('option:nth-child(1)', text: place.colour_sets[0].description)
-        expect(page).to have_selector('option:nth-child(2)', text: place.colour_sets[1].description)
-        expect(page).to have_selector('option:nth-child(3)', text: place.colour_sets[2].description)
-      end
-
-      expect(page).to have_selector('[data-test=color-picker]') do
-        expect(page).to have_selector('option:nth-child(1)', text: place.colour_sets.first.colours[0].colour)
-        expect(page).to have_selector('option:nth-child(2)', text: place.colour_sets.first.colours[1].colour)
-        expect(page).to have_selector('option:nth-child(3)', text: place.colour_sets.first.colours[2].colour)
-      end
-    end
-
-    scenario 'choosing a different colour set updates the colour set colours' do
-      find('[data-test=color-set-picker]').select(place.colour_sets[1].description)
-
-      expect(page).to have_selector('[data-test=color-picker]') do
-        expect(page).to have_selector('option:nth-child(1)', text: place.colour_sets[1].colours[0].colour)
-        expect(page).to have_selector('option:nth-child(2)', text: place.colour_sets[1].colours[1].colour)
-        expect(page).to have_selector('option:nth-child(3)', text: place.colour_sets[1].colours[2].colour)
+      expect(page).to have_selector('[data-test=grade]') do
+        expect(page).to have_selector('option:nth-child(1)', text: place.grades[0].name)
+        expect(page).to have_selector('option:nth-child(2)', text: place.grades[1].name)
+        expect(page).to have_selector('option:nth-child(3)', text: place.grades[2].name)
       end
     end
 

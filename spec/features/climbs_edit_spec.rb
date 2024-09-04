@@ -4,13 +4,12 @@ RSpec.feature 'Climbs#edit', type: :feature do
   context 'when logged in as the climb\'s climber' do
     include_context 'logged_in'
 
-    let!(:colour_set) { create(:route_set_colour_set, place: logged_in_user.place) }
-    let!(:colour_green) { create(:route_set_colour_set_colour, colour: 'green', route_set_colour_set: colour_set) }
-    let!(:colour_red) { create(:route_set_colour_set_colour, colour: 'red', route_set_colour_set: colour_set) }
+    let!(:grade_green) { create(:grade, name: 'green', place: logged_in_user.place) }
+    let!(:grade_red) { create(:grade, name: 'red', place: logged_in_user.place) }
 
-    let!(:route_set_green) { create(:route_set, added: Date.yesterday, route_set_colour_set_colour: colour_green) }
-    let!(:route_set_old_green) { create(:route_set, added: Date.yesterday - 1.day, route_set_colour_set_colour: colour_green) }
-    let!(:route_set_red) { create(:route_set, added: Date.today, route_set_colour_set_colour: colour_red) }
+    let!(:route_set_green) { create(:route_set, added: Date.yesterday, grade: grade_green) }
+    let!(:route_set_old_green) { create(:route_set, added: Date.yesterday - 1.day, grade: grade_green) }
+    let!(:route_set_red) { create(:route_set, added: Date.today, grade: grade_red) }
 
     let!(:route_set_green_route_1) { create(:route, route_set: route_set_green) }
     let!(:route_set_green_route_2) { create(:route, route_set: route_set_green) }
@@ -31,8 +30,8 @@ RSpec.feature 'Climbs#edit', type: :feature do
 
     scenario 'only newest sets per colour are options' do
       within('[data-test=route-set-picker]') do
-        expect(page).to have_selector("button[data-route-set-id='#{route_set_green.id}'][data-colour='#{route_set_green.route_set_colour_set_colour.id}']")
-        expect(page).to have_selector("button[data-route-set-id='#{route_set_red.id}'][data-colour='#{route_set_red.route_set_colour_set_colour.id}']")
+        expect(page).to have_selector("button[data-route-set-id='#{route_set_green.id}'][data-grade='#{route_set_green.grade.id}']")
+        expect(page).to have_selector("button[data-route-set-id='#{route_set_red.id}'][data-grade='#{route_set_red.grade.id}']")
         expect(page).to_not have_selector("button[data-route-set-id='#{route_set_old_green.id}']")
       end
     end

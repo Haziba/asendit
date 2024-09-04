@@ -3,7 +3,7 @@ module ClimbsHelper
     routes = Route.find(route_states.select(&:tried?).map(&:route_id))
     route_sets = RouteSet.find(routes.map(&:route_set_id).uniq)
 
-    route_sets.map { |route_set| [route_set.route_set_colour_set_colour.colour, (routes.count { |route| route.route_set_id == route_set.id }.to_f * 100) / routes.count.to_f] }
+    route_sets.map { |route_set| [route_set.grade.name, (routes.count { |route| route.route_set_id == route_set.id }.to_f * 100) / routes.count.to_f] }
   end
 
   def route_set_by_route_id(route_id)
