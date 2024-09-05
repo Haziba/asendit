@@ -1,0 +1,60 @@
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7CMTeN5_6tyb5l35lmDzVuJzMZVzADsA&libraries=places"></script>
+<input type="text" id="place" class="form-control" />
+<input type="button" id="calculate" value="Calculate" />
+<div id="output"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    function writeLine(text) {
+      document.querySelector('#output').innerHTML = text + '<br />' + document.querySelector('#output').innerHTML;
+    }
+
+    function calculateDrivingTime(origin) {
+      document.querySelector('#calculate').disabled = true;
+
+      // Define the destinations
+      const destinations = [
+        'Southville, Bristol, UK',
+        'Bromsgrove, UK',
+        'Derby, UK'
+      ];
+
+      writeLine(`Calculating driving time to ${origin}...`);
+
+      // Initialize the Distance Matrix Service
+      const service = new google.maps.DistanceMatrixService();
+
+      // Request driving time for each destination
+      service.getDistanceMatrix(
+        {
+          origins: [origin],  // Starting point (variable value)
+          destinations: destinations,  // Destinations
+          travelMode: 'DRIVING',  // Travel mode
+        },
+        function(response, status) {
+          if (status !== 'OK') {
+            writeLine('Error with distance matrix: ' + status);
+          } else {
+            const results = response.rows[0].elements;
+            results.forEach((result, index) => {
+              if (result.status === 'OK') {
+                writeLine(`Driving time to ${destinations[index]}: ${result.duration.text}`);
+              } else {
+                writeLine(`Error calculating driving time to ${destinations[index]}`);
+              }
+            });
+          }
+
+          document.querySelector('#calculate').disabled = false;
+          writeLine('-------------------');
+        }
+      );
+    }
+    document.getElementById("calculate").addEventListener("click", function() {
+      // Example usage: Use a specific origin value
+      calculateDrivingTime(document.querySelector('#place').value);
+    });
+
+  });
+</script>
+
