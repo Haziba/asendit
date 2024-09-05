@@ -65,3 +65,5 @@ gem 'omniauth-auth0'
 gem 'omniauth-rails_csrf_protection'
 
 gem "faker", "~> 3.4"
+
+gem "aws-sdk-s3", "~> 1.160"

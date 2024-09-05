@@ -1,0 +1,65 @@
+<%
+@title = @route_set.name
+@back_url = route_sets_path
+%>
+
+<div class="card">
+  <div id="map" class="map">
+    <img src="/GroundFloor.png" id="floorBackground" />
+  </div>
+  <div id="debug"></div>
+</div>
+
+<script>
+  $(() => {
+    const $map = $('#map')
+    const $routeSets = $('#routeSets')
+    const $done = $('#done')
+    const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
+    const routeSets = <%= raw @climbed_routes.to_json %>
+
+    const initRouteStates = () => {
+      const initialRouteStates = <%= raw @route_states.to_json %>
+      routeSets.forEach(route => {
+        const statuses = initialRouteStates.filter(initialRouteState => initialRouteState.route_id == route.id).map(state => state.status)
+
+        const statusPrecendence = ["sent", "failed", "not_attempted"]
+
+        for(const status of statusPrecendence) {
+          if(statuses.indexOf(status) >= 0) {
+            route.status = status
+            break
+          }
+        }
+      })
+    }
+
+    const addRoute = (route) => {
+      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.status)}</div>`)
+      $route.click(() => clickRoute(route))
+      route.$elem = $route
+      $('#map').append($route)
+    }
+
+    const setRoute = () => {
+      const newRoutes = routeSets
+      newRoutes.forEach(addRoute)
+    }
+
+    const icon = status => {
+      switch(status) {
+        case 'new_win':
+          return '⭐'
+        case 'sent':
+          return '✔'
+        case 'failed':
+          return '❌'
+        default:
+          return '🟡'
+      }
+    }
+
+    initRouteStates()
+    setRoute()
+  })
+</script>

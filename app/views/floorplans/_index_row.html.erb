@@ -1,0 +1,7 @@
+<tr data-test="floorplan-<%= floorplan.id %>">
+  <td><%= floorplan.name %></td>
+  <td class="actions">
+    <%= link_to "Edit", edit_place_floorplan_path(floorplan.place.id, floorplan.id), { class: "btn btn-secondary btn-sm #{admin_user? ? "" : "disabled"}" } %>
+    <%= button_to "Delete", place_floorplan_path(floorplan.place.id, floorplan.id), method: :delete, data: {confirm: "Are you sure?", test: 'delete-button'}, class: "btn btn-danger btn-sm", disabled: !admin_user? %>
+  </td>
+</tr>

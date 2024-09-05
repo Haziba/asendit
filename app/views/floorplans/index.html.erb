@@ -1,0 +1,23 @@
+<%
+@title = "#{@place.name} Floorplans"
+@back_url = menu_path
+@extra_header = link_to "Add", new_place_floorplan_path(place.id), { class: "btn btn-primary btn-block btn-sm #{admin_user? ? "" : "disabled"}" }
+%>
+
+<div class="accordion" id="accordionExample">
+  <div class="card open" data-test="floorplans">
+    <div class="card-header" data-toggle="collapse" data-target="#collapseCurrent">
+      <h5>Floorplans</h5>
+    </div>
+
+    <div id="collapseCurrent" class="collapse show">
+      <table class="table">
+        <tbody>
+        <% @floorplans.each do |floorplan| %>
+          <%= render "floorplans/index_row", floorplan: floorplan %>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
