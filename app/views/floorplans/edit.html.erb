@@ -9,23 +9,56 @@
       <%= f.label :name, { class: "form-label" } %>
       <%= f.text_field :name, value: @floorplan.name, class: "form-control" %>
     </div>
-
-    <div class="mb-3">
-      <%= f.label :images, class: "form-label" %>
-      <%= f.file_field :images, multiple: true, direct_upload: true, class: "form-control" %>
-    </div>
-
-    <%= f.submit "Edit", class: "btn btn-success" %>
+    <%= f.submit "Update", class: "btn btn-success" %>
   <% end %>
 
   <hr />
 
-  <select id="tool" class="mb-2 form-control" data-test="add-or-remove">
-    <option>Add</option>
-    <option>Remove</option>
-  </select>
+  <div style="display: flex;">
+    <button id="floorplan-prev">&lt;</button>
+    <span style="flex-grow: 1; text-align: center">
+      <input type="text" id="floorplan-name" class="form-control">
+    </span>
+    <button id="floorplan-next">&gt;</button>
+  </div>
 
-  <% @floorplan.images.each do |image| %>
-    <%= image_tag image %>
-  <% end %>
+  <img id="floorplan-img"/>
 </div>
+
+<script>
+  $(() => {
+    const $name = $('#floorplan-name');
+    const $img = $('#floorplan-img');
+
+    let data = [<% @floorplan.images.each_with_index do |image, index| %>{image: "<%= url_for(image) %>", name: "Floor - <%=index%>"},<% end %>]
+    let currentFloorplan = 0;
+
+    const switchFloorplan = (floorplanId) => {
+      $name.val(data[floorplanId].name);
+      $img.attr('src', data[floorplanId].image);
+      currentFloorplan = floorplanId;
+    }
+
+    $('#floorplan-prev').click(() => {
+      if(currentFloorplan - 1 < 0)
+        switchFloorplan(data.length-1);
+      else
+        switchFloorplan(currentFloorplan - 1);
+    });
+
+    $('#floorplan-next').click(() => {
+      if(currentFloorplan + 1 >= data.length)
+        switchFloorplan(0);
+      else
+        switchFloorplan(currentFloorplan + 1);
+    });
+
+    $name.change(() => {
+      data[currentFloorplan].name = $name.val();
+
+      console.log(data);
+    });
+
+    switchFloorplan(0);
+  })
+</script>
