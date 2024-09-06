@@ -1,6 +1,6 @@
 class FloorplansController < ApplicationController
   before_action :set_place
-  before_action :set_floorplan, only: [:show, :edit, :update, :destroy]
+  before_action :set_floorplan, only: [:show, :edit, :update, :destroy, :update_data, :upload_file]
 
   def index
     @floorplans = @place.floorplans
@@ -27,13 +27,25 @@ class FloorplansController < ApplicationController
   end
 
   def update
-    pp params
-    pp floorplan_params
     if @floorplan.update(floorplan_params)
       redirect_to edit_place_floorplan_path(@floorplan), notice: 'Floorplan was successfully updated.'
     else
       render :edit
     end
+  end
+
+  def update_data
+    if @floorplan.update(data: params[:data])
+      render json: { success: true }
+    else
+      render json: { success: false }
+    end
+  end
+
+  def upload_file
+    new_image_id = @floorplan.images.count
+    @floorplan.images.attach(params[:image])
+    render json: { success: true, id: new_image_id }
   end
 
   def destroy
@@ -44,7 +56,7 @@ class FloorplansController < ApplicationController
   private
 
   def set_floorplan
-    @floorplan = Floorplan.find(params[:id])
+    @floorplan = params[:floorplan_id].present? ? Floorplan.find(params[:floorplan_id]) : Floorplan.find(params[:id])
   end
 
   def set_place

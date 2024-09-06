@@ -20,6 +20,9 @@
       <input type="text" id="floorplan-name" class="form-control">
     </span>
     <button id="floorplan-next">&gt;</button>
+    <button id="floorplan-upload">📂</button>
+    <button id="floorplan-remove">-</button>
+    <button id="floorplan-add">+</button>
   </div>
 
   <img id="floorplan-img"/>
@@ -30,12 +33,13 @@
     const $name = $('#floorplan-name');
     const $img = $('#floorplan-img');
 
-    let data = [<% @floorplan.images.each_with_index do |image, index| %>{image: "<%= url_for(image) %>", name: "Floor - <%=index%>"},<% end %>]
+    let data = <%= raw @floorplan.data.to_json %>
+    let images = {<% @floorplan.images.each do |image| %><%= image.id %>: '<%= url_for(image) %>',<% end %>}
     let currentFloorplan = 0;
 
     const switchFloorplan = (floorplanId) => {
       $name.val(data[floorplanId].name);
-      $img.attr('src', data[floorplanId].image);
+      $img.attr('src', images[data[floorplanId].image_id]);
       currentFloorplan = floorplanId;
     }
 
@@ -53,11 +57,67 @@
         switchFloorplan(currentFloorplan + 1);
     });
 
+    $('#floorplan-remove').click(() => {
+      data.splice(currentFloorplan, 1);
+      switchFloorplan(0);
+      updateServer();
+    });
+
+    $('#floorplan-upload').click(() => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (event) => {
+        const file = event.target.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        $.ajax({
+          url: '<%= place_floorplan_upload_file_path(place_id: @floorplan.place.id, floorplan_id: @floorplan.id) %>',
+          method: 'PATCH',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+            data[currentFloorplan].image_id = response.id;
+            updateServer();
+            switchFloorplan(currentFloorplan)
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
+      };
+      
+      input.click();
+    });
+
+    $('#floorplan-add').click(() => {
+      data.push({image: '', name: 'New Floorplan'});
+      switchFloorplan(data.length-1);
+    });
+
     $name.change(() => {
       data[currentFloorplan].name = $name.val();
 
-      console.log(data);
+      updateServer();
     });
+
+    const updateServer = () => {
+      const dataToSend = data.filter(item => item.image_id !== '');
+      $.ajax({
+        url: '<%= place_floorplan_update_data_path(place_id: @floorplan.place.id, floorplan_id: @floorplan) %>',
+        method: 'PATCH',
+        data: JSON.stringify({data: dataToSend}),
+        contentType: 'application/json',
+        success: function(response) {
+          console.log(response);
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
 
     switchFloorplan(0);
   })
