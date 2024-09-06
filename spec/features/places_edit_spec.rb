@@ -60,6 +60,72 @@ RSpec.feature 'Places#edit', type: :feature do
       place.reload
       expect(place.grades).to_not include(grade_to_remove)
     end
+
+    context 'when no floorplan data' do
+      before do
+        place.floorplan.update(data: [])
+        visit "/places/#{place.id}/edit"
+      end
+
+      scenario 'a floorplan is added' do
+        expect(page).to have_field('floorplan-name', with: 'New Floorplan')
+
+        # Floorplan without image isn't uploaded
+        fill_in 'floorplan-name', with: 'Cool Floorplan'
+        sleep 0.5
+        place.reload
+        expect(place.floorplan.data).to eq([])
+
+        # First floorplan image is uploaded
+        previous_image_src = find('#floorplan-img', visible: :any)['src']
+        attach_file('floorplan-image-upload', './public/GroundFloor.png', visible: false)
+        sleep 0.5
+        expect(find('#floorplan-img', visible: :any)['src']).to_not eq(previous_image_src)
+
+        place.reload
+        expect(place.floorplan.data).to eq([{ 'name' => 'Cool Floorplan', 'image_id' => place.floorplan.images.last.id }])
+      end
+    end
+
+    context 'when floorplan data' do
+      scenario 'a floorplan is switched between' do
+        expect(page).to have_field('floorplan-name', with: place.floorplan.data.first['name'])
+        find('#floorplan-next').click
+        expect(page).to have_field('floorplan-name', with: place.floorplan.data.last['name'])
+        find('#floorplan-next').click
+        expect(page).to have_field('floorplan-name', with: place.floorplan.data.first['name'])
+        find('#floorplan-prev').click
+        expect(page).to have_field('floorplan-name', with: place.floorplan.data.last['name'])
+        find('#floorplan-prev').click
+        expect(page).to have_field('floorplan-name', with: place.floorplan.data.first['name'])
+      end
+
+      scenario 'a floorplan is edited' do
+        expect(page).to have_field('floorplan-name', with: place.floorplan.data.first['name'])
+
+        fill_in 'floorplan-name', with: 'Cool Floorplan'
+        sleep 0.5
+        place.reload
+        expect(place.floorplan.data.first['name']).to eq('Cool Floorplan')
+
+        previous_image_src = find('#floorplan-img', visible: :any)['src']
+
+        attach_file('floorplan-image-upload', './public/GroundFloor.png', visible: false)
+        sleep 0.5
+        expect(find('#floorplan-img', visible: :any)['src']).to_not eq(previous_image_src)
+
+        place.reload
+        expect(place.floorplan.data).to eq([{ 'name' => 'Cool Floorplan', 'image_id' => place.floorplan.images.last.id }] + place.floorplan.data[1..])
+      end
+
+      scenario 'a floorplan is removed' do
+        # Remove the first floorplan
+        find('#floorplan-remove').click
+        expect(page).to have_field('floorplan-name', with: place.floorplan.data.last['name'])
+        place.reload
+        expect(place.floorplan.data.length).to eq(1)
+      end
+    end
   end
 
   context 'when anonymous' do

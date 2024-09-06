@@ -9,6 +9,8 @@ class NewPlaceForm
   def save
     return false unless valid?
 
-    Place.create(name: name, user: user)
+    place = Place.create(name: name, user: user)
+    Floorplan.create(name: 'Initial floorplan', data: [], place: place)
+    place
   end
 end

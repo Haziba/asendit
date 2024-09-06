@@ -7,12 +7,19 @@ FactoryBot.define do
     place
   end
 
+  factory :floorplan do
+    name { "Test Floorplan" }
+    data { [{name: "Bottom Floor", image_id: 1}, {name: "Top Floor", image_id: 2}] }
+    place
+  end
+
   factory :place do
     name { "Test Gym" }
     user
 
     after(:create) do |place|
       create_list(:grade, 3, place: place)
+      create(:floorplan, place: place)
     end
   end
 

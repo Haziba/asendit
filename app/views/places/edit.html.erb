@@ -46,6 +46,10 @@
     <% end %>
     </tbody>
   </table>
+
+  <hr />
+
+  <%= render partial: 'floorplans/edit', locals: { place: @place, floorplan: @place.floorplan } %>
 </div>
 
 <script>

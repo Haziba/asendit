@@ -1,19 +1,4 @@
-<%
-@title = "Edit #{@place.name}"
-@back_url = place_floorplans_path
-%>
-
 <div class="card">
-  <%= form_with url: place_floorplan_path(@floorplan), method: :patch, model: @floorplan do |f| %>
-    <div class="mb-3">
-      <%= f.label :name, { class: "form-label" } %>
-      <%= f.text_field :name, value: @floorplan.name, class: "form-control" %>
-    </div>
-    <%= f.submit "Update", class: "btn btn-success" %>
-  <% end %>
-
-  <hr />
-
   <div style="display: flex;">
     <button id="floorplan-prev">&lt;</button>
     <span style="flex-grow: 1; text-align: center">
@@ -25,7 +10,9 @@
     <button id="floorplan-add">+</button>
   </div>
 
-  <img id="floorplan-img"/>
+  <img data-image-id="lol" id="floorplan-img"/>
+
+  <input type="file" accept="image/*" id="floorplan-image-upload" style="display: none">
 </div>
 
 <script>
@@ -33,13 +20,14 @@
     const $name = $('#floorplan-name');
     const $img = $('#floorplan-img');
 
-    let data = <%= raw @floorplan.data.to_json %>
-    let images = {<% @floorplan.images.each do |image| %><%= image.id %>: '<%= url_for(image) %>',<% end %>}
+    let data = <%= raw floorplan.data.to_json %>
+    let images = {<% floorplan.images.each do |image| %><%= image.id %>: '<%= url_for(image) %>',<% end %>}
     let currentFloorplan = 0;
 
     const switchFloorplan = (floorplanId) => {
       $name.val(data[floorplanId].name);
       $img.attr('src', images[data[floorplanId].image_id]);
+      $img.data('image-id', data[floorplanId].image_id);
       currentFloorplan = floorplanId;
     }
 
@@ -59,54 +47,56 @@
 
     $('#floorplan-remove').click(() => {
       data.splice(currentFloorplan, 1);
-      switchFloorplan(0);
       updateServer();
+      switchFloorplan(0);
     });
 
     $('#floorplan-upload').click(() => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = (event) => {
-        const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('image', file);
-        
-        $.ajax({
-          url: '<%= place_floorplan_upload_file_path(place_id: @floorplan.place.id, floorplan_id: @floorplan.id) %>',
-          method: 'PATCH',
-          data: formData,
-          processData: false,
-          contentType: false,
-          success: function(response) {
-            data[currentFloorplan].image_id = response.id;
-            updateServer();
-            switchFloorplan(currentFloorplan)
-          },
-          error: function(error) {
-            console.log(error);
-          }
-        });
-      };
+      $('#floorplan-image-upload').click();
+    });
+
+    $('#floorplan-image-upload').change((event) => {
+      const file = event.target.files[0];
+      const formData = new FormData();
+      formData.append('image', file);
       
-      input.click();
+      $.ajax({
+        url: '<%= place_floorplan_upload_file_path(place_id: floorplan.place.id, floorplan_id: floorplan.id) %>',
+        method: 'PATCH',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          data[currentFloorplan].image_id = response.id;
+          images[response.id] = response.url;
+          updateServer();
+          switchFloorplan(currentFloorplan)
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
     });
 
     $('#floorplan-add').click(() => {
-      data.push({image: '', name: 'New Floorplan'});
+      addFloorplan();
       switchFloorplan(data.length-1);
     });
 
-    $name.change(() => {
+    const addFloorplan = () => {
+      data.push({image_id: undefined, name: 'New Floorplan'});
+    }
+
+    $name.keydown(debounce(() => {
       data[currentFloorplan].name = $name.val();
 
       updateServer();
-    });
+    }, 400));
 
     const updateServer = () => {
-      const dataToSend = data.filter(item => item.image_id !== '');
+      const dataToSend = data.filter(item => item.image_id);
       $.ajax({
-        url: '<%= place_floorplan_update_data_path(place_id: @floorplan.place.id, floorplan_id: @floorplan) %>',
+        url: '<%= place_floorplan_update_data_path(place_id: floorplan.place.id, floorplan_id: floorplan) %>',
         method: 'PATCH',
         data: JSON.stringify({data: dataToSend}),
         contentType: 'application/json',
@@ -118,6 +108,9 @@
         }
       });
     }
+
+    if(!data.length)
+      addFloorplan();
 
     switchFloorplan(0);
   })
