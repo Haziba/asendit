@@ -10,7 +10,7 @@
     <button id="floorplan-add">+</button>
   </div>
 
-  <img data-image-id="lol" id="floorplan-img"/>
+  <img id="floorplan-img"/>
 
   <input type="file" accept="image/*" id="floorplan-image-upload" style="display: none">
 </div>
@@ -21,34 +21,38 @@
     const $img = $('#floorplan-img');
 
     let data = <%= raw floorplan.data.to_json %>
+    const nonDeletedFloorplans = () => data.filter(item => !item.deleted);
     let images = {<% floorplan.images.each do |image| %><%= image.id %>: '<%= url_for(image) %>',<% end %>}
-    let currentFloorplan = 0;
+    let currentFloorplan;
 
-    const switchFloorplan = (floorplanId) => {
-      $name.val(data[floorplanId].name);
-      $img.attr('src', images[data[floorplanId].image_id]);
-      $img.data('image-id', data[floorplanId].image_id);
-      currentFloorplan = floorplanId;
+    const switchFloorplan = (floorplan) => {
+      $name.val(floorplan.name);
+      $img.attr('src', images[floorplan.image_id]);
+      currentFloorplan = floorplan;
     }
 
     $('#floorplan-prev').click(() => {
-      if(currentFloorplan - 1 < 0)
-        switchFloorplan(data.length-1);
+      const floorplans = nonDeletedFloorplans();
+      const next = floorplans.indexOf(currentFloorplan)-1;
+      if(next < 0)
+        switchFloorplan(floorplans[[floorplans.length-1]]);
       else
-        switchFloorplan(currentFloorplan - 1);
+        switchFloorplan(floorplans[next]);
     });
 
     $('#floorplan-next').click(() => {
-      if(currentFloorplan + 1 >= data.length)
-        switchFloorplan(0);
+      const floorplans = nonDeletedFloorplans();
+      const next = floorplans.indexOf(currentFloorplan)+1;
+      if(next >= floorplans.length)
+        switchFloorplan(floorplans[0]);
       else
-        switchFloorplan(currentFloorplan + 1);
+        switchFloorplan(floorplans[next]);
     });
 
     $('#floorplan-remove').click(() => {
-      data.splice(currentFloorplan, 1);
+      currentFloorplan.deleted = true;
       updateServer();
-      switchFloorplan(0);
+      switchFloorplan(nonDeletedFloorplans()[0]);
     });
 
     $('#floorplan-upload').click(() => {
@@ -67,7 +71,7 @@
         processData: false,
         contentType: false,
         success: function(response) {
-          data[currentFloorplan].image_id = response.id;
+          currentFloorplan.image_id = response.id;
           images[response.id] = response.url;
           updateServer();
           switchFloorplan(currentFloorplan)
@@ -84,11 +88,11 @@
     });
 
     const addFloorplan = () => {
-      data.push({image_id: undefined, name: 'New Floorplan'});
+      data.push({id: data.length, image_id: undefined, name: 'New Floorplan'});
     }
 
     $name.keydown(debounce(() => {
-      data[currentFloorplan].name = $name.val();
+      currentFloorplan.name = $name.val();
 
       updateServer();
     }, 400));
@@ -112,6 +116,6 @@
     if(!data.length)
       addFloorplan();
 
-    switchFloorplan(0);
+    switchFloorplan(nonDeletedFloorplans()[0]);
   })
 </script>

@@ -1,7 +1,7 @@
 <tr data-test="place-<%= place.id %>">
   <td><%= place.name %></td>
   <td class="actions">
-    <%= button_to "Choose", place_choose_path(place_id: place.id), method: :post, class: 'btn btn-primary btn-sm', data: { test: 'choose' } %>
+    <%= button_to "Choose", place_choose_path(place_id: place.id), method: :post, class: 'btn btn-primary btn-sm', data: { test: 'choose' }, disabled: is_current_place?(place) %>
     <%= link_to "View", place_path(place.id), { class: "btn btn-secondary btn-sm" } %>
     <%= link_to "Edit", edit_place_path(place.id), { class: "btn btn-secondary btn-sm #{user_can_edit_place?(place) ? "" : "disabled"}", data: { test: 'edit' } } %>
     <%#= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?", test: 'delete-button'}, class: "btn btn-danger btn-sm", disabled: !admin_user? %>

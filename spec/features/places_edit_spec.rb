@@ -118,12 +118,15 @@ RSpec.feature 'Places#edit', type: :feature do
         expect(place.floorplan.data).to eq([{ 'name' => 'Cool Floorplan', 'image_id' => place.floorplan.images.last.id }] + place.floorplan.data[1..])
       end
 
-      scenario 'a floorplan is removed' do
+      scenario 'a floorplan is marked as deleted' do
         # Remove the first floorplan
         find('#floorplan-remove').click
         expect(page).to have_field('floorplan-name', with: place.floorplan.data.last['name'])
+
+        updated_old_place_data = place.floorplan.data
+        updated_old_place_data.first['deleted'] = true
         place.reload
-        expect(place.floorplan.data.length).to eq(1)
+        expect(place.floorplan.data).to eq(updated_old_place_data)
       end
     end
   end

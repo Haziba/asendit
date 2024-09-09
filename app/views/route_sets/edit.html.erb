@@ -20,29 +20,42 @@
     <option>Remove</option>
   </select>
 
+  <div style="display: flex;">
+    <button id="floorplan-prev">&lt;</button>
+    <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+    <button id="floorplan-next">&gt;</button>
+  </div>
   <div id="map" class="map">
-    <img src="/GroundFloor.png" id="floorBackground" />
+    <% @place.floorplan.data.each_with_index do |floor, index| %>
+      <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" />
+    <% end %>
   </div>
 </div>
 
 <script>
   $(() => {
     const $tool = $('#tool')
+    const floorplanData = <%= raw @place.floorplan.data.to_json %>
+    const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
+    let currentFloorplan;
 
-    $('#floorBackground').click(me => {
+    $('#map').click(me => {
       if($tool.val() != 'Add')
         return
 
-      const $mapImg = $('#floorBackground')
+      const $mapImg = $('.floorplan:visible')
       const widthRatio = $mapImg[0].naturalWidth / $mapImg.width()
       const heightRatio = $mapImg[0].naturalHeight / $mapImg.height()
+
+      console.log(me.offsetX, me.offsetY, widthRatio, heightRatio)
+      console.log(me.offsetX * widthRatio, me.offsetY * heightRatio)
 
       $.post({
         url: "/routes",
         data: {
           posX: me.offsetX * widthRatio,
           posY: me.offsetY * heightRatio,
-          floor: 1,
+          floor: currentFloorplan.id,
           routeSet: <%= @route_set.id %>
         },
         success: data => addRoute
@@ -53,7 +66,8 @@
     const routes = []
 
     const addRoute = route => {
-      route.$elem = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">⭕</div>`)
+      const $floorplan = $('.floorplan:visible')
+      route.$elem = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / $floorplan[0].naturalWidth) * 100}%; top: ${(route.pos_y / $floorplan[0].naturalHeight) * 100}%" data-floor="${route.floor}">⭕</div>`)
       route.$elem.click(() => clickRoute(route))
       $map.append(route.$elem)
       routes.push(route)
@@ -70,6 +84,37 @@
       routes.splice(routes.indexOf(route), 1)
     }
 
-    <%= raw @route_set.routes.to_json %>.forEach(addRoute)
+    const switchFloorplan = (floorplan) => {
+      $('#floorplan_name').text(floorplan.name);
+      $('.floorplan').hide();
+      $('.floorplan[data-floorplan-id=' + floorplan.id + ']').show();
+      $('.route').hide();
+      $('.route[data-floor=' + floorplan.id + ']').show();
+      currentFloorplan = floorplan;
+    }
+
+    $('#floorplan-prev').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)-1;
+      if(next < 0)
+        switchFloorplan(floorplans[[floorplans.length-1]]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    $('#floorplan-next').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)+1;
+      if(next >= floorplans.length)
+        switchFloorplan(floorplans[0]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    switchFloorplan(floorplanData[0]);
+
+    $('.floorplan:visible')[0].onload = () => {
+      <%= raw @route_set.routes.to_json %>.forEach(addRoute)
+    };
   })
 </script>

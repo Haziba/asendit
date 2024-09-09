@@ -64,5 +64,11 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
   config.filter_run_when_matching :focus unless ENV['ALL']
 
+  Capybara.register_driver :selenium do |app|
+    Capybara::Selenium::Driver.new(app, browser: :chrome)  # or :firefox
+  end
+  
+  Capybara.default_driver = :selenium if ENV['SHOW_BROWSER']
+
   config.include CapybaraHelpers, type: :feature
 end

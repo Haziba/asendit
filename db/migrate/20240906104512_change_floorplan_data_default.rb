@@ -1,5 +1,5 @@
 class ChangeFloorplanDataDefault < ActiveRecord::Migration[7.1]
   def change
-    change_column_default :floorplans, :data, []
+    change_column_default :floorplans, :data, from: {}, to: []
   end
 end
