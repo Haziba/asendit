@@ -111,10 +111,9 @@
         switchFloorplan(floorplans[next]);
     });
 
-    switchFloorplan(floorplanData[0]);
-
     $('.floorplan:visible')[0].onload = () => {
       <%= raw @route_set.routes.to_json %>.forEach(addRoute)
+      switchFloorplan(floorplanData[0]);
     };
   })
 </script>

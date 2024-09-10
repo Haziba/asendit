@@ -2,6 +2,7 @@ class ClimbsController < ApplicationController
   include Secured
 
   before_action :check_auth, only: [:show, :edit, :update, :destroy]
+  before_action :set_place, only: [:show, :edit, :update, :destroy]
 
   def create
     current_climb = Climb.where(climber: session[:userinfo]["id"], current: true).first
@@ -82,5 +83,11 @@ class ClimbsController < ApplicationController
 
   def check_auth
     redirect_to climbs_path unless Climb.find(params[:id]).climber == session[:userinfo]["id"]
+  end
+
+  private
+
+  def set_place
+    @place = User.me(session).place
   end
 end

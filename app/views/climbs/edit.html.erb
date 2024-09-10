@@ -21,9 +21,15 @@
     <% end %>
   </div>
 
+  <div style="display: flex;">
+    <button id="floorplan-prev">&lt;</button>
+    <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+    <button id="floorplan-next">&gt;</button>
+  </div>
   <div id="map" class="map">
-    <div id="floorBackgroundColour"></div>
-    <img src="/GroundFloor.png" id="floorBackground" style="opacity: 0.8; background-color: pink" />
+    <% @place.floorplan.data.each_with_index do |floor, index| %>
+      <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
+    <% end %>
   </div>
 </div>
 
@@ -38,6 +44,10 @@
     const previousStates = <%= raw previous_states.to_json %>
     let $currentRouteSetBtn = null
     let $routes = []
+
+    const floorplanData = <%= raw @place.floorplan.data.to_json %>
+    const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
+    let currentFloorplan;
 
     const initRouteStates = () => {
       const initialRouteStates = <%= raw @climb.route_states.to_json %>
@@ -80,7 +90,8 @@
     }
 
     const addRoute = route => {
-      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route)}</div>`)
+      const $floorplan = $('.floorplan:visible')
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / $floorplan[0].naturalWidth) * 100}%; top: ${(route.pos_y / $floorplan[0].naturalHeight) * 100}%" data-floor="${route.floor}">⭕</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $map.append($route)
@@ -163,14 +174,46 @@
     }
 
     $climbedAt.change(updateServer)
-    $routeSets.click(changeRoute)
-    initRouteStates()
-    changeRoute()
 
-    if('wakeLock' in navigator) {
-      $lock.removeClass('visually-hidden')
-      $lock.click(toggleLock)
+    const switchFloorplan = (floorplan) => {
+      $('#floorplan_name').text(floorplan.name);
+      $('.floorplan').hide();
+      $('.floorplan[data-floorplan-id=' + floorplan.id + ']').show();
+      $('.route').hide();
+      $('.route[data-floor=' + floorplan.id + ']').show();
+      currentFloorplan = floorplan;
     }
+
+    $('#floorplan-prev').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)-1;
+      if(next < 0)
+        switchFloorplan(floorplans[[floorplans.length-1]]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    $('#floorplan-next').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)+1;
+      if(next >= floorplans.length)
+        switchFloorplan(floorplans[0]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    $('.floorplan:visible')[0].onload = () => {
+      $routeSets.click(changeRoute)
+      initRouteStates()
+      changeRoute()
+      switchFloorplan(floorplanData[0]);
+
+
+      if('wakeLock' in navigator) {
+        $lock.removeClass('visually-hidden')
+        $lock.click(toggleLock)
+      }
+    };
   })
 
   $(() => {
