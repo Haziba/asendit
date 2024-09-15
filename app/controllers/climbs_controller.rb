@@ -2,6 +2,7 @@ class ClimbsController < ApplicationController
   include Secured
 
   before_action :check_auth, only: [:show, :edit, :update, :destroy]
+  before_action :set_climb, only: [:show, :edit, :update, :destroy]
   before_action :set_place, only: [:show, :edit, :update, :destroy]
 
   def create
@@ -9,12 +10,14 @@ class ClimbsController < ApplicationController
     
     return redirect_to(edit_climb_path(current_climb)) if current_climb != nil
 
-    active_route_sets = User.me(session).place.grades.map(&:active_route_set).reject { |r_s| r_s.nil? }
+    place = User.me(session).place
+    active_route_sets = place.grades.map(&:active_route_set).reject { |r_s| r_s.nil? }
 
     climb = Climb.new(
       climbed_at: Time.now,
       climber: session[:userinfo]["id"],
       route_sets: active_route_sets,
+      place: place,
       current: true
     )
 
@@ -87,7 +90,11 @@ class ClimbsController < ApplicationController
 
   private
 
+  def set_climb
+    @climb = params[:climb_id] ? Climb.find(params[:climb_id]) : Climb.find(params[:id])
+  end
+
   def set_place
-    @place = User.me(session).place
+    @place = @climb&.route_sets.first.place || User.me(session).place
   end
 end

@@ -50,7 +50,7 @@
     });
 
     $('#floorplan-remove').click(() => {
-      currentFloorplan.deleted = true;
+      data[data.indexOf(currentFloorplan)].deleted = true;
       updateServer();
       switchFloorplan(nonDeletedFloorplans()[0]);
     });
@@ -71,7 +71,7 @@
         processData: false,
         contentType: false,
         success: function(response) {
-          currentFloorplan.image_id = response.id;
+          data[data.indexOf(currentFloorplan)].image_id = response.id;
           images[response.id] = response.url;
           updateServer();
           switchFloorplan(currentFloorplan)
@@ -84,7 +84,7 @@
 
     $('#floorplan-add').click(() => {
       addFloorplan();
-      switchFloorplan(data.length-1);
+      switchFloorplan(data[data.length-1]);
     });
 
     const addFloorplan = () => {
@@ -92,7 +92,7 @@
     }
 
     $name.keydown(debounce(() => {
-      currentFloorplan.name = $name.val();
+      data[data.indexOf(currentFloorplan)].name = $name.val();
 
       updateServer();
     }, 400));

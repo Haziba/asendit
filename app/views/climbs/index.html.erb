@@ -10,6 +10,7 @@
       <tbody>
         <% @climbs.map do |climb| %>
         <tr data-test="climb-<%= climb.id %>">
+          <td><%= climb.place&.name %></td>
           <td><%= "#{climb.name}" %></td>
           <% if climb.route_states.count(&:tried?) > 0 %>
             <td>

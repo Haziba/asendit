@@ -24,10 +24,17 @@
       </h5>
     </div>
 
-    <div id="collapse-<%= i %>" class="collapse">
+    <div id="collapse-<%= i %>" class="collapse map-set">
       <div class="card-body">
-        <div id="map-<%= route_set.id %>" class="map" data-test="map">
-          <img src="/GroundFloor.png" id="floorBackground" />
+        <div style="display: flex;">
+          <button class="floorplan-prev">&lt;</button>
+          <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+          <button class="floorplan-next">&gt;</button>
+        </div>
+        <div id="map-<%= route_set.id %>" class="map" style="background-color: <%= route_set.grade.map_tint_colour %>">
+          <% @place.floorplan.data.each_with_index do |floor, index| %>
+            <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
+          <% end %>
         </div>
       </div>
     </div>
@@ -45,6 +52,10 @@
     const previousStates = <%= raw previous_states.to_json %>
     const newWins = <%= raw new_wins.to_json %>
 
+    const floorplanData = <%= raw @place.floorplan.data.to_json %>
+    const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
+    let currentFloorplans = {};
+
     const initRouteStates = () => {
       const initialRouteStates = <%= raw @climb.route_states.to_json %>
       Object.keys(routeSets).forEach(routeSetKey => {
@@ -58,7 +69,8 @@
     }
 
     const addRoute = (route, routeSet) => {
-      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route)}</div>`)
+      const $floorplan = $('.floorplan')
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / $floorplan[route.floor].naturalWidth) * 100}%; top: ${(route.pos_y / $floorplan[route.floor].naturalHeight) * 100}%" data-floor="${route.floor}">${icon(route)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $('#map-' + routeSet).append($route)
@@ -78,7 +90,6 @@
 
       switch(route.status) {
         case 'flashed':
-          console.log('flashed', newWins, route.id)
           return `${icon}⚡`
         case 'sent':
           return `${icon}✔`
@@ -96,8 +107,43 @@
       }
     }
 
-    initRouteStates()
-    Object.keys(routeSets).forEach(routeSet => setRoute(routeSet))
+    const switchFloorplan = ($elem, floorplan) => {
+      $elem.find('#floorplan_name').text(floorplan.name);
+      $elem.find('.floorplan').hide();
+      $elem.find('.floorplan[data-floorplan-id=' + floorplan.id + ']').show();
+      $elem.find('.route').hide();
+      $elem.find('.route[data-floor=' + floorplan.id + ']').show();
+      currentFloorplans[$elem] = floorplan;
+    }
+
+    $('.floorplan-prev').click((e) => {
+      const $elem = $(e.currentTarget).closest('.map-set');
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplans[$elem])-1;
+      if(next < 0)
+        switchFloorplan($elem, floorplans[[floorplans.length-1]]);
+      else
+        switchFloorplan($elem, floorplans[next]);
+    });
+
+    $('.floorplan-next').click((e) => {
+      const $elem = $(e.currentTarget).closest('.map-set');
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplans[$elem])+1;
+      if(next >= floorplans.length)
+        switchFloorplan($elem, floorplans[0]);
+      else
+        switchFloorplan($elem, floorplans[next]);
+    });
+
+    $('.floorplan:first')[0].onload = () => {
+      initRouteStates()
+      Object.keys(routeSets).forEach(routeSet => setRoute(routeSet))
+
+      $('.map-set').each((id) => {
+        switchFloorplan($($('.map-set')[id]), floorplanData[0]);
+      })
+    };
 
     $('#share').click(() => {
       navigator.share({

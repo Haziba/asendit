@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_06_104512) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_14_215712) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,6 +49,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_06_104512) do
     t.boolean "current"
     t.json "route_state_json", default: []
     t.date "climbed_at"
+    t.bigint "place_id"
+    t.index ["place_id"], name: "index_climbs_on_place_id"
   end
 
   create_table "climbs_route_sets", force: :cascade do |t|

@@ -46,6 +46,11 @@
     let $routes = []
 
     const floorplanData = <%= raw @place.floorplan.data.to_json %>
+    const floorplanImages = floorplanData.map(floorplan => {
+      const img = new Image();  // Create an off-DOM image
+      img.src = $('img[data-floorplan-id=' + floorplan.id + ']').attr('src');
+      return img;
+    })
     const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
     let currentFloorplan;
 
@@ -87,11 +92,12 @@
       $map.css('background-color', $currentRouteSetBtn.data('tint-colour'))
       $currentRouteSetBtn.addClass('current')
       $currentRouteSetBtn.attr('disabled', true)
+      switchFloorplan(currentFloorplan)
     }
 
     const addRoute = route => {
-      const $floorplan = $('.floorplan:visible')
-      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / $floorplan[0].naturalWidth) * 100}%; top: ${(route.pos_y / $floorplan[0].naturalHeight) * 100}%" data-floor="${route.floor}">⭕</div>`)
+      const $floorplan = $('.floorplan')
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / floorplanImages[route.floor].naturalWidth) * 100}%; top: ${(route.pos_y / floorplanImages[route.floor].naturalHeight) * 100}%" data-floor="${route.floor}">⭕</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $map.append($route)
@@ -205,9 +211,8 @@
     $('.floorplan:visible')[0].onload = () => {
       $routeSets.click(changeRoute)
       initRouteStates()
+      currentFloorplan = floorplanData[0];
       changeRoute()
-      switchFloorplan(floorplanData[0]);
-
 
       if('wakeLock' in navigator) {
         $lock.removeClass('visually-hidden')
