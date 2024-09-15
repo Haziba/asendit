@@ -10,8 +10,6 @@ module PlacesHelper
   end
 
   def is_current_place?(place)
-    puts "Place: #{place.name}"
-    puts "User: #{place == current_place}"
     place == current_place
   end
 end

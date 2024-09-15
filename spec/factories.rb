@@ -9,8 +9,22 @@ FactoryBot.define do
 
   factory :floorplan do
     name { "Test Floorplan" }
-    data { [{name: "Bottom Floor", image_id: 1}, {name: "Top Floor", image_id: 2}] }
+    data { [{id: 0, name: "Bottom Floor", image_id: 1}, {id: 1, name: "Top Floor", image_id: 2}] }
     place
+
+    after(:create) do |floorplan|
+      floorplan.images.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'files', 'FloorLower.png')),
+        filename: 'FloorLower.png',
+        content_type: 'image/png'
+      )
+      floorplan.images.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'files', 'FloorUpper.png')),
+        filename: 'FloorUpper.png',
+        content_type: 'image/png'
+      )
+      floorplan.update(data: [{id: 0, name: "Bottom Floor", image_id: floorplan.images.first.id}, {id: 1, name: "Top Floor", image_id: floorplan.images.last.id}])
+    end
   end
 
   factory :place do
@@ -27,9 +41,11 @@ FactoryBot.define do
     climber { "Test Climber" }
     current { false }
     route_state_json { [] }
+    route_sets { [] }
     climbed_at { Date.today }
     created_at { Time.now }
     updated_at { Time.now }
+    place
   end
 
   factory :route_set do
@@ -44,7 +60,7 @@ FactoryBot.define do
     association :route_set
     pos_x { 1 }
     pos_y { 1 }
-    floor { 1 }
+    floor { 0 }
     added { Time.now }
     created_at { Time.now }
     updated_at { Time.now }

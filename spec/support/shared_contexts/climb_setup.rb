@@ -18,5 +18,5 @@ RSpec.shared_context 'climb setup' do
   let!(:routes) { { route_set1.id => [route_set1_route1, route_set1_route2], route_set2.id => [route_set2_route1, route_set2_route2] } }
 
   let!(:climber) { '1234' }
-  let!(:climb) { create(:climb, climber: climber, route_state_json: route_states) }
+  let!(:climb) { create(:climb, climber: climber, route_state_json: route_states, route_sets: [route_set1, route_set2], place: place) }
 end

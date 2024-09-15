@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.feature "RouteSets#show", type: :feature do
   let!(:route_set) { create(:route_set) }
-  let!(:route_1) { create(:route, route_set: route_set, pos_x: 100, pos_y: 200) }
-  let!(:route_2) { create(:route, route_set: route_set, pos_x: 200, pos_y: 400) }
-  let!(:route_3) { create(:route, route_set: route_set, pos_x: 300, pos_y: 600) }
+  let!(:route_1) { create(:route, route_set: route_set, pos_x: 100, pos_y: 200, floor: 0) }
+  let!(:route_2) { create(:route, route_set: route_set, pos_x: 200, pos_y: 400, floor: 0) }
+  let!(:route_3) { create(:route, route_set: route_set, pos_x: 300, pos_y: 100, floor: 1) }
   let!(:route_4) { create(:route, route_set: route_set, pos_x: 400, pos_y: 800) }
 
   context 'when logged in' do
@@ -30,6 +30,36 @@ RSpec.feature "RouteSets#show", type: :feature do
         expect(page).to have_selector('.route', text: '🟡', visible: :all)
         expect(page).to have_selector('.route', text: '✔', visible: :all)
         expect(page).to have_selector('.route', text: '❌', visible: :all)
+      end
+
+      scenario 'changing floor shows & hides the floor routes' do
+        expect(page).to have_selector("[data-route-id='#{route_1.id}']", visible: true)
+        expect(page).to have_selector("[data-route-id='#{route_2.id}']", visible: true)
+        expect(page).to have_selector("[data-route-id='#{route_3.id}']", visible: false)
+
+        find("#floorplan-next", visible: :all).click
+
+        expect(page).to have_selector("[data-route-id='#{route_1.id}']", visible: false)
+        expect(page).to have_selector("[data-route-id='#{route_2.id}']", visible: false)
+        expect(page).to have_selector("[data-route-id='#{route_3.id}']", visible: true)
+
+        find("#floorplan-next", visible: :all).click
+
+        expect(page).to have_selector("[data-route-id='#{route_1.id}']", visible: true)
+        expect(page).to have_selector("[data-route-id='#{route_2.id}']", visible: true)
+        expect(page).to have_selector("[data-route-id='#{route_3.id}']", visible: false)
+
+        find("#floorplan-prev", visible: :all).click
+
+        expect(page).to have_selector("[data-route-id='#{route_1.id}']", visible: false)
+        expect(page).to have_selector("[data-route-id='#{route_2.id}']", visible: false)
+        expect(page).to have_selector("[data-route-id='#{route_3.id}']", visible: true)
+
+        find("#floorplan-prev", visible: :all).click
+
+        expect(page).to have_selector("[data-route-id='#{route_1.id}']", visible: true)
+        expect(page).to have_selector("[data-route-id='#{route_2.id}']", visible: true)
+        expect(page).to have_selector("[data-route-id='#{route_3.id}']", visible: false)
       end
     end
 

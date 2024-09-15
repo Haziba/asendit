@@ -71,4 +71,7 @@ RSpec.configure do |config|
   Capybara.default_driver = :selenium if ENV['SHOW_BROWSER']
 
   config.include CapybaraHelpers, type: :feature
+
+  config.order = :random
+  Kernel.srand config.seed
 end

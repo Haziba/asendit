@@ -83,7 +83,7 @@ RSpec.feature 'Places#edit', type: :feature do
         expect(find('#floorplan-img', visible: :any)['src']).to_not eq(previous_image_src)
 
         place.reload
-        expect(place.floorplan.data).to eq([{ 'name' => 'Cool Floorplan', 'image_id' => place.floorplan.images.last.id }])
+        expect(place.floorplan.data).to eq([{ 'id' => 0, 'name' => 'Cool Floorplan', 'image_id' => place.floorplan.images.last.id }])
       end
     end
 
@@ -115,7 +115,7 @@ RSpec.feature 'Places#edit', type: :feature do
         expect(find('#floorplan-img', visible: :any)['src']).to_not eq(previous_image_src)
 
         place.reload
-        expect(place.floorplan.data).to eq([{ 'name' => 'Cool Floorplan', 'image_id' => place.floorplan.images.last.id }] + place.floorplan.data[1..])
+        expect(place.floorplan.data).to eq([{ 'id' => 0, 'name' => 'Cool Floorplan', 'image_id' => place.floorplan.images.last.id }] + place.floorplan.data[1..])
       end
 
       scenario 'a floorplan is marked as deleted' do

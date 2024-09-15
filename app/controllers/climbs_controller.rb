@@ -95,6 +95,6 @@ class ClimbsController < ApplicationController
   end
 
   def set_place
-    @place = @climb&.route_sets.first.place || User.me(session).place
+    @place = @climb&.place || User.me(session).place
   end
 end

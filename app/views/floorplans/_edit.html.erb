@@ -98,6 +98,7 @@
     }, 400));
 
     const updateServer = () => {
+      console.log(data);
       const dataToSend = data.filter(item => item.image_id);
       $.ajax({
         url: '<%= place_floorplan_update_data_path(place_id: floorplan.place.id, floorplan_id: floorplan) %>',

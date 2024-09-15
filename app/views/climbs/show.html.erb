@@ -53,6 +53,11 @@
     const newWins = <%= raw new_wins.to_json %>
 
     const floorplanData = <%= raw @place.floorplan.data.to_json %>
+    const floorplanImages = floorplanData.map(floorplan => {
+      const img = new Image();
+      img.src = $('img[data-floorplan-id=' + floorplan.id + ']').attr('src');
+      return img;
+    })
     const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
     let currentFloorplans = {};
 
@@ -69,8 +74,7 @@
     }
 
     const addRoute = (route, routeSet) => {
-      const $floorplan = $('.floorplan')
-      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / $floorplan[route.floor].naturalWidth) * 100}%; top: ${(route.pos_y / $floorplan[route.floor].naturalHeight) * 100}%" data-floor="${route.floor}">${icon(route)}</div>`)
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / floorplanImages[route.floor].naturalWidth) * 100}%; top: ${(route.pos_y / floorplanImages[route.floor].naturalHeight) * 100}%" data-floor="${route.floor}">${icon(route)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $('#map-' + routeSet).append($route)
@@ -136,14 +140,23 @@
         switchFloorplan($elem, floorplans[next]);
     });
 
-    $('.floorplan:first')[0].onload = () => {
-      initRouteStates()
-      Object.keys(routeSets).forEach(routeSet => setRoute(routeSet))
+    let imagesLoaded = 0;
+    const totalImages = $('.floorplan').length;
+    $('.floorplan').each(function() {
+      $(this).on('load', function() {
+        imagesLoaded++;
+        if (imagesLoaded === totalImages) {
+          initRouteStates()
+          Object.keys(routeSets).forEach(routeSet => setRoute(routeSet))
 
-      $('.map-set').each((id) => {
-        switchFloorplan($($('.map-set')[id]), floorplanData[0]);
-      })
-    };
+          $('.map-set').each((id) => {
+            switchFloorplan($($('.map-set')[id]), floorplanData[0]);
+          })
+        }
+      }).each(function() {
+        if (this.complete) $(this).trigger('load');
+      });
+    });
 
     $('#share').click(() => {
       navigator.share({

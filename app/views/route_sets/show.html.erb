@@ -4,10 +4,16 @@
 %>
 
 <div class="card">
-  <div id="map" class="map">
-    <img src="/GroundFloor.png" id="floorBackground" />
+  <div style="display: flex;">
+    <button id="floorplan-prev">&lt;</button>
+    <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+    <button id="floorplan-next">&gt;</button>
   </div>
-  <div id="debug"></div>
+  <div id="map" class="map" style="background-color: <%= @route_set.grade.map_tint_colour %>">
+    <% @place.floorplan.data.each_with_index do |floor, index| %>
+      <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
+    <% end %>
+  </div>
 </div>
 
 <script>
@@ -17,6 +23,15 @@
     const $done = $('#done')
     const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
     const routeSets = <%= raw @climbed_routes.to_json %>
+
+    const floorplanData = <%= raw @place.floorplan.data.to_json %>
+    const floorplanImages = floorplanData.map(floorplan => {
+      const img = new Image();
+      img.src = $('img[data-floorplan-id=' + floorplan.id + ']').attr('src');
+      return img;
+    })
+    const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
+    let currentFloorplan;
 
     const initRouteStates = () => {
       const initialRouteStates = <%= raw @route_states.to_json %>
@@ -35,7 +50,7 @@
     }
 
     const addRoute = (route) => {
-      const $route = $(`<div class="route" style="left: ${(route.pos_x / 400) * 100}%; top: ${(route.pos_y / 873) * 100}%">${icon(route.status)}</div>`)
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / floorplanImages[route.floor].naturalWidth) * 100}%; top: ${(route.pos_y / floorplanImages[route.floor].naturalHeight) * 100}%" data-floor="${route.floor}">${icon(route.status)}</div>`)
       $route.click(() => clickRoute(route))
       route.$elem = $route
       $('#map').append($route)
@@ -59,7 +74,46 @@
       }
     }
 
-    initRouteStates()
-    setRoute()
+    const switchFloorplan = (floorplan) => {
+      $('#floorplan_name').text(floorplan.name);
+      $('.floorplan').hide();
+      $('.floorplan[data-floorplan-id=' + floorplan.id + ']').show();
+      $('.route').hide();
+      $('.route[data-floor=' + floorplan.id + ']').show();
+      currentFloorplan = floorplan;
+    }
+
+    $('#floorplan-prev').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)-1;
+      if(next < 0)
+        switchFloorplan(floorplans[[floorplans.length-1]]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    $('#floorplan-next').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)+1;
+      if(next >= floorplans.length)
+        switchFloorplan(floorplans[0]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    let imagesLoaded = 0;
+    const totalImages = $('.floorplan').length;
+    $('.floorplan').each(function() {
+      $(this).on('load', function() {
+        imagesLoaded++;
+        if (imagesLoaded === totalImages) {
+          initRouteStates()
+          setRoute()
+          switchFloorplan(floorplanData[0]);
+        }
+      }).each(function() {
+        if (this.complete) $(this).trigger('load');
+      });
+    });
   })
 </script>

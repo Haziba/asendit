@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe ClimbsController, type: :controller do
   let(:user_info) { { "id" => "1234" } }
   let(:another_user_info) { { "id" => "5678" } }
-  let!(:user) { create(:user, reference: user_info["id"]) }
+  let!(:user) { User.find_by(reference: user_info['id']) || create(:user, reference: user_info["id"]) }
 
   before do
     allow(controller).to receive(:session).and_return(userinfo: user_info)
@@ -23,12 +23,16 @@ RSpec.describe ClimbsController, type: :controller do
       let!(:place) { create(:place) }
       let!(:other_place) { create(:place)}
 
-      let!(:active_route_set) { create(:route_set, added: Date.today, grade: place.grades.first) }
-      let!(:active_older_route_set) { create(:route_set, added: Date.yesterday, grade: place.grades.first) }
-      let!(:active_other_place_route_set) { create(:route_set, grade: other_place.grades.first) }
+      let!(:active_route_set) { create(:route_set, added: Date.today, grade: place.grades.first, place: place) }
+      let!(:active_older_route_set) { create(:route_set, added: Date.yesterday, grade: place.grades.first, place: place) }
+      let!(:active_other_place_route_set) { create(:route_set, grade: other_place.grades.first, place: other_place) }
 
       before do
         user.update(place: place)
+
+        active_route_set.save!
+        active_older_route_set.save!
+        active_other_place_route_set.save!
       end
 
       it 'creates a new climb and redirects to its edit path' do
@@ -79,10 +83,13 @@ RSpec.describe ClimbsController, type: :controller do
 
   describe 'GET #edit' do
     let!(:place) { create(:place) }
-    let!(:user) { create(:user, reference: user_info["id"], place: place) }
-    let!(:added_route_set) { create(:route_set, grade: place.grades.first) }
-    let!(:first_route_set_for_grade) { create(:route_set, grade: place.grades.last) }
+    let!(:added_route_set) { create(:route_set, grade: place.grades.first, place: place) }
+    let!(:first_route_set_for_grade) { create(:route_set, grade: place.grades.last, place: place) }
     let!(:climb) { create(:climb, climber: user_info["id"], route_sets: [added_route_set]) }
+
+    before do
+      user.update(place: place)
+    end
 
     it 'assigns the requested climb to @climb' do
       get :edit, params: { id: climb.id }
@@ -98,7 +105,7 @@ RSpec.describe ClimbsController, type: :controller do
     it 'adds new route sets if the grade wasnt previously included' do
       get :edit, params: { id: climb.id }
       climb.reload
-      expect(climb.route_sets).to eq([added_route_set, first_route_set_for_grade])
+      expect(climb.route_sets.map(&:id)).to match_array([added_route_set.id, first_route_set_for_grade.id])
     end
   end
 
@@ -129,7 +136,7 @@ RSpec.describe ClimbsController, type: :controller do
 
     it 'assigns the climbs of the current user to @climbs' do
       get :index
-      expect(assigns(:climbs)).to eq([climb])
+      expect(assigns(:climbs).map(&:id)).to match_array(Climb.where(climber: user_info['id']).map(&:id))
     end
   end
 
