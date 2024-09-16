@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :places do
     post '/choose', to: 'places#choose'
     resources :grades
+    resources :tournaments
     resources :floorplans do
       patch :update_data, constraints: { format: :json }
       patch :upload_file, constraints: { format: :json }

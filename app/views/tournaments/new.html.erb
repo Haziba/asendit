@@ -1,0 +1,15 @@
+<%
+@title = "Add Tournament"
+@back_url = place_path(@place)
+%>
+
+<div class="card">
+  <%= form_with url: place_tournaments_path, model: @tournament do |f| %>
+    <div class="mb-3">
+      <%= f.label :name, { class: "form-label" } %>
+      <%= f.text_field :name, class: 'form-control', data: { test: 'name' }, required: true, minlength: '4' %>
+    </div>
+
+    <%= f.submit "Add", class: "btn btn-success" %>
+  <% end %>
+</div>

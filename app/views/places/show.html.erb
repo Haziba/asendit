@@ -8,6 +8,23 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @place.tournaments.each do |tournament| %>
+        <tr>
+          <td><%= tournament.name %></td>
+          <td><%= link_to "✏", edit_place_tournament_path(tournament), { class: "btn btn-secondary btn-sm", data: { test: 'show' } }  %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <hr />
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
         <th>Grade</th>
       </tr>
     </thead>
