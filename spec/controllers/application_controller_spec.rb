@@ -25,35 +25,21 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     context 'when session[:userinfo] is not present and DEV_USER is set' do
+      let!(:user) { create(:user) }
+
       before do
-        allow(ENV).to receive(:[]).with('DEV_USER').and_return('dev_user')
-        allow(ENV).to receive(:[]).with('DEV_NONADMIN_USER').and_return(nil)
+        allow(ENV).to receive(:[]).with('DEV_USER').and_return(user.id.to_s)
         get :index
       end
 
-      it 'sets session[:userinfo] with admin true' do
-        expect(session[:userinfo]["id"]).to eq('dev_user')
-        expect(session[:userinfo]["admin"]).to eq(true)
+      it 'sets session[:userinfo] true' do
+        expect(session[:userinfo]["id"]).to eq(user.id)
       end
     end
 
-    context 'when session[:userinfo] is not present and DEV_NONADMIN_USER is set' do
+    context 'when session[:userinfo] is not present and no DEV_USER is set' do
       before do
         allow(ENV).to receive(:[]).with('DEV_USER').and_return(nil)
-        allow(ENV).to receive(:[]).with('DEV_NONADMIN_USER').and_return('dev_nonadmin_user')
-        get :index
-      end
-
-      it 'sets session[:userinfo] with admin false' do
-        expect(session[:userinfo]["id"]).to eq('dev_nonadmin_user')
-        expect(session[:userinfo]["admin"]).to eq(false)
-      end
-    end
-
-    context 'when session[:userinfo] is not present and no DEV_USER or DEV_NONADMIN_USER is set' do
-      before do
-        allow(ENV).to receive(:[]).with('DEV_USER').and_return(nil)
-        allow(ENV).to receive(:[]).with('DEV_NONADMIN_USER').and_return(nil)
         get :index
       end
 

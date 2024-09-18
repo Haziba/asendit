@@ -20,7 +20,7 @@ RSpec.feature 'ClimbsShare#show', type: :feature do
     let!(:route_set_green_route_4) { create(:route, route_set: route_set_green, floor: 1) }
     let!(:route_set_red_route_1) { create(:route, route_set: route_set_red) }
 
-    let!(:climb) { create(:climb, climber: 'some@random.com', route_state_json: [
+    let!(:climb) { create(:climb, route_state_json: [
       build(:route_status, route_id: route_set_green_route_1.id, status: 'sent'),
       build(:route_status, route_id: route_set_green_route_2.id, status: 'failed'),
       build(:route_status, route_id: route_set_green_route_3.id, status: 'not_attempted'),

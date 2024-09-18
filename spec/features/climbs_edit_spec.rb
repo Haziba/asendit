@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Climbs#edit', type: :feature do
-  context 'when logged in as the climb\'s climber' do
+  context 'when logged in as the climb\'s user' do
     include_context 'logged_in'
 
     let!(:grade_green) { create(:grade, name: 'green', place: logged_in_user.place) }
@@ -17,12 +17,12 @@ RSpec.feature 'Climbs#edit', type: :feature do
     let!(:route_set_green_route_4) { create(:route, route_set: route_set_green) }
     let!(:route_set_red_route_1) { create(:route, route_set: route_set_red) }
 
-    let!(:previous_climb) { create(:climb, climber: climber, route_state_json: [
+    let!(:previous_climb) { create(:climb, user: logged_in_user, route_state_json: [
       build(:route_status, route_id: route_set_green_route_1.id, status: 'sent'),
       build(:route_status, route_id: route_set_green_route_2.id, status: 'failed'),
       build(:route_status, route_id: route_set_green_route_3.id, status: 'not_attempted'),
     ])}
-    let!(:climb) { create(:climb, climber: climber, current: true) }
+    let!(:climb) { create(:climb, user: logged_in_user, current: true) }
 
     before do
       visit "/climbs/#{climb.id}/edit"
@@ -112,7 +112,7 @@ RSpec.feature 'Climbs#edit', type: :feature do
   context 'when logged in as a rando' do
     include_context 'logged_in'
 
-    let!(:climb) { create(:climb, climber: 'rando@example.com') }
+    let!(:climb) { create(:climb, user: create(:user)) }
 
     scenario 'visiting another user\'s climb' do
       visit "/climbs/#{climb.id}/edit"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_14_215712) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_19_121412) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,7 +50,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_14_215712) do
     t.json "route_state_json", default: []
     t.date "climbed_at"
     t.bigint "place_id"
+    t.bigint "user_id"
     t.index ["place_id"], name: "index_climbs_on_place_id"
+    t.index ["user_id"], name: "index_climbs_on_user_id"
   end
 
   create_table "climbs_route_sets", force: :cascade do |t|
@@ -124,20 +126,68 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_14_215712) do
     t.index ["route_set_id"], name: "index_routes_on_route_set_id"
   end
 
+  create_table "routes_tournaments", id: false, force: :cascade do |t|
+    t.bigint "tournament_id", null: false
+    t.bigint "route_id", null: false
+    t.index ["route_id"], name: "index_routes_tournaments_on_route_id"
+    t.index ["tournament_id"], name: "index_routes_tournaments_on_tournament_id"
+  end
+
+  create_table "tournament_entries", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "place_id", null: false
+    t.bigint "tournament_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["place_id"], name: "index_tournament_entries_on_place_id"
+    t.index ["tournament_id"], name: "index_tournament_entries_on_tournament_id"
+    t.index ["user_id"], name: "index_tournament_entries_on_user_id"
+  end
+
+  create_table "tournament_routes", force: :cascade do |t|
+    t.bigint "tournament_id", null: false
+    t.bigint "route_id", null: false
+    t.integer "order", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["route_id"], name: "index_tournament_routes_on_route_id"
+    t.index ["tournament_id"], name: "index_tournament_routes_on_tournament_id"
+  end
+
+  create_table "tournaments", force: :cascade do |t|
+    t.bigint "place_id", null: false
+    t.text "name", null: false
+    t.date "starting", null: false
+    t.date "ending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["place_id"], name: "index_tournaments_on_place_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.text "reference"
     t.bigint "place_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "token"
+    t.boolean "admin"
+    t.string "google_uid"
     t.index ["place_id"], name: "index_users_on_place_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "climbs", "users"
   add_foreign_key "climbs_route_sets", "climbs"
   add_foreign_key "climbs_route_sets", "route_sets"
   add_foreign_key "floorplans", "places"
   add_foreign_key "grades", "places"
   add_foreign_key "route_sets", "grades"
   add_foreign_key "route_sets", "places"
+  add_foreign_key "tournament_entries", "places"
+  add_foreign_key "tournament_entries", "tournaments"
+  add_foreign_key "tournament_entries", "users"
+  add_foreign_key "tournament_routes", "routes"
+  add_foreign_key "tournament_routes", "tournaments"
+  add_foreign_key "tournaments", "places"
 end

@@ -2,13 +2,14 @@ require 'rails_helper'
 
 RSpec.describe RouteSetsController, type: :controller do
   let(:place) { create(:place) }
-  let(:user) { create(:user) }
-  let(:admin_user) { { "id" => user.reference, "admin" => true } }
-  let(:non_admin_user) { { "id" => user.reference, "admin" => false } }
+  let(:admin) { false }
+  let(:user) { create(:user, admin: admin) }
+
+  before { allow(controller).to receive(:session).and_return(userinfo: { 'id' => user.id, 'token' => user.token }) }
 
   describe 'POST #create' do
     context 'as an admin' do
-      before { allow(controller).to receive(:session).and_return(userinfo: admin_user) }
+      let(:admin) { true }
 
       it 'creates a new route set and redirects to edit path' do
         post :create, params: { grade: place.grades.first.id, added: '2023-08-08', place_id: place.id }
@@ -21,8 +22,6 @@ RSpec.describe RouteSetsController, type: :controller do
     end
 
     context 'as a non-admin' do
-      before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
-
       it 'does not allow creating a route set and redirects to index' do
         post :create, params: { colour: 'red', added: '2023-08-08', place_id: place.id }
 
@@ -36,7 +35,7 @@ RSpec.describe RouteSetsController, type: :controller do
     let!(:route_set) { create(:route_set) }
 
     context 'as an admin' do
-      before { allow(controller).to receive(:session).and_return(userinfo: admin_user) }
+      let(:admin) { true }
 
       it 'assigns the requested route set to @route_set' do
         get :edit, params: { id: route_set.id }
@@ -45,7 +44,7 @@ RSpec.describe RouteSetsController, type: :controller do
     end
 
     context 'as a non-admin' do
-      before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
+      let(:admin) { false }
 
       it 'redirects to index' do
         get :edit, params: { id: route_set.id }
@@ -59,8 +58,7 @@ RSpec.describe RouteSetsController, type: :controller do
     let!(:route_set2) { create(:route_set, added: 2.days.ago, grade: user.place.grades.first, place: user.place) }
     let!(:route_set3) { create(:route_set, added: 1.days.ago, grade: user.place.grades.last, place: user.place) }
     let!(:other_place_route_set) { create(:route_set, added: 1.days.ago, grade: create(:grade), place: create(:place)) }
-
-    before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
+    let!(:admin) { false }
 
     it 'assigns active and old route sets' do
       get :index
@@ -74,10 +72,10 @@ RSpec.describe RouteSetsController, type: :controller do
     let!(:route_set) { create(:route_set) }
     let!(:route1) { create(:route, route_set: route_set) }
     let!(:route2) { create(:route, route_set: route_set) }
-    let!(:climb) { create(:climb, climber: user.reference, route_state_json: [{ "route_id" => route1.id, "status" => "sent" }]) }
+    let!(:climb) { create(:climb, user: user, route_state_json: [{ "route_id" => route1.id, "status" => "sent" }]) }
+    let!(:admin) { false }
 
     before do
-      allow(controller).to receive(:session).and_return(userinfo: non_admin_user)
       get :show, params: { id: route_set.id }
     end
 
@@ -94,7 +92,7 @@ RSpec.describe RouteSetsController, type: :controller do
     let!(:route_set) { create(:route_set) }
 
     context 'as an admin' do
-      before { allow(controller).to receive(:session).and_return(userinfo: admin_user) }
+      let(:admin) { true }
 
       it 'destroys the route set and redirects to index' do
         expect {
@@ -106,7 +104,7 @@ RSpec.describe RouteSetsController, type: :controller do
     end
 
     context 'as a non-admin' do
-      before { allow(controller).to receive(:session).and_return(userinfo: non_admin_user) }
+      let(:admin) { false }
 
       it 'does not destroy the route set and redirects to index' do
         expect {

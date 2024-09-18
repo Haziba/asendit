@@ -40,7 +40,7 @@ RSpec.describe ClimbsHelper, type: :helper do
   context 'when the climber has previous climbs on these sets' do
     before do
       previous_route_states = [build(:route_status, route_id: route_set1_route1.id, status: 'sent')]
-      create(:climb, climber: climber, climbed_at: 1.day.ago, route_state_json: previous_route_states)
+      create(:climb, user: user, climbed_at: 1.day.ago, route_state_json: previous_route_states)
     end
 
     describe '#new_wins' do

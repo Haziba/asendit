@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.feature "Current climb banner", type: :feature do
   include_context('logged_in')
 
-  let!(:climb) { create(:climb, current: current, climber: logged_in_user.reference) }
+  let!(:climb) { create(:climb, current: current, user: logged_in_user) }
 
   before do
     visit '/menu'

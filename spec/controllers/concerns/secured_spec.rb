@@ -18,9 +18,11 @@ RSpec.describe SecuredDummyController, type: :controller do
   end
 
   describe 'before_action :logged_in_using_omniauth?' do
+    let!(:user) { create(:user) }
+
     context 'when user is logged in' do
       before do
-        allow(controller).to receive(:session).and_return(userinfo: { "id" => "1234" })
+        allow(controller).to receive(:session).and_return(userinfo: { "id" => user.id, "token" => user.token })
         get :index
       end
 

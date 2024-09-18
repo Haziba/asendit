@@ -29,7 +29,7 @@ FactoryBot.define do
 
   factory :place do
     name { "Test Gym" }
-    user
+    user { association :user }
 
     after(:create) do |place|
       create_list(:grade, 3, place: place)
@@ -38,7 +38,7 @@ FactoryBot.define do
   end
 
   factory :climb do
-    climber { "Test Climber" }
+    user { association :user }
     current { false }
     route_state_json { [] }
     route_sets { [] }
@@ -74,7 +74,7 @@ FactoryBot.define do
   end
 
   factory :user do
-    reference { Faker::Lorem.sentence }
+    token { Faker::Lorem.sentence}
 
     transient do
       without_place { false }

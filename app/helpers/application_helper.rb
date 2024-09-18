@@ -1,16 +1,16 @@
 module ApplicationHelper
   def admin_user?
-    session[:userinfo]["admin"]
+    @user&.admin?
   end
 
   def climb_in_progress?
-    return unless session[:userinfo]
+    return unless @user.present?
 
-    Climb.where(climber: session[:userinfo]["id"], current: true).exists?
+    Climb.where(user: @user, current: true).exists?
   end
 
   def place
-    @place ||= User.me(session).place
+    @place ||= @user.place if @user.present?
   end
 
   def colour_dark?(hex_color)

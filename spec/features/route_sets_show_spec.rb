@@ -15,7 +15,7 @@ RSpec.feature "RouteSets#show", type: :feature do
     end
 
     context 'when the user has climbs on this route set' do
-      let!(:climb) { create(:climb, climber: climber, route_state_json: [
+      let!(:climb) { create(:climb, user: logged_in_user, route_state_json: [
         build(:route_status, route_id: route_1.id, status: 'sent'),
         build(:route_status, route_id: route_2.id, status: 'flashed'),
         build(:route_status, route_id: route_3.id, status: 'failed')

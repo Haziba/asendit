@@ -4,14 +4,12 @@ RSpec.feature "Menu#Index", type: :feature do
   context 'when logged in with a place set' do
     include_context 'logged_in'
 
-    let!(:user) { create(:user, reference: climber, place: create(:place)) }
-
     before do
       visit '/menu'
     end
 
     scenario "User visits the menu page" do
-      expect(page).to have_content("Let's Climb - #{user.place.name}")
+      expect(page).to have_content("Let's Climb - #{logged_in_user.place.name}")
       expect(page).to have_link('Climbs')
       expect(page).to have_link('Route Sets')
     end

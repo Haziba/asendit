@@ -1,17 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe ClimbsController, type: :controller do
-  let(:user_info) { { "id" => "1234" } }
-  let(:another_user_info) { { "id" => "5678" } }
-  let!(:user) { User.find_by(reference: user_info['id']) || create(:user, reference: user_info["id"]) }
+  let!(:user) { create(:user) }
+  let!(:another_user) { create(:user) }
 
   before do
-    allow(controller).to receive(:session).and_return(userinfo: user_info)
+    allow(controller).to receive(:session).and_return(userinfo: {'id' => user.id, 'token' => user.token})
   end
 
   describe 'POST #create' do
     context 'when a current climb already exists' do
-      let!(:current_climb) { create(:climb, climber: user_info["id"], current: true) }
+      let!(:current_climb) { create(:climb, user: user, current: true) }
 
       it 'redirects to the edit path of the existing climb' do
         post :create
@@ -49,7 +48,7 @@ RSpec.describe ClimbsController, type: :controller do
   end
 
   describe 'GET #show' do
-    let!(:climb) { create(:climb, climber: user_info["id"]) }
+    let!(:climb) { create(:climb, user: user) }
 
     it 'assigns the requested climb to @climb' do
       get :show, params: { id: climb.id }
@@ -65,7 +64,7 @@ RSpec.describe ClimbsController, type: :controller do
 
   describe 'GET #current' do
     context 'when a current climb exists' do
-      let!(:current_climb) { create(:climb, climber: user_info["id"], current: true) }
+      let!(:current_climb) { create(:climb, user: user, current: true) }
 
       it 'redirects to the edit path of the current climb' do
         get :current
@@ -85,7 +84,7 @@ RSpec.describe ClimbsController, type: :controller do
     let!(:place) { create(:place) }
     let!(:added_route_set) { create(:route_set, grade: place.grades.first, place: place) }
     let!(:first_route_set_for_grade) { create(:route_set, grade: place.grades.last, place: place) }
-    let!(:climb) { create(:climb, climber: user_info["id"], route_sets: [added_route_set]) }
+    let!(:climb) { create(:climb, user: user, route_sets: [added_route_set]) }
 
     before do
       user.update(place: place)
@@ -110,7 +109,7 @@ RSpec.describe ClimbsController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    let!(:climb) { create(:climb, climber: user_info["id"]) }
+    let!(:climb) { create(:climb, user: user) }
 
     it 'updates the climb and redirects to the edit path' do
       patch :update, params: { 'id' => climb.id, 'climbed_at' => '2023-08-08', 'route_states[0][routeId]' => 1, 'route_states[0][status]' => 'flashed' }
@@ -121,7 +120,7 @@ RSpec.describe ClimbsController, type: :controller do
   end
 
   describe 'PATCH #complete' do
-    let!(:climb) { create(:climb, climber: user_info["id"], current: true) }
+    let!(:climb) { create(:climb, user: user, current: true) }
 
     it 'marks the climb as complete and redirects to the climb show path' do
       patch :complete, params: { climb_id: climb.id }
@@ -132,16 +131,16 @@ RSpec.describe ClimbsController, type: :controller do
   end
 
   describe 'GET #index' do
-    let!(:climb) { create(:climb, climber: user_info["id"]) }
+    let!(:climb) { create(:climb, user: user) }
 
     it 'assigns the climbs of the current user to @climbs' do
       get :index
-      expect(assigns(:climbs).map(&:id)).to match_array(Climb.where(climber: user_info['id']).map(&:id))
+      expect(assigns(:climbs).map(&:id)).to match_array(Climb.where(user: user).map(&:id))
     end
   end
 
   describe 'DELETE #destroy' do
-    let!(:climb) { create(:climb, climber: user_info["id"]) }
+    let!(:climb) { create(:climb, user: user) }
 
     it 'deletes the climb and redirects to the climbs path' do
       expect {
@@ -154,17 +153,16 @@ RSpec.describe ClimbsController, type: :controller do
 
   describe 'before_action :check_auth' do
     context 'when the user is not the owner of the climb' do
-      let!(:climb) { create(:climb, climber: another_user_info["id"]) }
+      let!(:climb) { create(:climb, user: another_user) }
 
       it 'redirects to the climbs path' do
-        allow(controller).to receive(:session).and_return(userinfo: user_info)
         patch :update, params: { id: climb.id, climbed_at: '2023-08-08', route_states: {} }
         expect(response).to redirect_to(climbs_path)
       end
     end
 
     context 'when the user is the owner of the climb' do
-      let!(:climb) { create(:climb, climber: user_info["id"]) }
+      let!(:climb) { create(:climb, user: user) }
 
       it 'allows the action to proceed' do
         patch :update, params: { id: climb.id, climbed_at: '2023-08-08', 'route_states[0][routeId]' => 1, 'route_states[0][status]' => 'flashed' }

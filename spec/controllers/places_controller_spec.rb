@@ -53,12 +53,7 @@ RSpec.describe PlacesController, type: :controller do
     context 'when logged in' do
       include_context 'logged_in'
 
-      let!(:user) { create(:user, reference: climber) }
       let(:valid_params) { { name: 'Cool Place' } }
-
-      before do
-        user.save
-      end
 
       context 'with valid attributes' do
         it 'creates a new place and redirects to places index' do
@@ -68,7 +63,7 @@ RSpec.describe PlacesController, type: :controller do
 
           expect(assigns(:place_form)).to be_a(NewPlaceForm)
           expect(assigns(:place_form).name).to eq('Cool Place')
-          expect(assigns(:place_form).user.reference).to eq(user.reference)
+          expect(assigns(:place_form).user.id).to eq(logged_in_user.id)
           expect(response).to redirect_to(places_path)
         end
       end
@@ -102,7 +97,7 @@ RSpec.describe PlacesController, type: :controller do
 
       it 'updates the user with the chosen place' do
         post :choose, params: { place_id: place.id }
-        expect(User.find_by(reference: session[:userinfo]['id']).place).to eq(place)
+        expect(User.find_by(id: session[:userinfo]['id']).place).to eq(place)
       end
 
       it 'redirects to the menu path' do

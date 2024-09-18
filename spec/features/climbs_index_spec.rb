@@ -11,8 +11,8 @@ RSpec.feature 'Climbs#index', type: :feature do
     let!(:route_old_red) { create(:route, route_set_id: route_set_old_red.id) }
     let!(:route_green) { create(:route, route_set_id: route_set_green.id) }
 
-    let!(:climb_half_and_half) { create(:climb, climber: climber, route_state_json: [build(:route_status, route_id: route_red.id, status: 'sent'), build(:route_status, route_id: route_green.id, status: 'sent')], climbed_at: Date.yesterday) }
-    let!(:climb_no_data) { create(:climb, climber: climber, climbed_at: Date.today) }
+    let!(:climb_half_and_half) { create(:climb, user: logged_in_user, route_state_json: [build(:route_status, route_id: route_red.id, status: 'sent'), build(:route_status, route_id: route_green.id, status: 'sent')], climbed_at: Date.yesterday) }
+    let!(:climb_no_data) { create(:climb, user: logged_in_user, climbed_at: Date.today) }
 
     before do
       visit '/climbs'
@@ -67,7 +67,7 @@ RSpec.feature 'Climbs#index', type: :feature do
       expect(Climb.count).to eq(old_climb_count+1)
 
       new_climb = Climb.last
-      expect(new_climb.climber).to eq(climber)
+      expect(new_climb.user).to eq(logged_in_user)
       expect(new_climb.climbed_at).to eq(Date.today)
       expect(new_climb.current).to be_truthy
 

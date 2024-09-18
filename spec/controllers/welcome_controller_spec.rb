@@ -3,8 +3,10 @@ require 'rails_helper'
 RSpec.describe WelcomeController, type: :controller do
   describe 'GET #index' do
     context 'when user is already logged in' do
+      let!(:user) { create(:user) }
+
       before do
-        session[:userinfo] = { "id" => '1234', "admin" => true }
+        session[:userinfo] = { "id" => user.id, "token" => user.token }
         get :index
       end
 

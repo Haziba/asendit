@@ -1,6 +1,7 @@
 class Climb < ApplicationRecord
   has_and_belongs_to_many :route_sets
   belongs_to :place
+  belongs_to :user
 
   def name
     climbed_at.strftime("#{climbed_at.day.ordinalize} %b")

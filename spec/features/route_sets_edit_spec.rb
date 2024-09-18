@@ -8,6 +8,8 @@ RSpec.feature 'RouteSets#edit', type: :feature do
     let!(:route) { create(:route, route_set: route_set, pos_x: 200, pos_y: 200) }
 
     before do
+      logged_in_user.update(admin: true)
+
       visit "/route_sets/#{route_set.id}/edit"
     end
 

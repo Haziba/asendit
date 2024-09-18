@@ -3,10 +3,10 @@ require 'rails_helper'
 RSpec.describe MenuController, type: :controller do
   describe 'GET #index' do
     context 'when the user is logged in and is at a place' do
-      let!(:user) { create(:user, reference: '1234', place: create(:place))}
+      let!(:user) { create(:user, place: create(:place))}
 
       before do
-        allow(controller).to receive(:session).and_return(userinfo: { "id" => user.reference, "name" => "Test User" })
+        allow(controller).to receive(:session).and_return(userinfo: { "id" => user.id, "token" => user.token })
         get :index
       end
 
@@ -14,8 +14,8 @@ RSpec.describe MenuController, type: :controller do
         expect(assigns(:title)).to eq("Let's Climb - #{user.place.name}")
       end
 
-      it 'sets the @user instance variable with session userinfo' do
-        expect(assigns(:user)).to eq({ "id" => "1234", "name" => "Test User" })
+      it 'sets the @user instance variable' do
+        expect(assigns(:user)).to eq(user)
       end
 
       it 'renders the index template' do
@@ -28,10 +28,10 @@ RSpec.describe MenuController, type: :controller do
     end
 
     context 'when the user is logged in and not at a place' do
-      let!(:user) { create(:user, :without_place, reference: '1234') }
+      let!(:user) { create(:user, :without_place) }
 
       before do
-        allow(controller).to receive(:session).and_return(userinfo: { "id" => user.reference, "name" => "Test User" })
+        allow(controller).to receive(:session).and_return(userinfo: { "id" => user.id, "token" => user.token })
         get :index
       end
 

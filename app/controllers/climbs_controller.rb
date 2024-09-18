@@ -6,7 +6,7 @@ class ClimbsController < ApplicationController
   before_action :set_place, only: [:show, :edit, :update, :destroy]
 
   def create
-    current_climb = Climb.where(climber: session[:userinfo]["id"], current: true).first
+    current_climb = Climb.where(user: user, current: true).first
     
     return redirect_to(edit_climb_path(current_climb)) if current_climb != nil
 
@@ -15,7 +15,7 @@ class ClimbsController < ApplicationController
 
     climb = Climb.new(
       climbed_at: Time.now,
-      climber: session[:userinfo]["id"],
+      user: user,
       route_sets: active_route_sets,
       place: place,
       current: true
@@ -34,7 +34,7 @@ class ClimbsController < ApplicationController
   end
 
   def current
-    current_climb = Climb.where(climber: session[:userinfo]["id"], current: true).first
+    current_climb = Climb.where(user: user, current: true).first
 
     if(current_climb)
       redirect_to edit_climb_path(current_climb.id)
@@ -76,7 +76,7 @@ class ClimbsController < ApplicationController
   end
 
   def index
-    @climbs = Climb.where(climber: session[:userinfo]["id"]).order(updated_at: :desc)
+    @climbs = Climb.where(user: user).order(updated_at: :desc)
   end
 
   def destroy
@@ -85,7 +85,7 @@ class ClimbsController < ApplicationController
   end
 
   def check_auth
-    redirect_to climbs_path unless Climb.find(params[:id]).climber == session[:userinfo]["id"]
+    redirect_to climbs_path unless Climb.find(params[:id]).user == user
   end
 
   private

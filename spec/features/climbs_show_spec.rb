@@ -22,7 +22,7 @@ RSpec.feature 'Climbs#show', type: :feature do
     let!(:route_set_green_route_4) { create(:route, route_set: route_set_green, floor: 1) }
     let!(:route_set_red_route_1) { create(:route, route_set: route_set_red) }
 
-    let!(:climb) { create(:climb, climber: climber, route_state_json: [
+    let!(:climb) { create(:climb, user: logged_in_user, route_state_json: [
       build(:route_status, route_id: route_set_green_route_1.id, status: 'sent'),
       build(:route_status, route_id: route_set_green_route_2.id, status: 'failed'),
       build(:route_status, route_id: route_set_green_route_3.id, status: 'not_attempted'),
@@ -101,7 +101,7 @@ RSpec.feature 'Climbs#show', type: :feature do
   context 'when logged in as a rando' do
     include_context 'logged_in'
 
-    let!(:climb) { create(:climb, climber: 'rando@example.com') }
+    let!(:climb) { create(:climb) }
 
     scenario 'visiting another user\'s climb' do
       visit "/climbs/#{climb.id}"
@@ -112,6 +112,10 @@ RSpec.feature 'Climbs#show', type: :feature do
 
   context 'when anonymous' do
     let!(:climb) { create(:climb) }
+
+    before do
+      ENV['DEV_USER'] = nil
+    end
 
     scenario "redirects to the root page when accessed by an anonymous user" do
       visit "/climbs/#{climb.id}"

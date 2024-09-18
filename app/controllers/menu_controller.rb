@@ -5,7 +5,7 @@ class MenuController < ApplicationController
 
   def index
     @title = "Let's Climb - #{User.me(session).place.name}"
-    @user = session[:userinfo]
+    @user = user
   end
 
   private

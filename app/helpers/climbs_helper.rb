@@ -1,4 +1,6 @@
 module ClimbsHelper
+  include ApplicationHelper
+
   def route_attempt_percentages(route_states)
     routes = Route.find(route_states.select(&:tried?).map(&:route_id))
     route_sets = RouteSet.find(routes.map(&:route_set_id).uniq)
@@ -30,7 +32,7 @@ module ClimbsHelper
   end
 
   def new_wins
-    previous_climbs = Climb.where(climber: @climb.climber).where('climbed_at < ?', @climb.climbed_at)
+    previous_climbs = @climb.user.climbs.where('climbed_at < ?', @climb.climbed_at)
     sent_route_ids = previous_climbs
       .map(&:route_states)
       .flatten
@@ -49,7 +51,7 @@ module ClimbsHelper
   end
 
   def previous_states
-    Climb.where(climber: @climb ? @climb.climber : session[:userinfo]["id"])
+    Climb.where(user: @climb ? @climb.user : user)
       .reject { |climb| climb == @climb }
       .map(&:route_states)
       .flatten

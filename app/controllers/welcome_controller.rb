@@ -6,6 +6,6 @@ class WelcomeController < ApplicationController
   end
 
   def redirect_if_logged_in
-    redirect_to menu_path if session[:userinfo].present?
+    redirect_to menu_path if @user.present?
   end
 end
