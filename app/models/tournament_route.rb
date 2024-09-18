@@ -1,4 +1,4 @@
 class TournamentRoute < ApplicationRecord
   belongs_to :tournament
-  has_one :route
+  belongs_to :route
 end

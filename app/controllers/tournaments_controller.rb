@@ -1,4 +1,5 @@
 class TournamentsController < ApplicationController
+  before_action :set_tournament, except: [:new, :create]
   before_action :set_place
 
   def new
@@ -16,7 +17,30 @@ class TournamentsController < ApplicationController
     redirect_to(place_path(@place))
   end
 
+  def edit
+    @active_route_sets = @place.grades.map(&:active_route_set)
+    @routes = @active_route_sets.map { |route_set| [route_set.id, route_set.routes] }.to_h
+  end
+
+  def update_routes
+    routes = params[:tournament_routes].values
+    routes.each do |route|
+      current_route = @tournament.tournament_routes.find_by(route_id: route[:route_id])
+
+      current_route.update(order: route[:order]) unless current_route.nil? || route[:order] == current_route.order
+      TournamentRoute.create!(tournament: @tournament, route_id: route[:route_id], order: route[:order]) if current_route.nil?
+    end
+
+    @tournament.tournament_routes.reject { |t_r| params[:tournament_routes].values.map { |param| param['route_id'].to_i }.include?(t_r[:route_id]) }.each(&:destroy)
+
+    render json: {success: true}
+  end
+
   private
+
+  def set_tournament
+    @tournament = params[:tournament_id].present? ? Tournament.find(params[:tournament_id]) : Tournament.find(params[:id])
+  end
 
   def set_place
     @place = params[:place_id].present? ? Place.find(params[:place_id]) : User.me(session).place

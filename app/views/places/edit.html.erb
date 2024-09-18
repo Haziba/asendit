@@ -20,6 +20,25 @@
     <span id="error-message"></span>
   </div>
 
+  <table class="table" id='tournaments'>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @place.tournaments.each do |tournament| %>
+        <tr>
+          <td><%= tournament.name %></td>
+          <td><%= link_to "✏", edit_place_tournament_path(place_id: @place.id, id: tournament.id), { class: "btn btn-secondary btn-sm", data: { test: 'show' } }  %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <hr />
+
   <table id='grades'>
     <thead>
     <tr>

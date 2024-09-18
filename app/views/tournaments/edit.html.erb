@@ -1,0 +1,181 @@
+<%
+@title = "Edit Tournament"
+@back_url = place_path(@place)
+%>
+
+<div class="card">
+  <%= form_with url: place_tournaments_path(@tournament), method: :patch, model: @tournament do |f| %>
+    <div class="mb-3">
+      <%= f.label :name, { class: "form-label" } %>
+      <%= f.text_field :name, value: @tournament.name, class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :starting, { class: "form-label" } %>
+      <%= f.date_field :starting, value: @tournament.starting, class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :ending, { class: "form-label" } %>
+      <%= f.date_field :ending, value: @tournament.ending, class: "form-control" %>
+    </div>
+
+    <%= f.submit "Edit", class: "btn btn-success" %>
+  <% end %>
+
+  <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer" data-test="route-set-picker">
+    <% @active_route_sets.each do |route_set| %>
+      <button style="background-color: <%= route_set.grade.map_tint_colour %>; <%= 'color: white !important;' if colour_dark?(route_set.grade.map_tint_colour) %>" data-route-set-id="<%= route_set.id %>" data-grade="<%= route_set.grade.id %>" data-tint-colour="<%= route_set.grade.map_tint_colour %>" class="btn">
+        <span>
+          <%= route_set.grade.name.titleize %>
+        </span>
+      </button>
+    <% end %>
+  </div>
+
+  <div style="display: flex;">
+    <button id="floorplan-prev">&lt;</button>
+    <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+    <button id="floorplan-next">&gt;</button>
+  </div>
+  <div id="map" class="map">
+    <% @place.floorplan.data.each_with_index do |floor, index| %>
+      <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
+    <% end %>
+  </div>
+</div>
+
+<script>
+  $(() => {
+    const $map = $('#map')
+    const $routeSets = $('#routeSetsContainer > button')
+    const $climbedAt = $('#climbedAt')
+    const routeSets = <%= raw @routes.to_json %>
+    const previousStates = <%= raw previous_states.to_json %>
+    const tournamentRoutes = <%= raw @tournament.tournament_routes.to_json %>
+    let $currentRouteSetBtn = null
+    let $routes = []
+
+    const floorplanData = <%= raw @place.floorplan.data.to_json %>
+    const floorplanImages = floorplanData.map(floorplan => {
+      const img = new Image();
+      img.src = $('img[data-floorplan-id=' + floorplan.id + ']').attr('src');
+      return img;
+    })
+    const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
+    let currentFloorplan;
+
+    const changeRoute = (e) => {
+      $routes.forEach($route => {
+        $route.remove()
+      })
+      $routes = []
+
+      if($currentRouteSetBtn) {
+        $currentRouteSetBtn.removeClass('current')
+        $currentRouteSetBtn.removeAttr('disabled')
+      }
+
+      $currentRouteSetBtn = e ? $(e.currentTarget) : $($routeSets[0])
+      const routeSetId = $currentRouteSetBtn.data('routeSetId')
+      const colour = $currentRouteSetBtn.data('colour')
+
+      const newRoutes = routeSets[routeSetId]
+      newRoutes.forEach(addRoute)
+
+      $map.css('background-color', $currentRouteSetBtn.data('tint-colour'))
+      $currentRouteSetBtn.addClass('current')
+      $currentRouteSetBtn.attr('disabled', true)
+      switchFloorplan(currentFloorplan)
+    }
+
+    const addRoute = route => {
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / floorplanImages[route.floor].naturalWidth) * 100}%; top: ${(route.pos_y / floorplanImages[route.floor].naturalHeight) * 100}%" data-floor="${route.floor}">${icon(route)}</div>`)
+      $route.click(() => clickRoute(route))
+      route.$elem = $route
+      $map.append($route)
+      $routes.push($route)
+    }
+
+    const clickRoute = route => {
+      const currentTournamentState = tournamentRoutes.find(tR => tR.route_id == route.id)
+      if(!currentTournamentState)
+        tournamentRoutes.push({route_id: route.id, order: tournamentRoutes.length})
+      else {
+        tournamentRoutes.filter(tR => tR.order > currentTournamentState.order).forEach(tR => tR.order--);
+        tournamentRoutes.splice(tournamentRoutes.indexOf(currentTournamentState), 1)
+      }
+
+      route.$elem.text(icon(route))
+
+      updateServer()
+    }
+
+    const updateServer = debounce(() => {
+      $.ajax({
+        url: '<%= place_tournament_update_routes_path(place_id: @place.id, tournament_id: @tournament.id) %>', 
+        data: {
+          tournament_routes: tournamentRoutes
+        },
+        method: 'patch'
+      })
+    }, 1000)
+
+    const icon = route => {
+      if(tournamentRoutes.find(tR => tR.route_id == route.id))
+        return '🟢'
+      return '🔴'
+    }
+
+    $climbedAt.change(updateServer)
+
+    const switchFloorplan = (floorplan) => {
+      $('#floorplan_name').text(floorplan.name);
+      $('.floorplan').hide();
+      $('.floorplan[data-floorplan-id=' + floorplan.id + ']').show();
+      $('.route').hide();
+      $('.route[data-floor=' + floorplan.id + ']').show();
+      currentFloorplan = floorplan;
+    }
+
+    $('#floorplan-prev').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)-1;
+      if(next < 0)
+        switchFloorplan(floorplans[[floorplans.length-1]]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    $('#floorplan-next').click(() => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)+1;
+      if(next >= floorplans.length)
+        switchFloorplan(floorplans[0]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    $('.floorplan:visible')[0].onload = () => {
+      $routeSets.click(changeRoute)
+      currentFloorplan = floorplanData[0];
+      changeRoute()
+    };
+  })
+
+  $(() => {
+    const $routeSetsContainer = $('#routeSetsContainer')
+    const routeSetContainerTop = $routeSetsContainer[0].getBoundingClientRect().y + document.documentElement.scrollTop - 10
+    $('#routeSets').css({ maxWidth: $routeSetsContainer.width() })
+
+    const updateFixedRouteSet = () => {
+      if(document.documentElement.scrollTop > routeSetContainerTop)
+        $routeSetsContainer.addClass('fix-to-top')
+      else
+        $routeSetsContainer.removeClass('fix-to-top')
+    }
+
+    $(document).scroll(updateFixedRouteSet)
+    updateFixedRouteSet()
+  })
+</script>
