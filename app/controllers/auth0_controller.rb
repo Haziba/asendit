@@ -5,6 +5,8 @@ class Auth0Controller < ApplicationController
     # In this code, you will pull the raw_info supplied from the id_token and assign it to the session.
     # Refer to https://github.com/auth0/omniauth-auth0#authentication-hash for complete information on 'omniauth.auth' contents.
     auth_info = request.env['omniauth.auth']
+    puts "Auth info"
+    pp auth_info
     session[:userinfo] = auth_info['extra']['raw_info']
 
     session[:userinfo]["id"] = "#{session[:userinfo]["nickname"]}-#{session[:userinfo]["sub"]}"
