@@ -84,7 +84,7 @@ RSpec.describe ClimbsController, type: :controller do
     let!(:place) { create(:place) }
     let!(:added_route_set) { create(:route_set, grade: place.grades.first, place: place) }
     let!(:first_route_set_for_grade) { create(:route_set, grade: place.grades.last, place: place) }
-    let!(:climb) { create(:climb, user: user, route_sets: [added_route_set]) }
+    let!(:climb) { create(:climb, user: user, route_sets: [added_route_set], place: place) }
 
     before do
       user.update(place: place)

@@ -22,7 +22,7 @@ RSpec.feature 'Climbs#edit', type: :feature do
       build(:route_status, route_id: route_set_green_route_2.id, status: 'failed'),
       build(:route_status, route_id: route_set_green_route_3.id, status: 'not_attempted'),
     ])}
-    let!(:climb) { create(:climb, user: logged_in_user, current: true) }
+    let!(:climb) { create(:climb, user: logged_in_user, route_sets: [route_set_green, route_set_red], current: true) }
 
     before do
       visit "/climbs/#{climb.id}/edit"

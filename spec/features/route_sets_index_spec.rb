@@ -14,6 +14,8 @@ RSpec.feature "RouteSets#Index", type: :feature do
     let!(:not_place_set) { create(:route_set, grade: grade_other, place: grade_other.place) }
 
     before do
+      logged_in_user.place.update(user: create(:user))
+
       visit '/route_sets'
     end
 
@@ -62,8 +64,8 @@ RSpec.feature "RouteSets#Index", type: :feature do
     end
   end
 
-  context 'when logged in as admin' do
-    include_context 'logged_in', admin: true
+  context 'when user can edit route set' do
+    include_context 'logged_in'
 
     let!(:grade_red) { create(:grade, name: 'red', place: logged_in_user.place) }
     let!(:grade_blue) { create(:grade, name: 'blue', place: logged_in_user.place) }
@@ -73,7 +75,9 @@ RSpec.feature "RouteSets#Index", type: :feature do
     let!(:new_blue_set) { create(:route_set, grade: grade_blue, added: Date.today, place: logged_in_user.place) }
     let!(:red_set) { create(:route_set, grade: grade_red, added: Date.today - 1.day, place: logged_in_user.place) }
     let!(:not_place_set) { create(:route_set, grade: grade_other, place: grade_other.place) }
+
     before do
+      allow_any_instance_of(RouteSet).to receive(:can_edit?).and_return(true)
       visit '/route_sets'
     end
 

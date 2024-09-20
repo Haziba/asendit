@@ -106,6 +106,10 @@ RSpec.describe RouteSetsController, type: :controller do
     context 'as a non-admin' do
       let(:admin) { false }
 
+      before do
+        route_set.place.update(user: create(:user))
+      end
+
       it 'does not destroy the route set and redirects to index' do
         expect {
           delete :destroy, params: { id: route_set.id }

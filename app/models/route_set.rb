@@ -6,4 +6,8 @@ class RouteSet < ApplicationRecord
   def name
     "#{grade&.name&.titleize || color.titleize} (#{added.to_date})"
   end
+
+  def can_edit?(user)
+    user.admin? || place.user == user
+  end
 end

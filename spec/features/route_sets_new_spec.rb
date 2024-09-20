@@ -34,12 +34,17 @@ RSpec.feature 'RouteSets#new', type: :feature do
 
   context 'when logged in as non admin' do
     include_context 'logged_in', admin: false
-    include_context 'a protected page', "/places/1/route_sets/new", return_path: '/route_sets'
 
     let!(:place) { create(:place) }
 
     before do
       logged_in_user.update(place: place)
+    end
+
+    scenario "redirects to the route_sets page when accessed by an anonymous user" do
+      visit "/places/#{place.id}/route_sets/new"
+
+      expect(page).to have_current_path('/route_sets')
     end
   end
 

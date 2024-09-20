@@ -96,10 +96,17 @@ JS
 
   context 'when logged in as non admin' do
     include_context 'logged_in', admin: false
-    include_context 'a protected page', '/places/1/route_sets/new', return_path: '/route_sets'
+
+    let!(:route_set) { create(:route_set) }
 
     before do
       logged_in_user.update(place: create(:place))
+    end
+
+    scenario "redirects to the route_sets page when accessed by an anonymous user" do
+      visit "/places/#{route_set.place.id}/route_sets/#{route_set.id}/edit"
+
+      expect(page).to have_current_path('/route_sets')
     end
   end
 

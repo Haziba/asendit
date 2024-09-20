@@ -1,8 +1,8 @@
 class RouteSetsController < ApplicationController
   include Secured
 
-  before_action :admin_only, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_place
+  before_action :ensure_can_edit, only: [:new, :create, :edit, :update, :destroy]
 
   def create
     route_set = RouteSet.new(
@@ -46,12 +46,15 @@ class RouteSetsController < ApplicationController
 
   private
 
-  def admin_only
-    redirect_to route_sets_path unless user.admin?
+  def ensure_can_edit
+    redirect_to route_sets_path unless @user.admin? || @place.can_edit?(@user)
   end
 
   def set_place
-    @place = params[:place_id].present? ? Place.find(params[:place_id]) : User.me(session).place
+    return @place = Place.find(params[:place_id]) if params[:place_id].present? 
+    return @place = RouteSet.find(params[:id]).place if params[:id].present?
+    @place = User.me(session).place
+
     redirect_to menu_path if @place.nil?
   end
 end
