@@ -75,7 +75,7 @@ class ClimbsController < ApplicationController
   end
 
   def index
-    @climbs = Climb.where(user: @user).order(updated_at: :desc)
+    @climbs = Climb.where(user: @user).order(climbed_at: :desc)
   end
 
   def destroy
