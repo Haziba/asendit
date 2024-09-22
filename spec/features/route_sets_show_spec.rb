@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 RSpec.feature "RouteSets#show", type: :feature do
-  let!(:route_set) { create(:route_set) }
-  let!(:route_1) { create(:route, route_set: route_set, pos_x: 100, pos_y: 200, floor: 0) }
-  let!(:route_2) { create(:route, route_set: route_set, pos_x: 200, pos_y: 400, floor: 0) }
-  let!(:route_3) { create(:route, route_set: route_set, pos_x: 300, pos_y: 100, floor: 1) }
-  let!(:route_4) { create(:route, route_set: route_set, pos_x: 400, pos_y: 800) }
-
   context 'when logged in' do
     include_context 'logged_in'
+
+    let!(:route_set) { create(:route_set, grade: create(:grade, place: logged_in_user.place)) }
+    let!(:route_1) { create(:route, route_set: route_set, pos_x: 100, pos_y: 200, floor: 0) }
+    let!(:route_2) { create(:route, route_set: route_set, pos_x: 200, pos_y: 400, floor: 0) }
+    let!(:route_3) { create(:route, route_set: route_set, pos_x: 300, pos_y: 100, floor: 1) }
+    let!(:route_4) { create(:route, route_set: route_set, pos_x: 400, pos_y: 800) }
 
     before do
       logged_in_user.update(place: route_set.place)

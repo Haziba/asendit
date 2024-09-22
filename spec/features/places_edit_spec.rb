@@ -4,7 +4,7 @@ RSpec.feature 'Places#edit', type: :feature do
   context 'when logged in' do
     include_context 'logged_in'
 
-    let!(:place) { create(:place) }
+    let!(:place) { create(:place, :with_grades, user: logged_in_user) }
 
     before do
       visit "/places/#{place.id}/edit"

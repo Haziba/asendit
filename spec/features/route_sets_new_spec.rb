@@ -4,11 +4,8 @@ RSpec.feature 'RouteSets#new', type: :feature do
   context 'when logged in as admin' do
     include_context 'logged_in', admin: true
 
-    let!(:place) { create(:place) }
-
     before do
-      logged_in_user.update(place: place)
-      visit "/places/#{place.id}/route_sets/new"
+      visit "/places/#{logged_in_user.place.id}/route_sets/new"
     end
 
     scenario 'page renders as expected' do
@@ -19,9 +16,9 @@ RSpec.feature 'RouteSets#new', type: :feature do
 
     scenario 'renders appropriate colour sets' do
       expect(page).to have_selector('[data-test=grade]') do
-        expect(page).to have_selector('option:nth-child(1)', text: place.grades[0].name)
-        expect(page).to have_selector('option:nth-child(2)', text: place.grades[1].name)
-        expect(page).to have_selector('option:nth-child(3)', text: place.grades[2].name)
+        expect(page).to have_selector('option:nth-child(1)', text: logged_in_user.place.grades[0].name)
+        expect(page).to have_selector('option:nth-child(2)', text: logged_in_user.place.grades[1].name)
+        expect(page).to have_selector('option:nth-child(3)', text: logged_in_user.place.grades[2].name)
       end
     end
 
@@ -34,12 +31,7 @@ RSpec.feature 'RouteSets#new', type: :feature do
 
   context 'when logged in as non admin' do
     include_context 'logged_in', admin: false
-
     let!(:place) { create(:place) }
-
-    before do
-      logged_in_user.update(place: place)
-    end
 
     scenario "redirects to the route_sets page when accessed by an anonymous user" do
       visit "/places/#{place.id}/route_sets/new"

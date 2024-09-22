@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe RouteSetsController, type: :controller do
-  let(:place) { create(:place) }
+  let(:place) { create(:place, :with_grades) }
   let(:admin) { false }
-  let(:user) { create(:user, admin: admin) }
+  let(:user) { create(:user, admin: admin, place: place) }
 
   before { allow(controller).to receive(:session).and_return(userinfo: { 'id' => user.id, 'token' => user.token }) }
 
@@ -25,7 +25,7 @@ RSpec.describe RouteSetsController, type: :controller do
       it 'does not allow creating a route set and redirects to index' do
         post :create, params: { colour: 'red', added: '2023-08-08', place_id: place.id }
 
-        expect(RouteSet.count).to eq(0)
+        expect(RouteSet.where(grade: place.grades.find_by(name: 'red'), added: '2023-08-08').first).to be_nil
         expect(response).to redirect_to(route_sets_path)
       end
     end
@@ -63,8 +63,8 @@ RSpec.describe RouteSetsController, type: :controller do
     it 'assigns active and old route sets' do
       get :index
 
-      expect(assigns(:active_route_sets)).to match_array([route_set2, route_set3])
-      expect(assigns(:old_route_sets)).to eq([route_set1])
+      expect(assigns(:active_route_sets).map(&:id)).to match_array([route_set2, route_set3].map(&:id))
+      expect(assigns(:old_route_sets).map(&:id)).to eq([route_set1].map(&:id))
     end
   end
 

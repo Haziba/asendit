@@ -77,7 +77,6 @@ RSpec.feature "RouteSets#Index", type: :feature do
     let!(:not_place_set) { create(:route_set, grade: grade_other, place: grade_other.place) }
 
     before do
-      allow_any_instance_of(RouteSet).to receive(:can_edit?).and_return(true)
       visit '/route_sets'
     end
 

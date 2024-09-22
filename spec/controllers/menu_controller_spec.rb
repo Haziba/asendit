@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe MenuController, type: :controller do
   describe 'GET #index' do
     context 'when the user is logged in and is at a place' do
-      let!(:user) { create(:user, place: create(:place))}
+      let!(:user) { create(:user)}
 
       before do
         allow(controller).to receive(:session).and_return(userinfo: { "id" => user.id, "token" => user.token })

@@ -51,7 +51,7 @@ module ClimbsHelper
   end
 
   def previous_states
-    Climb.where(user: @climb ? @climb.user : user)
+    Climb.where(user: @climb ? @climb.user : @user)
       .reject { |climb| climb == @climb }
       .map(&:route_states)
       .flatten

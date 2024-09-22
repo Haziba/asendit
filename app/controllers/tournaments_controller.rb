@@ -23,7 +23,8 @@ class TournamentsController < ApplicationController
   end
 
   def update_routes
-    routes = params[:tournament_routes].values
+    routes = params.has_key?(:tournament_routes) ? params[:tournament_routes].values : []
+
     routes.each do |route|
       current_route = @tournament.tournament_routes.find_by(route_id: route[:route_id])
 
@@ -31,7 +32,8 @@ class TournamentsController < ApplicationController
       TournamentRoute.create!(tournament: @tournament, route_id: route[:route_id], order: route[:order]) if current_route.nil?
     end
 
-    @tournament.tournament_routes.reject { |t_r| params[:tournament_routes].values.map { |param| param['route_id'].to_i }.include?(t_r[:route_id]) }.each(&:destroy)
+    to_remove = @tournament.tournament_routes.reject { |t_r| routes.map { |param| param['route_id'].to_i }.include?(t_r[:route_id]) }
+    to_remove.each(&:destroy)
 
     render json: {success: true}
   end

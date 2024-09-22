@@ -1,5 +1,5 @@
 RSpec.shared_context 'climb setup' do
-  let!(:setup_place) { create(:place) }
+  let!(:setup_place) { create(:place, :with_grades) }
 
   let(:route_set1) { create(:route_set, grade: setup_place.grades.first) }
   let(:route_set2) { create(:route_set, grade: setup_place.grades.first) }

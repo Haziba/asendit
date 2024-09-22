@@ -19,8 +19,8 @@ RSpec.describe ClimbsController, type: :controller do
     end
 
     context 'when no current climb exists' do
-      let!(:place) { create(:place) }
-      let!(:other_place) { create(:place)}
+      let!(:place) { create(:place, :with_grades) }
+      let!(:other_place) { create(:place, :with_grades) }
 
       let!(:active_route_set) { create(:route_set, added: Date.today, grade: place.grades.first, place: place) }
       let!(:active_older_route_set) { create(:route_set, added: Date.yesterday, grade: place.grades.first, place: place) }
@@ -41,7 +41,7 @@ RSpec.describe ClimbsController, type: :controller do
 
         climb = Climb.last
         expect(climb.current).to be true
-        expect(climb.route_sets).to eq([active_route_set])
+        expect(climb.route_sets.map(&:id)).to eq([active_route_set.id])
         expect(response).to redirect_to(edit_climb_path(climb))
       end
     end
@@ -81,7 +81,7 @@ RSpec.describe ClimbsController, type: :controller do
   end
 
   describe 'GET #edit' do
-    let!(:place) { create(:place) }
+    let!(:place) { create(:place, :with_grades) }
     let!(:added_route_set) { create(:route_set, grade: place.grades.first, place: place) }
     let!(:first_route_set_for_grade) { create(:route_set, grade: place.grades.last, place: place) }
     let!(:climb) { create(:climb, user: user, route_sets: [added_route_set], place: place) }
