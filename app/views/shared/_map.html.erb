@@ -1,0 +1,244 @@
+<% map_id = "map-#{rand(1..1000000)}" %>
+
+<div id="<%= map_id %>">
+  <% if lockable %> 
+    <div class="row mx-1 mb-1 flex flex-row justify-content-between">
+      <input type="date" value="<%= @climb.climbed_at %>" class="form-control w-50" id="climbedAt">
+      <button class="btn bg-white w-25 visually-hidden" id="lock">🔓</button>
+    </div>
+  <% end %>
+
+  <% if route_sets.count > 1 %>
+  <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer" data-test="route-set-picker">
+    <% route_sets.each do |route_set| %>
+      <button style="background-color: <%= route_set.grade.map_tint_colour %>; <%= 'color: white !important;' if colour_dark?(route_set.grade.map_tint_colour) %>" data-route-set-id="<%= route_set.id %>" data-grade="<%= route_set.grade.id %>" data-tint-colour="<%= route_set.grade.map_tint_colour %>" class="btn">
+        <span>
+          <%= route_set.grade.name.titleize %>
+        </span>
+      </button>
+    <% end %>
+  </div>
+  <% end %>
+
+  <div style="display: flex;">
+    <button class="floorplan-prev">&lt;</button>
+    <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+    <button class="floorplan-next">&gt;</button>
+  </div>
+  <div class="map" style="background-color: <%= route_sets.first.grade.map_tint_colour %>">
+    <% @place.floorplan.data.each_with_index do |floor, index| %>
+      <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
+    <% end %>
+  </div>
+</div>
+
+<script>
+  $(() => {
+    const $map = $('#<%=map_id%> .map')
+    const $routeSets = $('#routeSetsContainer > button')
+    const $done = $('#done')
+    const $routeStates = $('<input type="hidden" name="route_states" id="route_states" />')
+    const $lock = $('#lock')
+    const routeSets = <%= raw routes.to_json %>
+    const previousStates = <%= raw previous_states.to_json %>
+    const newWins = <%= raw new_wins.to_json %>
+    let $currentRouteSetBtn = null
+    let $routes = []
+
+    const floorplanData = <%= raw floorplan_data.to_json %>
+    const floorplanImages = floorplanData.map(floorplan => {
+      const img = new Image();
+      img.src = $('img[data-floorplan-id=' + floorplan.id + ']').attr('src');
+      return img;
+    })
+    const nonDeletedFloorplans = floorplanData.filter(item => !item.deleted);
+    let currentFloorplan;
+
+    const initRouteStates = () => {
+      const initialRouteStates = <%= raw initial_route_states.to_json %>
+      Object.keys(routeSets).forEach(routeSetKey => {
+        routeSets[routeSetKey].forEach(route => {
+          const routeState = initialRouteStates.filter(initialRouteState => initialRouteState.route_id == route.id)[0]
+
+          if(!routeState)
+            return
+          route.status = routeState.status
+        })
+      })
+    }
+
+    const changeRoute = (e) => {
+      if(isLocked())
+        return
+
+      $routes.forEach($route => {
+        $route.remove()
+      })
+      $routes = []
+
+      if($currentRouteSetBtn) {
+        $currentRouteSetBtn.removeClass('current')
+        $currentRouteSetBtn.removeAttr('disabled')
+      }
+
+    <% if route_sets.count > 1 %>
+      $currentRouteSetBtn = e ? $(e.currentTarget) : $($routeSets[0])
+      const routeSetId = $currentRouteSetBtn.data('routeSetId')
+      const colour = $currentRouteSetBtn.data('colour')
+
+      const newRoutes = routeSets[routeSetId]
+      newRoutes.forEach(addRoute)
+
+      $map.css('background-color', $currentRouteSetBtn.data('tint-colour'))
+      $currentRouteSetBtn.addClass('current')
+      $currentRouteSetBtn.attr('disabled', true)
+    <% else %>
+      
+      routeSets[<%= route_sets.first.id %>].forEach(addRoute)
+
+      $map.css('background-color', '<%= route_sets.first.grade.map_tint_colour %>')
+    <% end %>
+      switchFloorplan(currentFloorplan)
+    }
+
+    const addRoute = route => {
+      const $route = $(`<div class="route" data-route-id="${route.id}" style="left: ${(route.pos_x / floorplanImages[route.floor].naturalWidth) * 100}%; top: ${(route.pos_y / floorplanImages[route.floor].naturalHeight) * 100}%" data-floor="${route.floor}">${icon(route)}</div>`)
+      <% if editable %>$route.click(() => clickRoute(route))<% end %>
+      route.$elem = $route
+      $map.append($route)
+      $routes.push($route)
+    }
+
+    const clickRoute = route => {
+      if(isLocked())
+          return
+
+      const statusOrder = ['failed', 'sent', 'flashed']
+      const nextStatusIndex = statusOrder.indexOf(route.status) + 1
+      route.status = statusOrder[nextStatusIndex]
+
+      route.$elem.text(icon(route))
+
+      updateServer()
+    }
+
+    const toggleLock = () => {
+      $lock.attr('disabled', 'disabled')
+
+      if(isLocked()) {
+        $lock.wakeLock.release().then(() => {
+          $lock.wakeLock = null
+          $lock.removeAttr('disabled')
+          $lock.text('🔓')
+          $map.css('opacity', 1)
+        })
+      } else {
+        navigator.wakeLock.request('screen').then(lock => {
+          $lock.wakeLock = lock
+          $lock.removeAttr('disabled')
+          $lock.text('🔒')
+          $map.css('opacity', 0.1)
+        })
+      }
+    }
+
+    const isLocked = () => {
+      return !!$lock.wakeLock
+    }
+
+    const updateServer = debounce(() => {
+      const routeStates = Object.keys(routeSets).map(routeSetId => 
+        routeSets[routeSetId].map(route => ({
+          routeId: route.id,
+          status: route.status || 'not_attempted'
+        }))
+      ).flat()
+
+      $.ajax({
+        url: '<%= climb_path(@climb) %>', 
+        data: {
+          route_states: routeStates
+        },
+        method: 'patch'
+      })
+    }, 1000)
+
+
+    const icon = route => {
+      let icon = ''
+
+      if(<%= show_new_win_star ? 'true' : 'false' %>) {
+        const newWin = newWins.filter(newWin => newWin.route_id == route.id)[0]
+
+        if(newWin)
+          icon = '⭐'
+      }
+
+      switch(route.status) {
+        case 'flashed':
+          return `${icon}⚡`
+        case 'sent':
+          return `${icon}✔`
+        case 'failed':
+          return '❌'
+      }
+
+      switch(previousStates[route.id]) {
+        case 'sent':
+          return '🟢'
+        case 'failed':
+          return '🟡'
+        default:
+          return '🔴'
+      }
+    }
+
+    const switchFloorplan = (floorplan) => {
+      $('#floorplan_name').text(floorplan.name);
+      $('.floorplan').hide();
+      $('.floorplan[data-floorplan-id=' + floorplan.id + ']').show();
+      $('.route').hide();
+      $('.route[data-floor=' + floorplan.id + ']').show();
+      currentFloorplan = floorplan;
+    }
+
+    $('.floorplan-prev').click((e) => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)-1;
+      if(next < 0)
+        switchFloorplan(floorplans[[floorplans.length-1]]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    $('.floorplan-next').click((e) => {
+      const floorplans = nonDeletedFloorplans;
+      const next = floorplans.indexOf(currentFloorplan)+1;
+      if(next >= floorplans.length)
+        switchFloorplan(floorplans[0]);
+      else
+        switchFloorplan(floorplans[next]);
+    });
+
+    let imagesLoaded = 0;
+    const totalImages = $('.floorplan').length;
+    $('.floorplan').each(function() {
+      $(this).on('load', function() {
+        imagesLoaded++;
+        if (imagesLoaded === totalImages) {
+          $routeSets.click(changeRoute)
+          initRouteStates()
+          currentFloorplan = floorplanData[0];
+          changeRoute()
+
+          if('wakeLock' in navigator) {
+            $lock.removeClass('visually-hidden')
+            $lock.click(toggleLock)
+          }
+        }
+      }).each(function() {
+        if (this.complete) $(this).trigger('load');
+      });
+    });
+  });
+</script>

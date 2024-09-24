@@ -4,7 +4,7 @@
 
 <div class="accordion" id="accordionExample">
   <% @route_sets.each_with_index do |route_set, i| %>
-  <div class="card" data-test="route-set-<%= route_set.id %>">
+  <div class="card" data-route-set-id="<%= route_set.id %>">
     <div class="card-header" data-toggle="collapse" data-target="#collapse-<%= i %>">
       <h5 class="mb-0 d-flex justify-content-between">
         <div>
@@ -24,16 +24,15 @@
 
     <div id="collapse-<%= i %>" class="collapse map-set">
       <div class="card-body">
-        <div style="display: flex;">
-          <button class="floorplan-prev">&lt;</button>
-          <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
-          <button class="floorplan-next">&gt;</button>
-        </div>
-        <div id="map-<%= route_set.id %>" class="map" style="background-color: <%= route_set.grade.map_tint_colour %>">
-          <% @place.floorplan.data.each_with_index do |floor, index| %>
-            <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
-          <% end %>
-        </div>
+        <%= render 'shared/map', route_sets: [route_set],
+                                 routes: routes_for_route_set(route_set),
+                                 previous_states: previous_states,
+                                 new_wins: new_wins,
+                                 floorplan_data: @place.floorplan.data,
+                                 initial_route_states: @climb.route_states,
+                                 show_new_win_star: true,
+                                 lockable: false,
+                                 editable: false %>
       </div>
     </div>
   </div>

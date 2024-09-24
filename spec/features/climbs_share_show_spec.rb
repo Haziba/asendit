@@ -38,13 +38,13 @@ RSpec.feature 'ClimbsShare#show', type: :feature do
     end
 
     scenario 'shows route sets with attempts' do
-      expect(page).to have_selector("[data-test='route-set-#{route_set_green.id}']", visible: :all)
-      expect(page).to have_selector("[data-test='route-set-#{route_set_red.id}']", visible: :all)
-      expect(page).to_not have_selector("[data-test='route-set-#{route_set_blue.id}']", visible: :all)
+      expect(page).to have_selector("[data-route-set-id='#{route_set_green.id}']", visible: :all)
+      expect(page).to have_selector("[data-route-set-id='#{route_set_red.id}']", visible: :all)
+      expect(page).to_not have_selector("[data-route-set-id='#{route_set_blue.id}']", visible: :all)
     end
 
     scenario 'route set headers contain correct info' do
-      within("[data-test='route-set-#{route_set_green.id}']", visible: :all) do
+      within("[data-route-set-id='#{route_set_green.id}']", visible: :all) do
         expect(page).to have_content(route_set_green.grade.name.titleize)
         expect(page).to have_content(attempted_routes(route_set_green))
         expect(page).to have_content(success_rate(route_set_green))
@@ -53,41 +53,41 @@ RSpec.feature 'ClimbsShare#show', type: :feature do
     end
 
     scenario 'clicking the route set shows & hides the map' do
-      expect(page).to_not have_selector("[data-test='route-set-#{route_set_green.id}'] .map")
-      find("[data-test='route-set-#{route_set_green.id}']", visible: :all).click
-      expect(page).to have_selector("[data-test='route-set-#{route_set_green.id}'] .map")
+      expect(page).to_not have_selector("[data-route-set-id='#{route_set_green.id}'] .map")
+      find("[data-route-set-id='#{route_set_green.id}']", visible: :all).click
+      expect(page).to have_selector("[data-route-set-id='#{route_set_green.id}'] .map")
     end
 
     scenario 'changing floor shows & hides the floor routes' do
-      find("[data-test='route-set-#{route_set_green.id}']", visible: :all).click
+      find("[data-route-set-id='#{route_set_green.id}']", visible: :all).click
 
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_1.id}']", visible: true)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_2.id}']", visible: true)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_3.id}']", visible: false)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_4.id}']", visible: false)
 
-      find("[data-test='route-set-#{route_set_green.id}'] .floorplan-next", visible: :all).click
+      find("[data-route-set-id='#{route_set_green.id}'] .floorplan-next", visible: :all).click
 
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_1.id}']", visible: false)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_2.id}']", visible: false)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_3.id}']", visible: true)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_4.id}']", visible: true)
 
-      find("[data-test='route-set-#{route_set_green.id}'] .floorplan-next", visible: :all).click
+      find("[data-route-set-id='#{route_set_green.id}'] .floorplan-next", visible: :all).click
 
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_1.id}']", visible: true)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_2.id}']", visible: true)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_3.id}']", visible: false)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_4.id}']", visible: false)
 
-      find("[data-test='route-set-#{route_set_green.id}'] .floorplan-prev", visible: :all).click
+      find("[data-route-set-id='#{route_set_green.id}'] .floorplan-prev", visible: :all).click
 
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_1.id}']", visible: false)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_2.id}']", visible: false)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_3.id}']", visible: true)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_4.id}']", visible: true)
 
-      find("[data-test='route-set-#{route_set_green.id}'] .floorplan-prev", visible: :all).click
+      find("[data-route-set-id='#{route_set_green.id}'] .floorplan-prev", visible: :all).click
 
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_1.id}']", visible: true)
       expect(page).to have_selector("[data-route-id='#{route_set_green_route_2.id}']", visible: true)

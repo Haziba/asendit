@@ -68,4 +68,8 @@ module ClimbsHelper
       .reject { |state| state == nil }
       .to_h
   end
+
+  def routes_for_route_set(route_set)
+    {route_set.id => @routes[route_set.id]}
+  end
 end

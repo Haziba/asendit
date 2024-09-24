@@ -112,9 +112,8 @@ RSpec.describe ClimbsController, type: :controller do
     let!(:climb) { create(:climb, user: user) }
 
     it 'updates the climb and redirects to the edit path' do
-      patch :update, params: { 'id' => climb.id, 'climbed_at' => '2023-08-08', 'route_states[0][routeId]' => 1, 'route_states[0][status]' => 'flashed' }
+      patch :update, params: { 'id' => climb.id, 'route_states[0][routeId]' => 1, 'route_states[0][status]' => 'flashed' }
       climb.reload
-      expect(climb.climbed_at.to_s).to eq('2023-08-08')
       expect(climb.route_state_json).to eq([{"route_id"=>1, "status"=>"flashed"}])
     end
   end

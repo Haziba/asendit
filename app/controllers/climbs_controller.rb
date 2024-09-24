@@ -58,7 +58,6 @@ class ClimbsController < ApplicationController
 
   def update
     climb = Climb.find(params[:id])
-    climb.climbed_at = params["climbed_at"]
     climb.route_state_json = params["route_states"].to_unsafe_h.map do |index, route_state|
       RouteStatus.new(
         route_state["routeId"].to_i,
