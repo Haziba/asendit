@@ -4,6 +4,8 @@
   @extra_header = link_to "Add", new_place_path, { class: "btn btn-primary btn-block btn-sm", data: { test: 'add' } }
 %>
 
+<input class="form-control" id="placeSearch">
+
 <table class="table">
   <tbody>
   <% @places.each do |place| %>
@@ -11,3 +13,10 @@
   <% end %>
   </tbody>
 </table>
+
+<script>
+  $(() => {
+      $('#placeSearch').keyup(() => {
+      })
+  })
+</script>

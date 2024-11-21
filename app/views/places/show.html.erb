@@ -4,21 +4,23 @@
 %>
 
 <div class="card">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @place.tournaments.each do |tournament| %>
+  <% if @place.tournaments.any? %>
+    <table class="table">
+      <thead>
         <tr>
-          <td><%= tournament.name %></td>
+          <th>Name</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <hr />
+      </thead>
+      <tbody>
+        <% @place.tournaments.each do |tournament| %>
+          <tr>
+            <td><%= tournament.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <hr />
+  <% end %>
   <table class="table">
     <thead>
       <tr>
