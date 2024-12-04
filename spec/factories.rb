@@ -1,4 +1,9 @@
 FactoryBot.define do
+  factory :page_visitor do
+    page_identifier { "MyString" }
+    user { nil }
+  end
+
   factory :tournament do
     transient do
       place { nil }
