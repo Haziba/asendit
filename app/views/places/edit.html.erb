@@ -3,6 +3,8 @@
   @back_url = places_path
 %>
 
+<%= turbo_stream_from @place %>
+
 <div class="card container">
   <%= form_with url: place_path(@place), method: :patch, model: @place do |f| %>
     <div class="mb-3">
