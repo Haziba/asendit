@@ -3,7 +3,7 @@
   @back_url = places_path
 %>
 
-<div class="card">
+<div class="card container">
   <%= form_with url: place_path(@place), method: :patch, model: @place do |f| %>
     <div class="mb-3">
       <%= f.label :name, { class: "form-label" } %>
@@ -39,32 +39,27 @@
 
   <hr />
 
-  <table id='grades'>
-    <thead>
-    <tr>
-      <th>Name</th>
-      <th>Grade</th>
-      <th>Tint</th>
-      <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-      <td><input type="text" id="grade_name" class="form-control" /></td>
-      <td><input type="text" id="grade_grade" class="form-control" /></td>
-      <td><input type="color" id="grade_map_tint_colour" class="form-control" /></td>
-      <td><button id="add_grade" class="btn btn-secondary">+</button></td>
-    </tr>
-    <% @place.grades.each do |grade| %>
-      <tr data-grade-id=<%= grade.id %>>
-        <td><%= grade.name %></td>
-        <td><%= grade.grade %></td>
-        <td><%= grade.map_tint_colour %></td>
-        <td><button name='remove-grade' class='btn btn-secondary'>-</button></td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
+  <h3 class="text-center">Grades</h3>
+
+  <div class="row">
+    <div class="d-table col-12" id="grades">
+      <div class="d-table-row border border-dark border-bottom">
+        <div class="d-table-cell fw-bolder">
+          Name
+        </div>
+        <div class="d-table-cell fw-bolder">
+          Grade
+        </div>
+        <div class="d-table-cell fw-bolder">
+          Tint
+        </div>
+      </div>
+
+      <%= render @place.grades %>
+    </div>
+
+    <%= turbo_frame_tag "new_grade", src: new_place_grade_path(@place), target: '_top' %>
+  </div>
 
   <hr />
 
@@ -72,7 +67,7 @@
 </div>
 
 <script>
-  $(() => {
+  /*$(() => {
       const $tbody = $('#grades tbody');
       const $error = $('#grade-error');
 
@@ -130,5 +125,5 @@
           $tbody.append($elem);
           return $elem;
       }
-  })
+  })*/
 </script>

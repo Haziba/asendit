@@ -1,0 +1,21 @@
+<h2>New Grade</h2>
+<%= turbo_frame_tag "new_grade", target: "_top" do %>
+    <%= form_with(model: [@grade.place, @grade], class: 'row row-cols-sm-auto g-2',
+    data: { controller: 'reset_form', action: 'turbo:submit-end->reset_form#reset' }) do |f| %>
+        <div class="col-12">
+            <%= f.label :name, class: 'visually-hidden' %>
+            <%= f.text_field :name, required: true, class: 'form-control', placeholder: 'Name' %>
+        </div>
+        <div class="col-12">
+            <%= f.label :grade, class: 'visually-hidden' %>
+            <%= f.number_field :grade, required: true, class: 'form-control', placeholder: 'Grade' %>
+        </div>
+        <div class="col-4">
+            <%= f.label :map_tint_colour, 'Colour', class: 'visually-hidden' %>
+            <%= f.text_field :map_tint_colour, type: :color, required: true, class: 'form-control form-control-color' %>
+        </div>
+        <div class="col-8">
+            <%= f.submit "+", class: 'btn btn-primary' %>
+        </div>
+    <% end %>
+<% end %>

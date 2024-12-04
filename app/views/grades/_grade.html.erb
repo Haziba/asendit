@@ -1,0 +1,9 @@
+<%= turbo_frame_tag dom_id(grade), class: "d-table-row" do %>
+    <div class="d-table-cell"><%= grade.name %></div>
+    <div class="d-table-cell"><%= grade.grade %></div>
+    <div class="d-table-cell"><%= grade.map_tint_colour %></div>
+    <div class="d-table-cell">
+        <%= link_to "✏️", edit_place_grade_path(grade.place, grade), class: 'btn btn-secondary' %>
+        <%= button_to "-", place_grade_path(grade.place, grade), method: :delete, class: 'btn btn-danger', form: { data: { turbo_stream: true } } %>
+    </div>
+<% end %>

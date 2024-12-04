@@ -1,0 +1,19 @@
+<%= turbo_frame_tag dom_id(@grade), class: 'd-table-row' do %>
+    <%= form_with(model: [@grade.place, @grade], html: {style: "display: contents"}) do |f| %>
+        <div class="d-table-cell">
+            <%= f.label :name, class: 'visually-hidden' %>
+            <%= f.text_field :name, required: true, class: 'form-control', placeholder: 'Name' %>
+        </div>
+        <div class="d-table-cell">
+            <%= f.label :grade, class: 'visually-hidden' %>
+            <%= f.number_field :grade, required: true, class: 'form-control', placeholder: 'Grade' %>
+        </div>
+        <div class="d-table-cell">
+            <%= f.label :map_tint_colour, 'Colour', class: 'visually-hidden' %>
+            <%= f.text_field :map_tint_colour, type: :color, required: true, class: 'form-control form-control-color' %>
+        </div>
+        <div class="d-table-cell">
+            <%= f.submit "💾", class: 'btn btn-primary' %>
+        </div>
+    <% end %>
+<% end %>

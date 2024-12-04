@@ -13,7 +13,6 @@ gem 'puma'
 # Use SCSS for stylesheets
 gem 'sass-rails'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
 # Use Redis adapter to run Action Cable in production
@@ -67,3 +66,9 @@ gem 'omniauth-rails_csrf_protection'
 gem "faker", "~> 3.4"
 
 gem "aws-sdk-s3", "~> 1.160"
+
+gem "turbo-rails", "~> 2.0"
+
+gem "importmap-rails", "~> 2.0"
+
+gem "stimulus-rails", "~> 1.3"

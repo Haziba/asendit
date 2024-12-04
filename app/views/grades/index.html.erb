@@ -1,0 +1,9 @@
+<h2>Grades</h2>
+
+<div id="grades-list">
+    <%= turbo_frame_tag "grades" do %>
+        <%= render @grades %>
+    <% end %>
+</div>
+
+<%= render "form", grade: @new_grade %>

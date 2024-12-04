@@ -1,31 +1,53 @@
 class GradesController < ApplicationController
-  before_action :set_grade, only: [:show, :update, :destroy]
+  before_action :set_place
+  before_action :set_grade, only: [:show, :edit, :update, :destroy]
+
+  def new
+    @grade = @place.grades.new
+  end
 
   def create
-    @grade = Grade.new(place_id: params[:place_id], name: params[:name], grade: params[:grade], map_tint_colour: params[:map_tint_colour])
+    @place.grades.create!(grade_params)
 
-    if @grade.save
-      render json: @grade, status: :created
-    else
-      render json: @grade.errors, status: :unprocessable_entity
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to @place}
     end
   end
 
   def update
-    if @grade.update(name: params[:name], grade: params[:grade], map_tint_colour: params[:map_tint_colour])
-      render json: @grade
-    else
-      render json: @grade.errors, status: :unprocessable_entity
+    @grade.update!(update_grade_params)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to @place, notice: 'Grade was successfully updated.' }
     end
   end
 
   def destroy
     @grade.destroy
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to @place}
+    end
   end
 
   private
 
   def set_grade
     @grade = Grade.find(params[:id])
+  end
+
+  def set_place
+    @place = Place.find(params[:place_id])
+  end
+
+  def grade_params
+    params.require(:grade).permit(:place_id, :name, :grade, :map_tint_colour)
+  end
+
+  def update_grade_params
+    params.require(:grade).permit(:name, :grade, :map_tint_colour)
   end
 end

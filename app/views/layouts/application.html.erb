@@ -7,7 +7,7 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_importmap_tags %>
   </head>
 
   <body>
@@ -55,7 +55,7 @@
 </html>
 
 <script>
-$('body').on('click', '[data-toggle]', me => {
+/*$('body').on('click', '[data-toggle]', me => {
   const $toggleTarget = $(($(me.currentTarget).data('target')))
 
   if($toggleTarget.is(':visible')) {
@@ -70,5 +70,5 @@ $('body').on('click', '[data-toggle]', me => {
 
   $toggleTarget
     .slideDown(250).closest('.card').addClass('open')
-})
+})*/
 </script>
