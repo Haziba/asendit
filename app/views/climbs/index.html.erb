@@ -4,44 +4,16 @@
 @extra_header = button_to "Add", climbs_path(method: :post), { class: "btn btn-primary btn-sm", data: { test: 'add' } }
 %>
 
+<%= turbo_stream_from @user %>
+
 <%= turbo_frame_tag "main-content" do %>
   <% if @climbs.any? %>
     <div class="card">
-      <table id="climbs" class="table">
-        <tbody>
-          <% @climbs.map do |climb| %>
-          <tr data-test="climb-<%= climb.id %>">
-            <td><%= climb.place&.name %></td>
-            <td><%= "#{climb.name}" %></td>
-            <% if climb.route_states.count(&:tried?) > 0 %>
-              <td>
-                <%= climb.route_states.count(&:success?) %>/<%= climb.route_states.count(&:tried?) %> (<%= climb.success_percentage %>)
-              </td>
-              <td>
-                <div class="climb-wheel">
-                  <div class="pie">
-                    <% offset = 0 %>
-                    <% route_attempt_percentages(climb.route_states).each do |route_set_name, percentage| %>
-                      <div class="pie__segment" style="--offset: <%= offset %>; --value: <%= percentage %>; --bg: <%= route_set_name.split(' ').first %>;<%= percentage >= 50 ? " --over50: 1": nil %>"></div>
-                      <% offset += percentage %>
-                    <% end %>
-                  </div>
-                </div>
-              </td>
-            <% else %>
-              <td colspan="2" style="text-align: center">
-                None Set
-              </td>
-            <% end %>
-            <td class="actions">
-              <%= link_to "👁", climb_path(climb.id), { class: "btn btn-secondary btn-sm", data: { test: 'show', turbo_action: 'advance' } } %>
-              <%= link_to "✏️", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm", data: { test: 'edit', turbo_action: 'advance' } } %>
-              <%= button_to "🗑", climb, method: :delete, data: {confirm: "Are you sure?", test: 'delete'}, class: "btn btn-danger btn-sm" %>
-            </td>
-          </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <div class="row">
+        <div class="d-table col-12" id="climbs">
+          <%= render @climbs %>
+        </div>
+      </div>
     </div>
   <% end %>
 <% end %>

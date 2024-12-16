@@ -3,6 +3,10 @@ class Climb < ApplicationRecord
   belongs_to :place
   belongs_to :user
 
+  after_create_commit -> { broadcast_prepend_to user }
+  after_update_commit -> { broadcast_replace_to user }
+  after_destroy_commit -> { broadcast_remove_to user }
+
   def name
     climbed_at.strftime("#{climbed_at.day.ordinalize} %b")
   end

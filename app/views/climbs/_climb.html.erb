@@ -1,0 +1,30 @@
+<%= turbo_frame_tag dom_id(climb), class: "d-table-row", data: { test: "climb-#{climb.id}"} do %>
+    <div class="d-table-cell"><%= climb.place&.name %></div>
+    <div class="d-table-cell"><%= "#{climb.name}" %></div>
+    <% if climb.route_states.count(&:tried?) > 0 %>
+        <div class="d-table-cell">
+        <%= climb.route_states.count(&:success?) %>/<%= climb.route_states.count(&:tried?) %> (<%= climb.success_percentage %>)
+        </div>
+        <div class="d-table-cell">
+        <div class="climb-wheel">
+            <div class="pie">
+            <% offset = 0 %>
+            <% route_attempt_percentages(climb.route_states).each do |route_set_name, percentage| %>
+                <div class="pie__segment" style="--offset: <%= offset %>; --value: <%= percentage %>; --bg: <%= route_set_name.split(' ').first %>;<%= percentage >= 50 ? " --over50: 1": nil %>"></div>
+                <% offset += percentage %>
+            <% end %>
+            </div>
+        </div>
+        </div>
+    <% else %>
+        <div class="d-table-cell" style="text-align: center">
+        None Set
+        </div>
+        <div class="d-table-cell"></div>
+    <% end %>
+    <div class="d-table-cell actions">
+        <%= link_to "👁", climb_path(climb.id), { class: "btn btn-secondary btn-sm", data: { test: 'show', turbo_action: 'advance' } } %>
+        <%= link_to "✏️", edit_climb_path(climb.id), { class: "btn btn-secondary btn-sm", data: { test: 'edit', turbo_action: 'advance' } } %>
+        <%= button_to "🗑", climb, method: :delete, data: {confirm: "Are you sure?", test: 'delete'}, class: "btn btn-danger btn-sm" %>
+    </div>
+<% end %>

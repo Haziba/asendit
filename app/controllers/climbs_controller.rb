@@ -2,7 +2,8 @@ class ClimbsController < ApplicationController
   include Secured
 
   before_action :check_auth, only: [:show, :edit, :update, :destroy]
-  before_action :set_climb, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:index]
+  before_action :set_climb, only: [:show, :edit, :update, :destroy, :complete]
   before_action :set_place, only: [:create, :show, :edit, :update, :destroy]
 
   def create
@@ -12,7 +13,7 @@ class ClimbsController < ApplicationController
 
     active_route_sets = @place.grades.map(&:active_route_set).reject { |r_s| r_s.nil? }
 
-    climb = Climb.new(
+    @climb = Climb.new(
       climbed_at: Time.now,
       user: @user,
       route_sets: active_route_sets,
@@ -20,9 +21,12 @@ class ClimbsController < ApplicationController
       current: true
     )
 
-    climb.save
+    @climb.save
 
-    redirect_to(edit_climb_path(climb))
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to(edit_climb_path(@climb)) }
+    end
   end
 
   def show
@@ -57,20 +61,27 @@ class ClimbsController < ApplicationController
   end
 
   def update
-    climb = Climb.find(params[:id])
-    climb.route_state_json = params["route_states"].to_unsafe_h.map do |index, route_state|
+    @climb.route_state_json = params["route_states"].to_unsafe_h.map do |index, route_state|
       RouteStatus.new(
         route_state["routeId"].to_i,
         route_state["status"]
       )
     end
-    climb.save
+    @climb.save
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to climbs_path }
+    end
   end
 
   def complete
-    climb = Climb.find(params[:climb_id])
-    climb.update_attribute(:current, false)
-    redirect_to climb_path(climb)
+    @climb.update(current: false, climbed_at: Date.today)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to climb_path(@climb) }
+    end
   end
 
   def index
@@ -78,8 +89,12 @@ class ClimbsController < ApplicationController
   end
 
   def destroy
-    Climb.find(params[:id]).destroy
-    redirect_to climbs_path
+    @climb.destroy
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to climbs_path }
+    end
   end
 
   def check_auth
