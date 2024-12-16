@@ -3,47 +3,49 @@
 @back_url = place_path(@place)
 %>
 
-<div class="card">
-  <%= form_with url: place_tournaments_path(@tournament), method: :patch, model: @tournament do |f| %>
-    <div class="mb-3">
-      <%= f.label :name, { class: "form-label" } %>
-      <%= f.text_field :name, value: @tournament.name, class: "form-control" %>
-    </div>
+<%= turbo_frame_tag "main-content" do %>
+  <div class="card">
+    <%= form_with url: place_tournaments_path(@tournament), method: :patch, model: @tournament do |f| %>
+      <div class="mb-3">
+        <%= f.label :name, { class: "form-label" } %>
+        <%= f.text_field :name, value: @tournament.name, class: "form-control" %>
+      </div>
 
-    <div class="mb-3">
-      <%= f.label :starting, { class: "form-label" } %>
-      <%= f.date_field :starting, value: @tournament.starting, class: "form-control" %>
-    </div>
+      <div class="mb-3">
+        <%= f.label :starting, { class: "form-label" } %>
+        <%= f.date_field :starting, value: @tournament.starting, class: "form-control" %>
+      </div>
 
-    <div class="mb-3">
-      <%= f.label :ending, { class: "form-label" } %>
-      <%= f.date_field :ending, value: @tournament.ending, class: "form-control" %>
-    </div>
+      <div class="mb-3">
+        <%= f.label :ending, { class: "form-label" } %>
+        <%= f.date_field :ending, value: @tournament.ending, class: "form-control" %>
+      </div>
 
-    <%= f.submit "Edit", class: "btn btn-success" %>
-  <% end %>
-
-  <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer" data-test="route-set-picker">
-    <% @active_route_sets.each do |route_set| %>
-      <button style="background-color: <%= route_set.grade.map_tint_colour %>; <%= 'color: white !important;' if colour_dark?(route_set.grade.map_tint_colour) %>" data-route-set-id="<%= route_set.id %>" data-grade="<%= route_set.grade.id %>" data-tint-colour="<%= route_set.grade.map_tint_colour %>" class="btn">
-        <span>
-          <%= route_set.grade.name.titleize %>
-        </span>
-      </button>
+      <%= f.submit "Edit", class: "btn btn-success" %>
     <% end %>
-  </div>
 
-  <div style="display: flex;">
-    <button id="floorplan-prev">&lt;</button>
-    <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
-    <button id="floorplan-next">&gt;</button>
+    <div class="row mx-1 mb-1 flex flex-row" id="routeSetsContainer" data-test="route-set-picker">
+      <% @active_route_sets.each do |route_set| %>
+        <button style="background-color: <%= route_set.grade.map_tint_colour %>; <%= 'color: white !important;' if colour_dark?(route_set.grade.map_tint_colour) %>" data-route-set-id="<%= route_set.id %>" data-grade="<%= route_set.grade.id %>" data-tint-colour="<%= route_set.grade.map_tint_colour %>" class="btn">
+          <span>
+            <%= route_set.grade.name.titleize %>
+          </span>
+        </button>
+      <% end %>
+    </div>
+
+    <div style="display: flex;">
+      <button id="floorplan-prev">&lt;</button>
+      <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+      <button id="floorplan-next">&gt;</button>
+    </div>
+    <div id="map" class="map">
+      <% @place.floorplan.data.each_with_index do |floor, index| %>
+        <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
+      <% end %>
+    </div>
   </div>
-  <div id="map" class="map">
-    <% @place.floorplan.data.each_with_index do |floor, index| %>
-      <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
-    <% end %>
-  </div>
-</div>
+<% end %>
 
 <script>
   /*$(() => {

@@ -25,7 +25,7 @@
     <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
     <button class="floorplan-next">&gt;</button>
   </div>
-  <div class="map" style="background-color: <%= route_sets.first.grade.map_tint_colour %>">
+  <div class="map" style="background-color: <%= route_sets.first&.grade&.map_tint_colour %>">
     <% @place.floorplan.data.each_with_index do |floor, index| %>
       <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
     <% end %>
@@ -94,9 +94,9 @@
       $currentRouteSetBtn.attr('disabled', true)
     <% else %>
       
-      routeSets[<%= route_sets.first.id %>].forEach(addRoute)
+      routeSets[<%= route_sets.first&.id %>].forEach(addRoute)
 
-      $map.css('background-color', '<%= route_sets.first.grade.map_tint_colour %>')
+      $map.css('background-color', '<%= route_sets.first&.grade&.map_tint_colour %>')
     <% end %>
       switchFloorplan(currentFloorplan)
     }

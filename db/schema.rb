@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_19_121412) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_04_121836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,7 +51,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_19_121412) do
     t.date "climbed_at"
     t.bigint "place_id"
     t.bigint "user_id"
+    t.bigint "tournament_id"
     t.index ["place_id"], name: "index_climbs_on_place_id"
+    t.index ["tournament_id"], name: "index_climbs_on_tournament_id"
     t.index ["user_id"], name: "index_climbs_on_user_id"
   end
 
@@ -82,6 +84,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_19_121412) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["place_id"], name: "index_grades_on_place_id"
+  end
+
+  create_table "page_visitors", force: :cascade do |t|
+    t.string "page_identifier", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_page_visitors_on_user_id"
   end
 
   create_table "places", force: :cascade do |t|
@@ -177,11 +187,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_19_121412) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "climbs", "tournaments"
   add_foreign_key "climbs", "users"
   add_foreign_key "climbs_route_sets", "climbs"
   add_foreign_key "climbs_route_sets", "route_sets"
   add_foreign_key "floorplans", "places"
   add_foreign_key "grades", "places"
+  add_foreign_key "page_visitors", "users"
   add_foreign_key "route_sets", "grades"
   add_foreign_key "route_sets", "places"
   add_foreign_key "tournament_entries", "places"

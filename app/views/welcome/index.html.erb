@@ -1,3 +1,5 @@
-<div class="text-center m-0">
-  <%= button_to 'Login', 'auth/auth0', method: :post, class: "btn btn-lg btn-success " %>
-</div>
+<%= turbo_frame_tag "main-content" do %>
+  <div class="text-center m-0">
+    <%= button_to 'Login', 'auth/auth0', method: :post, class: "btn btn-lg btn-success " %>
+  </div>
+<% end %>

@@ -5,68 +5,70 @@
 
 <%= turbo_stream_from @place %>
 
-<div class="card container">
-  <%= form_with url: place_path(@place), method: :patch, model: @place do |f| %>
-    <div class="mb-3">
-      <%= f.label :name, { class: "form-label" } %>
-      <%= f.text_field :name, class: 'form-control', data: { test: 'name' }, required: true, minlength: '4' %>
-    </div>
-
-    <%= f.submit "Update", class: "btn btn-success" %>
-  <% end %>
-
-  <hr />
-
-  <div class="alert alert-danger d-none" id="grade-error" role="alert">
-    <h4 class="alert-heading">Failed to create</h4>
-    <span id="error-message"></span>
-  </div>
-
-  <table class="table" id='tournaments'>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @place.tournaments.each do |tournament| %>
-        <tr>
-          <td><%= tournament.name %></td>
-          <td><%= link_to "✏", edit_place_tournament_path(place_id: @place.id, id: tournament.id), { class: "btn btn-secondary btn-sm", data: { test: 'show' } }  %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-
-  <hr />
-
-  <h3 class="text-center">Grades</h3>
-
-  <div class="row">
-    <div class="d-table col-12" id="grades">
-      <div class="d-table-row border border-dark border-bottom">
-        <div class="d-table-cell fw-bolder">
-          Name
-        </div>
-        <div class="d-table-cell fw-bolder">
-          Grade
-        </div>
-        <div class="d-table-cell fw-bolder">
-          Tint
-        </div>
+<%= turbo_frame_tag "main-content" do %>
+  <div class="card container">
+    <%= form_with url: place_path(@place), method: :patch, model: @place do |f| %>
+      <div class="mb-3">
+        <%= f.label :name, { class: "form-label" } %>
+        <%= f.text_field :name, class: 'form-control', data: { test: 'name' }, required: true, minlength: '4' %>
       </div>
 
-      <%= render @place.grades %>
+      <%= f.submit "Update", class: "btn btn-success" %>
+    <% end %>
+
+    <hr />
+
+    <div class="alert alert-danger d-none" id="grade-error" role="alert">
+      <h4 class="alert-heading">Failed to create</h4>
+      <span id="error-message"></span>
     </div>
 
-    <%= turbo_frame_tag "new_grade", src: new_place_grade_path(@place), target: '_top' %>
+    <table class="table" id='tournaments'>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @place.tournaments.each do |tournament| %>
+          <tr>
+            <td><%= tournament.name %></td>
+            <td><%= link_to "✏", edit_place_tournament_path(place_id: @place.id, id: tournament.id), { class: "btn btn-secondary btn-sm", data: { test: 'show', turbo_action: 'advance' } }  %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <hr />
+
+    <h3 class="text-center">Grades</h3>
+
+    <div class="row">
+      <div class="d-table col-12" id="grades">
+        <div class="d-table-row border border-dark border-bottom">
+          <div class="d-table-cell fw-bolder">
+            Name
+          </div>
+          <div class="d-table-cell fw-bolder">
+            Grade
+          </div>
+          <div class="d-table-cell fw-bolder">
+            Tint
+          </div>
+        </div>
+
+        <%= render @place.grades %>
+      </div>
+
+      <%= turbo_frame_tag "new_grade", src: new_place_grade_path(@place), target: '_top' %>
+    </div>
+
+    <hr />
+
+    <%= render partial: 'floorplans/edit', locals: { place: @place, floorplan: @place.floorplan } %>
   </div>
-
-  <hr />
-
-  <%= render partial: 'floorplans/edit', locals: { place: @place, floorplan: @place.floorplan } %>
-</div>
+<% end %>
 
 <script>
   /*$(() => {

@@ -3,36 +3,38 @@
   @back_url = places_path
 %>
 
-<div class="card">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @place.tournaments.each do |tournament| %>
+<%= turbo_frame_tag "main-content" do %>
+  <div class="card">
+    <table class="table">
+      <thead>
         <tr>
-          <td><%= tournament.name %></td>
+          <th>Name</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <hr />
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Grade</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @place.grades.each do |grade| %>
-        <tr style="background-color: <%= grade.map_tint_colour %>">
-          <td><%= grade.name %></td>
-          <td><%= grade.grade %></td>
+      </thead>
+      <tbody>
+        <% @place.tournaments.each do |tournament| %>
+          <tr>
+            <td><%= tournament.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <hr />
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Grade</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+      </thead>
+      <tbody>
+        <% @place.grades.each do |grade| %>
+          <tr style="background-color: <%= grade.map_tint_colour %>">
+            <td><%= grade.name %></td>
+            <td><%= grade.grade %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

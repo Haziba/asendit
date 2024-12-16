@@ -1,41 +1,43 @@
 <%
 @title = "Route Sets"
 @back_url = menu_path
-@extra_header = link_to "Add", new_place_route_set_path(place.id), { class: "btn btn-primary btn-block btn-sm #{admin_user? || place.user == @user ? "" : "disabled"}" }
+@extra_header = link_to "Add", new_place_route_set_path(place.id), { class: "btn btn-primary btn-block btn-sm #{admin_user? || place.user == @user ? "" : "disabled"}", data: { turbo_action: 'advance' } }
 %>
 
-<div class="accordion" id="accordionExample">
-  <div class="card open" data-test="current-sets">
-    <div class="card-header" data-toggle="collapse" data-target="#collapseCurrent">
-      <h5>Current Sets</h5>
+<%= turbo_frame_tag 'main-content' do %>
+  <div class="accordion" id="accordionExample">
+    <div class="card open" data-test="current-sets">
+      <div class="card-header" data-toggle="collapse" data-target="#collapseCurrent">
+        <h5>Current Sets</h5>
+      </div>
+
+      <div id="collapseCurrent" class="collapse show">
+        <table class="table">
+          <tbody>
+          <% @active_route_sets.each do |route_set| %>
+            <%= render "route_sets/index_row", route_set: route_set %>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div id="collapseCurrent" class="collapse show">
-      <table class="table">
-        <tbody>
-        <% @active_route_sets.each do |route_set| %>
-          <%= render "route_sets/index_row", route_set: route_set %>
-        <% end %>
-        </tbody>
-      </table>
+    <% if @old_route_sets.any? %>
+    <div class="card" data-test="previous-sets">
+      <div class="card-header" data-toggle="collapse" data-target="#collapsePrevious">
+        <h5>Previous Sets</h5>
+      </div>
+
+      <div id="collapsePrevious" class="collapse">
+        <table class="table">
+          <tbody>
+          <% @old_route_sets.each do |route_set| %>
+            <%= render "route_sets/index_row", route_set: route_set %>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
+    <% end %>
   </div>
-
-  <% if @old_route_sets.any? %>
-  <div class="card" data-test="previous-sets">
-    <div class="card-header" data-toggle="collapse" data-target="#collapsePrevious">
-      <h5>Previous Sets</h5>
-    </div>
-
-    <div id="collapsePrevious" class="collapse">
-      <table class="table">
-        <tbody>
-        <% @old_route_sets.each do |route_set| %>
-          <%= render "route_sets/index_row", route_set: route_set %>
-        <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <% end %>
-</div>
+<% end %>

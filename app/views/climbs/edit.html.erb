@@ -5,17 +5,19 @@
 @hide_current_climb_link = true
 %>
 
-<div class="card">
-  <%= render 'shared/map', route_sets: @climb.route_sets,
-                            routes: @routes,
-                            previous_states: previous_states,
-                            new_wins: new_wins,
-                            floorplan_data: @place.floorplan.data,
-                            initial_route_states: @climb.route_states,
-                            show_new_win_star: false,
-                            lockable: true,
-                            editable: true %>
-</div>
+<%= turbo_frame_tag "main-content" do %>
+  <div class="card">
+    <%= render 'shared/map', route_sets: @climb.route_sets,
+                              routes: @routes,
+                              previous_states: previous_states,
+                              new_wins: new_wins,
+                              floorplan_data: @place.floorplan.data,
+                              initial_route_states: @climb.route_states,
+                              show_new_win_star: false,
+                              lockable: true,
+                              editable: true %>
+  </div>
+<% end %>
 
 <script>
   /*$(() => {

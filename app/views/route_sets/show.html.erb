@@ -3,18 +3,20 @@
 @back_url = route_sets_path
 %>
 
-<div class="card">
-  <div style="display: flex;">
-    <button id="floorplan-prev">&lt;</button>
-    <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
-    <button id="floorplan-next">&gt;</button>
+<%= turbo_frame_tag "main-content" do %>
+  <div class="card">
+    <div style="display: flex;">
+      <button id="floorplan-prev">&lt;</button>
+      <span style="flex-grow: 1; text-align: center" id="floorplan_name"></span>
+      <button id="floorplan-next">&gt;</button>
+    </div>
+    <div id="map" class="map" style="background-color: <%= @route_set.grade.map_tint_colour %>">
+      <% @place.floorplan.data.each_with_index do |floor, index| %>
+        <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
+      <% end %>
+    </div>
   </div>
-  <div id="map" class="map" style="background-color: <%= @route_set.grade.map_tint_colour %>">
-    <% @place.floorplan.data.each_with_index do |floor, index| %>
-      <img src="<%= url_for(@place.floorplan.images.find(floor['image_id'])) %>" class="floorplan" data-floorplan-id="<%= index %>" style="opacity: 0.8" />
-    <% end %>
-  </div>
-</div>
+<% end %>
 
 <script>
   /*$(() => {

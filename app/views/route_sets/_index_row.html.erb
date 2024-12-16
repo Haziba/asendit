@@ -1,8 +1,8 @@
 <tr data-test="route-set-<%= route_set.id %>">
   <td><%= route_set.name %></td>
   <td class="actions">
-    <%= link_to "History", route_set_path(route_set.id), { class: "btn btn-secondary btn-sm" } %>
-    <%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm #{route_set.can_edit?(@user) ? "" : "disabled"}" } %>
+    <%= link_to "History", route_set_path(route_set.id), { class: "btn btn-secondary btn-sm", data: { turbo_action: 'advance' } } %>
+    <%= link_to "Edit", edit_route_set_path(route_set.id), { class: "btn btn-secondary btn-sm #{route_set.can_edit?(@user) ? "" : "disabled"}", data: { turbo_action: 'advance' } } %>
     <%= button_to "Delete", route_set, method: :delete, data: {confirm: "Are you sure?", test: 'delete-button'}, class: "btn btn-danger btn-sm", disabled: !route_set.can_edit?(@user) %>
   </td>
 </tr>

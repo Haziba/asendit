@@ -4,42 +4,44 @@
 @extra_header = "<button id='share' class='btn btn-sm btn-secondary' data-test='share'>Share</button>"
 %>
 
-<div class="accordion" id="accordionExample">
-  <% @route_sets.each_with_index do |route_set, i| %>
-  <div class="card" data-test="route-set-<%= route_set.id %>">
-    <div class="card-header" data-toggle="collapse" data-target="#collapse-<%= i %>">
-      <h5 class="mb-0 d-flex justify-content-between">
-        <div>
-          <%= route_set.grade.name.titleize %>
-        </div>
-        <div>
-          <%= attempted_routes(route_set) %>
-        </div>
-        <div>
-          <%= success_rate(route_set) %>✔
-        </div>
-        <div>
-          <%= new_wins_count_for_set(route_set) %>⭐
-        </div>
-      </h5>
-    </div>
+<%= turbo_frame_tag 'main-content' do %>
+  <div class="accordion" id="accordionExample">
+    <% @route_sets.each_with_index do |route_set, i| %>
+    <div class="card" data-test="route-set-<%= route_set.id %>">
+      <div class="card-header" data-toggle="collapse" data-target="#collapse-<%= i %>">
+        <h5 class="mb-0 d-flex justify-content-between">
+          <div>
+            <%= route_set.grade.name.titleize %>
+          </div>
+          <div>
+            <%= attempted_routes(route_set) %>
+          </div>
+          <div>
+            <%= success_rate(route_set) %>✔
+          </div>
+          <div>
+            <%= new_wins_count_for_set(route_set) %>⭐
+          </div>
+        </h5>
+      </div>
 
-    <div id="collapse-<%= i %>" class="collapse map-set">
-      <div class="card-body">
-        <%= render 'shared/map', route_sets: [route_set],
-                                 routes: routes_for_route_set(route_set),
-                                 previous_states: previous_states,
-                                 new_wins: new_wins,
-                                 floorplan_data: @place.floorplan.data,
-                                 initial_route_states: @climb.route_states,
-                                 show_new_win_star: true,
-                                 lockable: false,
-                                 editable: false %>
+      <div id="collapse-<%= i %>" class="collapse map-set">
+        <div class="card-body">
+          <%= render 'shared/map', route_sets: [route_set],
+                                  routes: routes_for_route_set(route_set),
+                                  previous_states: previous_states,
+                                  new_wins: new_wins,
+                                  floorplan_data: @place.floorplan.data,
+                                  initial_route_states: @climb.route_states,
+                                  show_new_win_star: true,
+                                  lockable: false,
+                                  editable: false %>
+        </div>
       </div>
     </div>
+    <% end %>
   </div>
-  <% end %>
-</div>
+<% end %>
 
 <script>
   /*$(() => {

@@ -4,10 +4,12 @@
   @extra_header = link_to "Add", new_place_path, { class: "btn btn-primary btn-block btn-sm", data: { test: 'add' } }
 %>
 
-<table class="table">
-  <tbody>
-  <% @places.each do |place| %>
-    <%= render "places/index_row", place: place %>
-  <% end %>
-  </tbody>
-</table>
+<%= turbo_frame_tag "main-content" do %>
+  <table class="table">
+    <tbody>
+    <% @places.each do |place| %>
+      <%= render "places/index_row", place: place %>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
