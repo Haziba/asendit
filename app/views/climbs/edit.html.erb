@@ -1,11 +1,18 @@
 <%
-@title = "Climb!"
-@back_url = climbs_path
-@extra_header = button_to "Done", { action: "complete", climb_id: @climb.id }, method: :post, class: "btn btn-primary btn-sm", data: { test: 'complete' }
 @hide_current_climb_link = true
 %>
 
-<%= turbo_frame_tag "main-content" do %>
+<turbo-stream action="replace" target="header">
+  <template>
+    <%= render "shared/header", 
+               back_url: climbs_path,
+               title: "Climb!",
+               extra_header: button_to("Done", { action: "complete", climb_id: @climb.id }, method: :post, class: "btn btn-primary btn-sm", data: { test: 'complete' })
+    %>
+  </template>
+</turbo-stream>
+
+<%= turbo_frame_tag "main-content", action: 'replace' do %>
   <div class="card">
     <%= render 'shared/map', route_sets: @climb.route_sets,
                               routes: @routes,

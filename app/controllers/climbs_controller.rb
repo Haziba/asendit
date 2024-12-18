@@ -58,10 +58,15 @@ class ClimbsController < ApplicationController
 
     @active_route_sets = @climb.route_sets
     @routes = @active_route_sets.map { |route_set| [route_set.id, route_set.routes] }.to_h
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html
+    end
   end
 
   def update
-    @climb.route_state_json = params["route_states"].to_unsafe_h.map do |index, route_state|
+    @climb.route_state_json = params["route_states"].map do |route_state|
       RouteStatus.new(
         route_state["routeId"].to_i,
         route_state["status"]

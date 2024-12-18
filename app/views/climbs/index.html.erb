@@ -1,8 +1,12 @@
-<%
-@title = "Climbs"
-@back_url = menu_path
-@extra_header = button_to "Add", climbs_path(method: :post), { class: "btn btn-primary btn-sm", data: { test: 'add' } }
-%>
+<turbo-stream action="replace" target="header">
+  <template>
+    <%= render "shared/header", 
+               back_url: menu_path,
+               title: "Climbs!",
+               extra_header: button_to("Add", climbs_path(method: :post), { class: "btn btn-primary btn-sm", data: { test: 'add' } })
+    %>
+  </template>
+</turbo-stream>
 
 <%= turbo_stream_from @user %>
 
