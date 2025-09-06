@@ -98,11 +98,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_19_121412) do
     t.datetime "updated_at", null: false
     t.bigint "place_id", null: false
     t.date "expires_at"
-    t.bigint "route_set_colour_set_colour_id"
     t.bigint "grade_id"
     t.index ["grade_id"], name: "index_route_sets_on_grade_id"
     t.index ["place_id"], name: "index_route_sets_on_place_id"
-    t.index ["route_set_colour_set_colour_id"], name: "index_route_sets_on_route_set_colour_set_colour_id"
   end
 
   create_table "route_states", force: :cascade do |t|

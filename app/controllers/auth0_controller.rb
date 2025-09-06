@@ -29,6 +29,28 @@ class Auth0Controller < ApplicationController
     # you will finish this in a later step
   end
 
+  # Development-only login bypass
+  def dev_login
+    return redirect_to '/' unless Rails.env.development?
+    
+    # Create or find a dev user
+    user = User.find_or_create_by(google_uid: 'dev-user-123') do |u|
+      u.token = SecureRandom.hex(16)
+      u.admin = true
+    end
+    
+    # Set up session as if OAuth succeeded
+    session[:userinfo] = {
+      'id' => user.id,
+      'token' => user.token,
+      'email' => 'dev@example.com',
+      'name' => 'Dev User',
+      'picture' => 'https://via.placeholder.com/150'
+    }
+    
+    redirect_to '/menu'
+  end
+
   private
 
   def auth_info
