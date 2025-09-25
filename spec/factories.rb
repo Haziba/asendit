@@ -6,20 +6,22 @@ FactoryBot.define do
     end
 
     trait :with_routes do
-      with_routes { true } 
+      with_routes { true }
     end
 
     name { Faker::Lorem.sentence }
     starting { Date.tomorrow }
     ending { Date.tomorrow + 7.days }
 
-    before(:create) do |tournament|
-      grade = create(:grade, place: tournament.place)
-      route_set = create(:route_set, :with_routes, place: grade.place, grade: grade)
+    before(:create) do |tournament, evaluator|
+      if evaluator.with_routes
+        grade = create(:grade, place: tournament.place)
+        route_set = create(:route_set, :with_routes, place: grade.place, grade: grade)
 
-      t_rs = route_set.routes.first(2).map { |route| create(:tournament_route, route: route, tournament: tournament) }
-      tournament.update(tournament_routes: t_rs)
-      t_rs.map(&:route).last.update(floor: 1)
+        t_rs = route_set.routes.first(2).map { |route| create(:tournament_route, route: route, tournament: tournament) }
+        tournament.update(tournament_routes: t_rs)
+        t_rs.map(&:route).last.update(floor: 1)
+      end
     end
 
     after(:build) do |tournament, evaluator|
@@ -30,10 +32,7 @@ FactoryBot.define do
   factory :tournament_route do
     tournament { association :tournament }
     route { association :route }
-
-    before(:create) do |tournament_route|
-      tournament_route.update(order: tournament_route.tournament.tournament_routes.count)
-    end
+    sequence(:order) { |n| n }
   end
 
   factory :grade do

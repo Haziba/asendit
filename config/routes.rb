@@ -11,6 +11,9 @@ Rails.application.routes.draw do
         post 'choose', on: :member
       end
       resources :route_sets, only: [:index, :show, :create, :update, :destroy]
+      resources :tournaments do
+        patch 'update_routes', on: :member
+      end
     end
   end
 
