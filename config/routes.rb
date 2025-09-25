@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       resources :climbs do
         post 'complete', on: :member
       end
+      resources :routes, only: [:index, :show, :create, :destroy]
     end
   end
 
