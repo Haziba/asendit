@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :places do
         post 'choose', on: :member
       end
+      resources :route_sets, only: [:index, :show, :create, :update, :destroy]
     end
   end
 
