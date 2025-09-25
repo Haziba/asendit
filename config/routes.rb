@@ -7,6 +7,9 @@ Rails.application.routes.draw do
         post 'complete', on: :member
       end
       resources :routes, only: [:index, :show, :create, :destroy]
+      resources :places do
+        post 'choose', on: :member
+      end
     end
   end
 
