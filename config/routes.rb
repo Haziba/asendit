@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # API routes for React Native app
   namespace :api do
     namespace :v1 do
-      # API endpoints will be added here
+      resources :climbs, only: [:index]
     end
   end
 

@@ -5,24 +5,27 @@ module Api
     private
 
     def authenticate_request
-      # For now, we'll create a placeholder that we'll implement with JWT in step 2
-      # This will check for a valid Auth0 token in the Authorization header
-      render json: { error: 'Unauthorized' }, status: :unauthorized unless valid_token?
-    end
-
-    def valid_token?
-      # Placeholder - will be implemented with JWT validation in step 2
-      # For now, allow requests with any Bearer token to test the structure
-      auth_header = request.headers['Authorization']
-      return false unless auth_header.present?
-
-      token = auth_header.split(' ').last
-      token.present?
+      render json: { error: 'Unauthorized' }, status: :unauthorized unless current_user
     end
 
     def current_user
-      # Placeholder - will return the authenticated user from the JWT token
-      @current_user ||= nil
+      @current_user ||= validate_token
+    end
+
+    def validate_token
+      auth_header = request.headers['Authorization']
+      return nil unless auth_header.present?
+
+      # Extract token from "Bearer <token>" format
+      token = auth_header.split(' ').last
+      return nil unless token.present?
+
+      # Validate the JWT token with Auth0
+      auth0_payload = Auth0JwtValidator.validate(token)
+
+      # You can map Auth0 user to your User model here if needed
+      # Example: User.find_or_create_by(auth0_id: auth0_payload['sub']) if auth0_payload
+      auth0_payload
     end
   end
 end

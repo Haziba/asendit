@@ -52,6 +52,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
+  gem 'webmock'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -67,3 +68,6 @@ gem 'omniauth-rails_csrf_protection'
 gem "faker", "~> 3.4"
 
 gem "aws-sdk-s3", "~> 1.160"
+
+# JWT for API authentication with Auth0
+gem 'jwt'
