@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  # API routes for React Native app
+  namespace :api do
+    namespace :v1 do
+      # API endpoints will be added here
+    end
+  end
+
   get "climbs/current", to: "climbs#current"
   resources :climbs do
     get "/share", to: "climb_share#show"
