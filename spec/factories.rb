@@ -151,6 +151,7 @@ FactoryBot.define do
 
   factory :user do
     token { Faker::Lorem.sentence}
+    google_uid { "auth0|#{Faker::Alphanumeric.alphanumeric(number: 10)}" }
 
     transient do
       without_place { false }

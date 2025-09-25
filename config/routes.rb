@@ -2,7 +2,10 @@ Rails.application.routes.draw do
   # API routes for React Native app
   namespace :api do
     namespace :v1 do
-      resources :climbs, only: [:index]
+      get 'climbs/current', to: 'climbs#current'
+      resources :climbs do
+        post 'complete', on: :member
+      end
     end
   end
 
