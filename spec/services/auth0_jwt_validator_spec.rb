@@ -1,8 +1,5 @@
 require 'rails_helper'
 require 'jwt'
-require 'webmock/rspec'
-
-WebMock.disable_net_connect!(allow_localhost: true)
 
 RSpec.describe Auth0JwtValidator do
   let(:auth0_domain) { 'shrill-hat-2743.us.auth0.com' }
