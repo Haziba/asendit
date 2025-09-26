@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       resources :tournaments do
         patch 'update_routes', on: :member
       end
+      resources :grades
     end
   end
 
