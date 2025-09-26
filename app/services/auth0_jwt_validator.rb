@@ -40,19 +40,11 @@ class Auth0JwtValidator
     private
 
     def auth0_domain
-      @auth0_domain ||= unless Rails.env.production?
-        Rails.application.config_for(:auth0)['auth0_domain']
-      else
-        ENV['AUTH0_DOMAIN']
-      end
+      @auth0_domain ||= ENV['AUTH0_DOMAIN'] || raise('AUTH0_DOMAIN environment variable not set')
     end
 
     def auth0_client_id
-      @auth0_client_id ||= unless Rails.env.production?
-        Rails.application.config_for(:auth0)['auth0_client_id']
-      else
-        ENV['AUTH0_CLIENT_ID']
-      end
+      @auth0_client_id ||= ENV['AUTH0_CLIENT_ID'] || raise('AUTH0_CLIENT_ID environment variable not set')
     end
 
     def get_public_key(kid)
