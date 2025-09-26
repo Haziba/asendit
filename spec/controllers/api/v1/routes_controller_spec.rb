@@ -18,7 +18,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
 
   before do
     allow_any_instance_of(Api::BaseController)
-      .to receive(:current_user)
+      .to receive(:validate_token)
       .and_return(auth0_payload)
 
     user.update(place: place)
@@ -79,7 +79,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
     context 'without authentication' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 
@@ -268,7 +268,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
     context 'without valid token' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 

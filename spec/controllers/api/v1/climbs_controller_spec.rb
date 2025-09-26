@@ -15,7 +15,7 @@ RSpec.describe Api::V1::ClimbsController, type: :controller do
 
   before do
     allow_any_instance_of(Api::BaseController)
-      .to receive(:current_user)
+      .to receive(:validate_token)
       .and_return(auth0_payload)
 
     user.update(place: place)
@@ -333,12 +333,12 @@ RSpec.describe Api::V1::ClimbsController, type: :controller do
 
     context 'with valid token but different user' do
       let(:different_auth0_payload) do
-        { 'sub' => 'auth0|different-user' }
+        { 'sub' => 'auth0|different-user', 'email' => 'different@example.com', 'name' => 'Different User' }
       end
 
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(different_auth0_payload)
       end
 

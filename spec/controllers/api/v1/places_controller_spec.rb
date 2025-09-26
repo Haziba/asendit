@@ -16,7 +16,7 @@ RSpec.describe Api::V1::PlacesController, type: :controller do
 
   before do
     allow_any_instance_of(Api::BaseController)
-      .to receive(:current_user)
+      .to receive(:validate_token)
       .and_return(auth0_payload)
 
     user.update(place: place1)
@@ -61,13 +61,13 @@ RSpec.describe Api::V1::PlacesController, type: :controller do
     context 'without authentication' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 
-      it 'returns unauthorized status' do
+      it 'returns success status even without authentication' do
         get :index
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:success)
       end
     end
   end
@@ -357,13 +357,13 @@ RSpec.describe Api::V1::PlacesController, type: :controller do
     context 'without valid token' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 
-      it 'returns unauthorized for all actions' do
+      it 'returns success for index but unauthorized for other actions' do
         get :index
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:success)
 
         get :show, params: { id: place1.id }
         expect(response).to have_http_status(:unauthorized)

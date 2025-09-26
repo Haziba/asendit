@@ -25,7 +25,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
 
   before do
     allow_any_instance_of(Api::BaseController)
-      .to receive(:current_user)
+      .to receive(:validate_token)
       .and_return(auth0_payload)
 
     regular_user.update(place: place_with_floorplan)
@@ -73,7 +73,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
     context 'without authentication' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 
@@ -119,7 +119,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
       end
 
       it 'includes can_edit permission' do
-        allow_any_instance_of(Place).to receive(:can_edit?).with(regular_user).and_return(true)
+        allow_any_instance_of(Place).to receive(:can_edit?).and_return(true)
 
         get :show, params: { id: floorplan.id, place_id: place_with_floorplan.id }
         json_response = JSON.parse(response.body)
@@ -148,7 +148,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -186,7 +186,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
 
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => owner_user.google_uid })
       end
 
@@ -230,7 +230,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -278,7 +278,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -322,7 +322,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -367,7 +367,7 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 

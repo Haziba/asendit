@@ -24,7 +24,7 @@ RSpec.describe Api::V1::GradesController, type: :controller do
 
   before do
     allow_any_instance_of(Api::BaseController)
-      .to receive(:current_user)
+      .to receive(:validate_token)
       .and_return(auth0_payload)
 
     regular_user.update(place: place)
@@ -81,7 +81,7 @@ RSpec.describe Api::V1::GradesController, type: :controller do
     context 'without authentication' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 
@@ -164,7 +164,7 @@ RSpec.describe Api::V1::GradesController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -195,7 +195,7 @@ RSpec.describe Api::V1::GradesController, type: :controller do
 
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => owner_user.google_uid })
       end
 
@@ -226,7 +226,7 @@ RSpec.describe Api::V1::GradesController, type: :controller do
     context 'with invalid parameters' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -253,7 +253,7 @@ RSpec.describe Api::V1::GradesController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -318,7 +318,7 @@ RSpec.describe Api::V1::GradesController, type: :controller do
     context 'with admin permissions' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 

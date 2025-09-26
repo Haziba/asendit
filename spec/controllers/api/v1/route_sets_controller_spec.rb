@@ -26,7 +26,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
 
   before do
     allow_any_instance_of(Api::BaseController)
-      .to receive(:current_user)
+      .to receive(:validate_token)
       .and_return(auth0_payload)
 
     regular_user.update(place: place)
@@ -96,7 +96,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
     context 'without authentication' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 
@@ -180,7 +180,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
     context 'as admin user' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -243,7 +243,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
       context 'as admin with invalid params' do
         before do
           allow_any_instance_of(Api::BaseController)
-            .to receive(:current_user)
+            .to receive(:validate_token)
             .and_return({ 'sub' => admin_user.google_uid })
         end
 
@@ -266,7 +266,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
     context 'as admin user' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -305,7 +305,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
       context 'as admin user' do
         before do
           allow_any_instance_of(Api::BaseController)
-            .to receive(:current_user)
+            .to receive(:validate_token)
             .and_return({ 'sub' => admin_user.google_uid })
         end
 
@@ -324,7 +324,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
     context 'as admin user' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return({ 'sub' => admin_user.google_uid })
       end
 
@@ -368,7 +368,7 @@ RSpec.describe Api::V1::RouteSetsController, type: :controller do
     context 'without valid token' do
       before do
         allow_any_instance_of(Api::BaseController)
-          .to receive(:current_user)
+          .to receive(:validate_token)
           .and_return(nil)
       end
 
