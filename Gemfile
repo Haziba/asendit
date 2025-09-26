@@ -71,3 +71,6 @@ gem "aws-sdk-s3", "~> 1.160"
 
 # JWT for API authentication with Auth0
 gem 'jwt'
+
+# CORS for React Native API access
+gem 'rack-cors'
