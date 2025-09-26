@@ -1,6 +1,7 @@
 module Api
   module V1
     class PlacesController < BaseController
+      skip_before_action :authenticate_request, only: [:index]
       before_action :set_place, only: [:show, :update, :destroy]
 
       def index
