@@ -1,7 +1,6 @@
 module Api
   module V1
     class TournamentsController < BaseController
-      before_action :set_user
       before_action :set_tournament, only: [:show, :update, :destroy, :update_routes]
       before_action :set_place
       before_action :ensure_can_edit, only: [:create, :update, :destroy, :update_routes]
@@ -9,7 +8,7 @@ module Api
       def index
         tournaments = @place.tournaments.includes(:tournament_routes)
 
-        render json: TournamentsPresenter.new(tournaments, @user).present
+        render json: TournamentsPresenter.new(tournaments, current_user).present
       end
 
       def show
@@ -17,9 +16,9 @@ module Api
         tournament_routes = @tournament.tournament_routes.includes(route: :route_set).order(:order)
 
         render json: {
-          tournament: TournamentPresenter.new(@tournament, @user).present_detail,
+          tournament: TournamentPresenter.new(@tournament, current_user).present_detail,
           tournament_routes: tournament_routes.map do |tr|
-            TournamentRoutePresenter.new(tr, @user).present
+            TournamentRoutePresenter.new(tr, current_user).present
           end
         }
       end
@@ -34,7 +33,7 @@ module Api
 
         if tournament.save
           render json: {
-            tournament: TournamentPresenter.new(tournament, @user).present_detail
+            tournament: TournamentPresenter.new(tournament, current_user).present_detail
           }, status: :created
         else
           render json: { error: tournament.errors.full_messages }, status: :unprocessable_entity
@@ -56,7 +55,7 @@ module Api
 
         if @tournament.update(update_params)
           render json: {
-            tournament: TournamentPresenter.new(@tournament, @user).present_detail
+            tournament: TournamentPresenter.new(@tournament, current_user).present_detail
           }
         else
           render json: { error: @tournament.errors.full_messages }, status: :unprocessable_entity
@@ -110,13 +109,6 @@ module Api
 
       private
 
-      def set_user
-        auth0_sub = current_user['sub'] if current_user
-        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
-          user.token = SecureRandom.hex(16)
-        end
-      end
-
       def set_tournament
         @tournament = Tournament.find(params[:id])
       rescue ActiveRecord::RecordNotFound
@@ -129,7 +121,7 @@ module Api
         elsif @tournament
           @place = @tournament.place
         else
-          @place = @user.place
+          @place = current_user.place
         end
 
         if @place.nil?
@@ -140,7 +132,7 @@ module Api
       end
 
       def ensure_can_edit
-        unless @user.admin || @place.can_edit?(@user)
+        unless current_user.admin || @place.can_edit?(current_user)
           render json: { error: 'You do not have permission to modify tournaments at this place' }, status: :forbidden
         end
       end

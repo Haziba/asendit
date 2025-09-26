@@ -19,6 +19,7 @@ Rails.application.routes.draw do
         patch 'update_data', on: :member
         post 'upload_image', on: :member
       end
+      resource :user, only: [:show]
     end
   end
 

@@ -1,7 +1,6 @@
 module Api
   module V1
     class GradesController < BaseController
-      before_action :set_user
       before_action :set_place
       before_action :set_grade, only: [:show, :update, :destroy]
       before_action :ensure_can_edit, only: [:create, :update, :destroy]
@@ -9,12 +8,12 @@ module Api
       def index
         grades = @place.grades.includes(:route_sets)
 
-        render json: GradesPresenter.new(grades, @user).present
+        render json: GradesPresenter.new(grades, current_user).present
       end
 
       def show
         render json: {
-          grade: GradePresenter.new(@grade, @user).present_detail
+          grade: GradePresenter.new(@grade, current_user).present_detail
         }
       end
 
@@ -28,7 +27,7 @@ module Api
 
         if grade.save
           render json: {
-            grade: GradePresenter.new(grade, @user).present_detail
+            grade: GradePresenter.new(grade, current_user).present_detail
           }, status: :created
         else
           render json: { error: grade.errors.full_messages }, status: :unprocessable_entity
@@ -44,7 +43,7 @@ module Api
 
         if @grade.update(update_params)
           render json: {
-            grade: GradePresenter.new(@grade, @user).present_detail
+            grade: GradePresenter.new(@grade, current_user).present_detail
           }
         else
           render json: { error: @grade.errors.full_messages }, status: :unprocessable_entity
@@ -68,13 +67,6 @@ module Api
 
       private
 
-      def set_user
-        auth0_sub = current_user['sub'] if current_user
-        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
-          user.token = SecureRandom.hex(16)
-        end
-      end
-
       def set_place
         if params[:place_id].present?
           @place = Place.find(params[:place_id])
@@ -83,7 +75,7 @@ module Api
           grade = Grade.find(params[:id])
           @place = grade.place
         else
-          @place = @user.place
+          @place = current_user.place
         end
 
         if @place.nil?
@@ -100,7 +92,7 @@ module Api
       end
 
       def ensure_can_edit
-        unless @user.admin || @place.can_edit?(@user)
+        unless current_user.admin || @place.can_edit?(current_user)
           render json: { error: 'You do not have permission to modify grades at this place' }, status: :forbidden
         end
       end

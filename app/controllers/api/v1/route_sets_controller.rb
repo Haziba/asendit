@@ -1,7 +1,6 @@
 module Api
   module V1
     class RouteSetsController < BaseController
-      before_action :set_user
       before_action :set_place
       before_action :set_route_set, only: [:show, :update, :destroy]
       before_action :ensure_can_edit, only: [:create, :update, :destroy]
@@ -14,19 +13,19 @@ module Api
         # Get past route sets (all except the most recent for each grade)
         old_route_sets = @place.grades.map(&:past_route_sets).flatten.compact
 
-        render json: RouteSetsPresenter.new([], @user).present_grouped_by_status(active_route_sets, old_route_sets)
+        render json: RouteSetsPresenter.new([], current_user).present_grouped_by_status(active_route_sets, old_route_sets)
       end
 
       def show
         # Get user's climbing history for this route set's routes
-        route_states = Climb.where(user: @user).map(&:route_states).flatten
+        route_states = Climb.where(user: current_user).map(&:route_states).flatten
         climbed_route_ids = route_states.select(&:tried?).map(&:route_id)
         climbed_routes = @route_set.routes.where(id: climbed_route_ids)
 
         render json: {
-          route_set: RouteSetPresenter.new(@route_set, @user).present_with_details,
-          routes: @route_set.routes.map { |route| RoutePresenter.new(route, @user).present_summary },
-          climbed_routes: climbed_routes.map { |route| RoutePresenter.new(route, @user).present_summary },
+          route_set: RouteSetPresenter.new(@route_set, current_user).present_with_details,
+          routes: @route_set.routes.map { |route| RoutePresenter.new(route, current_user).present_summary },
+          climbed_routes: climbed_routes.map { |route| RoutePresenter.new(route, current_user).present_summary },
           user_route_states: route_states.select { |rs|
             @route_set.routes.pluck(:id).include?(rs.route_id)
           }.map { |rs|
@@ -44,7 +43,7 @@ module Api
 
         if route_set.save
           render json: {
-            route_set: RouteSetPresenter.new(route_set, @user).present_with_details
+            route_set: RouteSetPresenter.new(route_set, current_user).present_with_details
           }, status: :created
         else
           render json: { error: route_set.errors.full_messages }, status: :unprocessable_entity
@@ -63,7 +62,7 @@ module Api
 
         if @route_set.update(update_params)
           render json: {
-            route_set: RouteSetPresenter.new(@route_set, @user).present_with_details
+            route_set: RouteSetPresenter.new(@route_set, current_user).present_with_details
           }
         else
           render json: { error: @route_set.errors.full_messages }, status: :unprocessable_entity
@@ -80,13 +79,6 @@ module Api
 
       private
 
-      def set_user
-        auth0_sub = current_user['sub'] if current_user
-        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
-          user.token = SecureRandom.hex(16)
-        end
-      end
-
       def set_place
         # Priority: explicit place_id param > route_set's place > user's current place
         if params[:place_id].present?
@@ -99,7 +91,7 @@ module Api
             return render json: { error: 'Route set not found' }, status: :not_found
           end
         else
-          @place = @user.place
+          @place = current_user.place
         end
 
         if @place.nil?
@@ -118,7 +110,7 @@ module Api
       end
 
       def ensure_can_edit
-        unless @user.admin || @place.can_edit?(@user)
+        unless current_user.admin || @place.can_edit?(current_user)
           render json: { error: 'You do not have permission to modify route sets at this place' }, status: :forbidden
         end
       end

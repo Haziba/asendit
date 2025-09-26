@@ -1,18 +1,17 @@
 module Api
   module V1
     class PlacesController < BaseController
-      before_action :set_user
       before_action :set_place, only: [:show, :update, :destroy]
 
       def index
         places = Place.all.includes(:user, :grades)
 
-        render json: PlacesPresenter.new(places, @user).present
+        render json: PlacesPresenter.new(places, current_user).present
       end
 
       def show
         render json: {
-          place: PlacePresenter.new(@place, @user).present_with_details
+          place: PlacePresenter.new(@place, current_user).present_with_details
         }
       end
 
@@ -24,14 +23,14 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        place = Place.new(name: params[:name], user: @user)
+        place = Place.new(name: params[:name], user: current_user)
 
         if place.save
           # Create initial floorplan like the form does
           Floorplan.create(name: 'Initial floorplan', data: [], place: place)
 
           render json: {
-            place: PlacePresenter.new(place, @user).present
+            place: PlacePresenter.new(place, current_user).present
           }, status: :created
         else
           render json: { error: place.errors.full_messages }, status: :unprocessable_entity
@@ -40,7 +39,7 @@ module Api
 
       def update
         # Only owner can update their place
-        unless @place.user == @user
+        unless @place.user == current_user
           return render json: { error: 'Only the owner can update this place' }, status: :forbidden
         end
 
@@ -52,7 +51,7 @@ module Api
 
         if @place.update(name: params[:name])
           render json: {
-            place: PlacePresenter.new(@place, @user).present
+            place: PlacePresenter.new(@place, current_user).present
           }
         else
           render json: { error: @place.errors.full_messages }, status: :unprocessable_entity
@@ -62,7 +61,7 @@ module Api
       def choose
         place = Place.find(params[:id])
 
-        if @user.update(place: place)
+        if current_user.update(place: place)
           render json: {
             message: 'Place selected successfully',
             selected_place: {
@@ -79,7 +78,7 @@ module Api
 
       def destroy
         # Only owner can delete their place
-        unless @place.user == @user
+        unless @place.user == current_user
           return render json: { error: 'Only the owner can delete this place' }, status: :forbidden
         end
 
@@ -98,14 +97,6 @@ module Api
       end
 
       private
-
-      def set_user
-        # Map Auth0 user to actual User record
-        auth0_sub = current_user['sub'] if current_user
-        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
-          user.token = SecureRandom.hex(16)
-        end
-      end
 
       def set_place
         @place = Place.find(params[:id])

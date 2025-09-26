@@ -1,14 +1,13 @@
 module Api
   module V1
     class ClimbsController < BaseController
-      before_action :set_user
       before_action :set_climb, only: [:show, :update, :destroy, :complete]
       before_action :check_climb_ownership, only: [:show, :update, :destroy, :complete]
 
       def index
-        climbs = Climb.where(user: @user).order(climbed_at: :desc).includes(:place, :route_sets)
+        climbs = Climb.where(user: current_user).order(climbed_at: :desc).includes(:place, :route_sets)
 
-        render json: ClimbsPresenter.new(climbs, @user).present
+        render json: ClimbsPresenter.new(climbs, current_user).present
       end
 
       def show
@@ -30,7 +29,7 @@ module Api
       end
 
       def current
-        current_climb = Climb.where(user: @user, current: true).first
+        current_climb = Climb.where(user: current_user, current: true).first
 
         if current_climb
           render json: { climb: ClimbPresenter.new(current_climb).present }
@@ -40,7 +39,7 @@ module Api
       end
 
       def create
-        existing_current = Climb.where(user: @user, current: true).first
+        existing_current = Climb.where(user: current_user, current: true).first
 
         if existing_current
           return render json: {
@@ -53,14 +52,14 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        place = @user.place
+        place = current_user.place
         return render json: { error: 'No place selected' }, status: :unprocessable_entity unless place
 
         active_route_sets = place.grades.map(&:active_route_set).reject(&:nil?)
 
         climb = Climb.new(
           climbed_at: Time.now,
-          user: @user,
+          user: current_user,
           route_sets: active_route_sets,
           place: place,
           current: true
@@ -108,13 +107,6 @@ module Api
 
       private
 
-      def set_user
-        # Map Auth0 user to actual User record
-        auth0_sub = current_user['sub'] if current_user
-        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
-          user.token = SecureRandom.hex(16)
-        end
-      end
 
       def set_climb
         @climb = Climb.find(params[:id])
@@ -123,7 +115,7 @@ module Api
       end
 
       def check_climb_ownership
-        unless @climb&.user == @user
+        unless @climb&.user == current_user
           render json: { error: 'Access denied' }, status: :forbidden
         end
       end

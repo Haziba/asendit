@@ -1,7 +1,6 @@
 module Api
   module V1
     class RoutesController < BaseController
-      before_action :set_user
       before_action :set_route, only: [:show, :destroy]
       before_action :check_route_access, only: [:show, :destroy]
 
@@ -12,15 +11,15 @@ module Api
           routes = route_set.routes.includes(:route_set)
         else
           # Return all routes for user's place
-          routes = Route.joins(route_set: :place).where(places: { id: @user.place_id }).includes(:route_set)
+          routes = Route.joins(route_set: :place).where(places: { id: current_user.place_id }).includes(:route_set)
         end
 
-        render json: RoutesPresenter.new(routes, @user).present
+        render json: RoutesPresenter.new(routes, current_user).present
       end
 
       def show
         render json: {
-          route: RoutePresenter.new(@route, @user).present
+          route: RoutePresenter.new(@route, current_user).present
         }
       end
 
@@ -28,7 +27,7 @@ module Api
         route_set = RouteSet.find(params[:route_set_id])
 
         # Check if user has access to this route set's place
-        unless route_set.place == @user.place
+        unless route_set.place == current_user.place
           return render json: { error: 'Access denied' }, status: :forbidden
         end
 
@@ -42,7 +41,7 @@ module Api
 
         if route.save
           render json: {
-            route: RoutePresenter.new(route, @user).present
+            route: RoutePresenter.new(route, current_user).present
           }, status: :created
         else
           render json: { error: route.errors.full_messages }, status: :unprocessable_entity
@@ -59,14 +58,6 @@ module Api
 
       private
 
-      def set_user
-        # Map Auth0 user to actual User record
-        auth0_sub = current_user['sub'] if current_user
-        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
-          user.token = SecureRandom.hex(16)
-        end
-      end
-
       def set_route
         @route = Route.find(params[:id])
       rescue ActiveRecord::RecordNotFound
@@ -75,7 +66,7 @@ module Api
 
       def check_route_access
         # User can only access routes at their current place
-        unless @route&.route_set&.place == @user.place
+        unless @route&.route_set&.place == current_user.place
           render json: { error: 'Access denied' }, status: :forbidden
         end
       end

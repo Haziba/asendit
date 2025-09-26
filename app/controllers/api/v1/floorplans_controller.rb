@@ -1,7 +1,6 @@
 module Api
   module V1
     class FloorplansController < BaseController
-      before_action :set_user
       before_action :set_place
       before_action :set_floorplan, only: [:show, :update, :destroy, :update_data, :upload_image]
       before_action :ensure_can_edit, only: [:create, :update, :destroy, :update_data, :upload_image]
@@ -11,7 +10,7 @@ module Api
 
         if floorplan
           render json: {
-            floorplan: FloorplanPresenter.new(floorplan, @user).present
+            floorplan: FloorplanPresenter.new(floorplan, current_user).present
           }
         else
           render json: { floorplan: nil }
@@ -40,7 +39,7 @@ module Api
 
         if floorplan.save
           render json: {
-            floorplan: FloorplanPresenter.new(floorplan, @user).present_detail
+            floorplan: FloorplanPresenter.new(floorplan, current_user).present_detail
           }, status: :created
         else
           render json: { error: floorplan.errors.full_messages }, status: :unprocessable_entity
@@ -55,7 +54,7 @@ module Api
 
         if @floorplan.update(update_params)
           render json: {
-            floorplan: FloorplanPresenter.new(@floorplan, @user).present_detail
+            floorplan: FloorplanPresenter.new(@floorplan, current_user).present_detail
           }
         else
           render json: { error: @floorplan.errors.full_messages }, status: :unprocessable_entity
@@ -66,7 +65,7 @@ module Api
         if @floorplan.update(data: params[:data])
           render json: {
             success: true,
-            floorplan: FloorplanPresenter.new(@floorplan, @user).present
+            floorplan: FloorplanPresenter.new(@floorplan, current_user).present
           }
         else
           render json: {
@@ -118,18 +117,11 @@ module Api
 
       private
 
-      def set_user
-        auth0_sub = current_user['sub'] if current_user
-        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
-          user.token = SecureRandom.hex(16)
-        end
-      end
-
       def set_place
         if params[:place_id].present?
           @place = Place.find(params[:place_id])
         else
-          @place = @user.place
+          @place = current_user.place
         end
 
         if @place.nil?
@@ -148,7 +140,7 @@ module Api
       end
 
       def ensure_can_edit
-        unless @user.admin || @place.can_edit?(@user)
+        unless current_user.admin || @place.can_edit?(current_user)
           render json: { error: 'You do not have permission to modify floorplans at this place' }, status: :forbidden
         end
       end
