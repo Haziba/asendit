@@ -84,16 +84,26 @@ FactoryBot.define do
       end
     end
 
+    trait :with_floorplan do
+      transient do
+        floorplan { true }
+      end
+    end
+
     name { "Test Gym" }
 
     after(:build) do |place, evaluator|
       place.user = evaluator.user || create(:user, place: place)
-      place.floorplan = evaluator.floorplan
+      place.floorplan = evaluator.floorplan unless evaluator.floorplan == true
     end
 
     after(:create) do |place, evaluator|
       place.user = create(:user, place: place) unless place.user
-      place.floorplan = create(:floorplan, place: place) unless place.floorplan
+      if evaluator.floorplan == true
+        create(:floorplan, place: place)
+      elsif evaluator.floorplan
+        place.floorplan = evaluator.floorplan
+      end
       place.grades = create_list(:grade, 3, place: place) if evaluator.with_grades
     end
   end

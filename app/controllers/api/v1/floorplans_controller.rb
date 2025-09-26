@@ -1,0 +1,188 @@
+module Api
+  module V1
+    class FloorplansController < BaseController
+      before_action :set_user
+      before_action :set_place
+      before_action :set_floorplan, only: [:show, :update, :destroy, :update_data, :upload_image]
+      before_action :ensure_can_edit, only: [:create, :update, :destroy, :update_data, :upload_image]
+
+      def index
+        floorplan = @place.floorplan
+
+        if floorplan
+          render json: {
+            floorplan: serialize_floorplan(floorplan)
+          }
+        else
+          render json: { floorplan: nil }
+        end
+      end
+
+      def show
+        render json: {
+          floorplan: serialize_floorplan_detail(@floorplan)
+        }
+      end
+
+      def create
+        existing_floorplan = @place.floorplan
+        if existing_floorplan
+          return render json: {
+            error: 'Place already has a floorplan'
+          }, status: :unprocessable_entity
+        end
+
+        floorplan = Floorplan.new(
+          place: @place,
+          name: params[:name] || 'Main Floorplan',
+          data: params[:data] || []
+        )
+
+        if floorplan.save
+          render json: {
+            floorplan: serialize_floorplan_detail(floorplan)
+          }, status: :created
+        else
+          render json: { error: floorplan.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      def update
+        update_params = {
+          name: params[:name],
+          data: params[:data]
+        }.compact
+
+        if @floorplan.update(update_params)
+          render json: {
+            floorplan: serialize_floorplan_detail(@floorplan)
+          }
+        else
+          render json: { error: @floorplan.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      def update_data
+        if @floorplan.update(data: params[:data])
+          render json: {
+            success: true,
+            floorplan: serialize_floorplan(@floorplan)
+          }
+        else
+          render json: {
+            success: false,
+            error: @floorplan.errors.full_messages
+          }, status: :unprocessable_entity
+        end
+      end
+
+      def upload_image
+        unless params[:image].present?
+          return render json: {
+            error: 'No image provided'
+          }, status: :bad_request
+        end
+
+        @floorplan.images.attach(params[:image])
+
+        if @floorplan.images.last
+          render json: {
+            success: true,
+            image: {
+              id: @floorplan.images.last.id,
+              url: rails_blob_url(@floorplan.images.last)
+            }
+          }
+        else
+          render json: {
+            error: 'Failed to upload image'
+          }, status: :unprocessable_entity
+        end
+      rescue => e
+        render json: {
+          error: "Upload failed: #{e.message}"
+        }, status: :unprocessable_entity
+      end
+
+      def destroy
+        if @floorplan.images.attached?
+          @floorplan.images.purge
+        end
+
+        if @floorplan.destroy
+          render json: { message: 'Floorplan deleted successfully' }
+        else
+          render json: { error: 'Failed to delete floorplan' }, status: :unprocessable_entity
+        end
+      end
+
+      private
+
+      def set_user
+        auth0_sub = current_user['sub'] if current_user
+        @user = User.find_or_create_by(google_uid: auth0_sub) do |user|
+          user.token = SecureRandom.hex(16)
+        end
+      end
+
+      def set_place
+        if params[:place_id].present?
+          @place = Place.find(params[:place_id])
+        else
+          @place = @user.place
+        end
+
+        if @place.nil?
+          render json: { error: 'No place selected or found' }, status: :unprocessable_entity
+        end
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Place not found' }, status: :not_found
+      end
+
+      def set_floorplan
+        @floorplan = @place.floorplan
+
+        if @floorplan.nil?
+          render json: { error: 'Floorplan not found' }, status: :not_found
+        end
+      end
+
+      def ensure_can_edit
+        unless @user.admin || @place.can_edit?(@user)
+          render json: { error: 'You do not have permission to modify floorplans at this place' }, status: :forbidden
+        end
+      end
+
+      def serialize_floorplan(floorplan)
+        {
+          id: floorplan.id,
+          name: floorplan.name,
+          data: floorplan.data,
+          images_count: floorplan.images.count,
+          created_at: floorplan.created_at,
+          updated_at: floorplan.updated_at
+        }
+      end
+
+      def serialize_floorplan_detail(floorplan)
+        serialize_floorplan(floorplan).merge(
+          place: {
+            id: floorplan.place.id,
+            name: floorplan.place.name
+          },
+          images: floorplan.images.map do |image|
+            {
+              id: image.id,
+              url: rails_blob_url(image),
+              filename: image.filename.to_s,
+              content_type: image.content_type,
+              byte_size: image.byte_size,
+              created_at: image.created_at
+            }
+          end,
+          can_edit: @user.admin || floorplan.place.can_edit?(@user)
+        )
+      end
+    end
+  end
+end

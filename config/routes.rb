@@ -15,6 +15,10 @@ Rails.application.routes.draw do
         patch 'update_routes', on: :member
       end
       resources :grades
+      resources :floorplans do
+        patch 'update_data', on: :member
+        post 'upload_image', on: :member
+      end
     end
   end
 
