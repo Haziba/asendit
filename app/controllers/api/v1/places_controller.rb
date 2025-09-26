@@ -7,45 +7,12 @@ module Api
       def index
         places = Place.all.includes(:user, :grades)
 
-        render json: {
-          places: places.map do |place|
-            {
-              id: place.id,
-              name: place.name,
-              created_at: place.created_at,
-              updated_at: place.updated_at,
-              owner: {
-                id: place.user.id,
-                email: place.user.token # Using token as identifier since we don't have email in User model
-              },
-              grades_count: place.grades.count,
-              current_user_place: (place.id == @user.place_id)
-            }
-          end
-        }
+        render json: PlacesPresenter.new(places, @user).present
       end
 
       def show
         render json: {
-          place: {
-            id: @place.id,
-            name: @place.name,
-            created_at: @place.created_at,
-            updated_at: @place.updated_at,
-            owner: {
-              id: @place.user.id,
-              email: @place.user.token
-            },
-            grades: @place.grades.map do |grade|
-              {
-                id: grade.id,
-                name: grade.name,
-                grade: grade.grade,
-                map_tint_colour: grade.map_tint_colour
-              }
-            end,
-            current_user_place: (@place.id == @user.place_id)
-          }
+          place: PlacePresenter.new(@place, @user).present_with_details
         }
       end
 
@@ -64,15 +31,7 @@ module Api
           Floorplan.create(name: 'Initial floorplan', data: [], place: place)
 
           render json: {
-            place: {
-              id: place.id,
-              name: place.name,
-              created_at: place.created_at,
-              owner: {
-                id: place.user.id,
-                email: place.user.token
-              }
-            }
+            place: PlacePresenter.new(place, @user).present
           }, status: :created
         else
           render json: { error: place.errors.full_messages }, status: :unprocessable_entity
@@ -93,11 +52,7 @@ module Api
 
         if @place.update(name: params[:name])
           render json: {
-            place: {
-              id: @place.id,
-              name: @place.name,
-              updated_at: @place.updated_at
-            }
+            place: PlacePresenter.new(@place, @user).present
           }
         else
           render json: { error: @place.errors.full_messages }, status: :unprocessable_entity

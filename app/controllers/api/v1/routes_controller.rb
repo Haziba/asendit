@@ -15,42 +15,12 @@ module Api
           routes = Route.joins(route_set: :place).where(places: { id: @user.place_id }).includes(:route_set)
         end
 
-        render json: {
-          routes: routes.map do |route|
-            {
-              id: route.id,
-              pos_x: route.pos_x,
-              pos_y: route.pos_y,
-              floor: route.floor,
-              added: route.added,
-              route_set: {
-                id: route.route_set.id,
-                name: route.route_set.name,
-                grade: route.route_set.grade
-              }
-            }
-          end
-        }
+        render json: RoutesPresenter.new(routes, @user).present
       end
 
       def show
         render json: {
-          route: {
-            id: @route.id,
-            pos_x: @route.pos_x,
-            pos_y: @route.pos_y,
-            floor: @route.floor,
-            added: @route.added,
-            route_set: {
-              id: @route.route_set.id,
-              name: @route.route_set.name,
-              grade: @route.route_set.grade,
-              place: {
-                id: @route.route_set.place.id,
-                name: @route.route_set.place.name
-              }
-            }
-          }
+          route: RoutePresenter.new(@route, @user).present
         }
       end
 
@@ -72,18 +42,7 @@ module Api
 
         if route.save
           render json: {
-            route: {
-              id: route.id,
-              pos_x: route.pos_x,
-              pos_y: route.pos_y,
-              floor: route.floor,
-              added: route.added,
-              route_set: {
-                id: route.route_set.id,
-                name: route.route_set.name,
-                grade: route.route_set.grade
-              }
-            }
+            route: RoutePresenter.new(route, @user).present
           }, status: :created
         else
           render json: { error: route.errors.full_messages }, status: :unprocessable_entity

@@ -11,7 +11,7 @@ module Api
 
         if floorplan
           render json: {
-            floorplan: serialize_floorplan(floorplan)
+            floorplan: FloorplanPresenter.new(floorplan, @user).present
           }
         else
           render json: { floorplan: nil }
@@ -20,7 +20,7 @@ module Api
 
       def show
         render json: {
-          floorplan: serialize_floorplan_detail(@floorplan)
+          floorplan: FloorplanPresenter.new(@floorplan, @user).present_detail
         }
       end
 
@@ -40,7 +40,7 @@ module Api
 
         if floorplan.save
           render json: {
-            floorplan: serialize_floorplan_detail(floorplan)
+            floorplan: FloorplanPresenter.new(floorplan, @user).present_detail
           }, status: :created
         else
           render json: { error: floorplan.errors.full_messages }, status: :unprocessable_entity
@@ -55,7 +55,7 @@ module Api
 
         if @floorplan.update(update_params)
           render json: {
-            floorplan: serialize_floorplan_detail(@floorplan)
+            floorplan: FloorplanPresenter.new(@floorplan, @user).present_detail
           }
         else
           render json: { error: @floorplan.errors.full_messages }, status: :unprocessable_entity
@@ -66,7 +66,7 @@ module Api
         if @floorplan.update(data: params[:data])
           render json: {
             success: true,
-            floorplan: serialize_floorplan(@floorplan)
+            floorplan: FloorplanPresenter.new(@floorplan, @user).present
           }
         else
           render json: {
@@ -153,36 +153,6 @@ module Api
         end
       end
 
-      def serialize_floorplan(floorplan)
-        {
-          id: floorplan.id,
-          name: floorplan.name,
-          data: floorplan.data,
-          images_count: floorplan.images.count,
-          created_at: floorplan.created_at,
-          updated_at: floorplan.updated_at
-        }
-      end
-
-      def serialize_floorplan_detail(floorplan)
-        serialize_floorplan(floorplan).merge(
-          place: {
-            id: floorplan.place.id,
-            name: floorplan.place.name
-          },
-          images: floorplan.images.map do |image|
-            {
-              id: image.id,
-              url: rails_blob_url(image),
-              filename: image.filename.to_s,
-              content_type: image.content_type,
-              byte_size: image.byte_size,
-              created_at: image.created_at
-            }
-          end,
-          can_edit: @user.admin || floorplan.place.can_edit?(@user)
-        )
-      end
     end
   end
 end

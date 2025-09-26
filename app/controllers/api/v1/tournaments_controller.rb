@@ -9,11 +9,7 @@ module Api
       def index
         tournaments = @place.tournaments.includes(:tournament_routes)
 
-        render json: {
-          tournaments: tournaments.map do |tournament|
-            serialize_tournament_summary(tournament)
-          end
-        }
+        render json: TournamentsPresenter.new(tournaments, @user).present
       end
 
       def show
@@ -21,23 +17,9 @@ module Api
         tournament_routes = @tournament.tournament_routes.includes(route: :route_set).order(:order)
 
         render json: {
-          tournament: serialize_tournament_detail(@tournament),
+          tournament: TournamentPresenter.new(@tournament, @user).present_detail,
           tournament_routes: tournament_routes.map do |tr|
-            {
-              id: tr.id,
-              order: tr.order,
-              route: {
-                id: tr.route.id,
-                pos_x: tr.route.pos_x,
-                pos_y: tr.route.pos_y,
-                floor: tr.route.floor,
-                route_set: {
-                  id: tr.route.route_set.id,
-                  name: tr.route.route_set.name,
-                  grade: tr.route.route_set.grade
-                }
-              }
-            }
+            TournamentRoutePresenter.new(tr, @user).present
           end
         }
       end
@@ -52,7 +34,7 @@ module Api
 
         if tournament.save
           render json: {
-            tournament: serialize_tournament_detail(tournament)
+            tournament: TournamentPresenter.new(tournament, @user).present_detail
           }, status: :created
         else
           render json: { error: tournament.errors.full_messages }, status: :unprocessable_entity
@@ -74,7 +56,7 @@ module Api
 
         if @tournament.update(update_params)
           render json: {
-            tournament: serialize_tournament_detail(@tournament)
+            tournament: TournamentPresenter.new(@tournament, @user).present_detail
           }
         else
           render json: { error: @tournament.errors.full_messages }, status: :unprocessable_entity
@@ -163,39 +145,6 @@ module Api
         end
       end
 
-      def serialize_tournament_summary(tournament)
-        {
-          id: tournament.id,
-          name: tournament.name,
-          starting: tournament.starting,
-          ending: tournament.ending,
-          route_count: tournament.tournament_routes.count,
-          status: tournament_status(tournament)
-        }
-      end
-
-      def serialize_tournament_detail(tournament)
-        serialize_tournament_summary(tournament).merge(
-          place: {
-            id: tournament.place.id,
-            name: tournament.place.name
-          },
-          created_at: tournament.created_at,
-          updated_at: tournament.updated_at,
-          can_edit: @user.admin || tournament.place.can_edit?(@user)
-        )
-      end
-
-      def tournament_status(tournament)
-        today = Date.today
-        if today < tournament.starting
-          'upcoming'
-        elsif today > tournament.ending
-          'ended'
-        else
-          'active'
-        end
-      end
     end
   end
 end

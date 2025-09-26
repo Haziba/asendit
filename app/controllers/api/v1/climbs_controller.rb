@@ -8,21 +8,7 @@ module Api
       def index
         climbs = Climb.where(user: @user).order(climbed_at: :desc).includes(:place, :route_sets)
 
-        render json: {
-          climbs: climbs.map do |climb|
-            {
-              id: climb.id,
-              name: climb.name,
-              climbed_at: climb.climbed_at,
-              current: climb.current,
-              success_percentage: climb.success_percentage,
-              place: {
-                id: climb.place.id,
-                name: climb.place.name
-              }
-            }
-          end
-        }
+        render json: ClimbsPresenter.new(climbs, @user).present
       end
 
       def show
@@ -31,23 +17,7 @@ module Api
         route_sets = RouteSet.find(routes.keys)
 
         render json: {
-          climb: {
-            id: @climb.id,
-            name: @climb.name,
-            climbed_at: @climb.climbed_at,
-            current: @climb.current,
-            success_percentage: @climb.success_percentage,
-            place: {
-              id: @climb.place.id,
-              name: @climb.place.name
-            },
-            route_states: @climb.route_states.map do |route_state|
-              {
-                route_id: route_state.route_id,
-                status: route_state.status
-              }
-            end
-          },
+          climb: ClimbPresenter.new(@climb).present_with_route_states,
           routes: routes,
           route_sets: route_sets.map do |rs|
             {
@@ -63,14 +33,7 @@ module Api
         current_climb = Climb.where(user: @user, current: true).first
 
         if current_climb
-          render json: {
-            climb: {
-              id: current_climb.id,
-              name: current_climb.name,
-              climbed_at: current_climb.climbed_at,
-              current: current_climb.current
-            }
-          }
+          render json: { climb: ClimbPresenter.new(current_climb).present }
         else
           render json: { climb: nil }
         end
@@ -104,18 +67,7 @@ module Api
         )
 
         if climb.save
-          render json: {
-            climb: {
-              id: climb.id,
-              name: climb.name,
-              climbed_at: climb.climbed_at,
-              current: climb.current,
-              place: {
-                id: place.id,
-                name: place.name
-              }
-            }
-          }, status: :created
+          render json: { climb: ClimbPresenter.new(climb).present }, status: :created
         else
           render json: { error: climb.errors.full_messages }, status: :unprocessable_entity
         end
@@ -132,16 +84,7 @@ module Api
         @climb.route_state_json = route_states || []
 
         if @climb.save
-          render json: {
-            climb: {
-              id: @climb.id,
-              name: @climb.name,
-              success_percentage: @climb.success_percentage,
-              route_states: @climb.route_states.map do |rs|
-                { route_id: rs.route_id, status: rs.status }
-              end
-            }
-          }
+          render json: { climb: ClimbPresenter.new(@climb).present_with_route_states }
         else
           render json: { error: @climb.errors.full_messages }, status: :unprocessable_entity
         end
@@ -149,14 +92,7 @@ module Api
 
       def complete
         if @climb.update(current: false)
-          render json: {
-            climb: {
-              id: @climb.id,
-              name: @climb.name,
-              current: @climb.current,
-              success_percentage: @climb.success_percentage
-            }
-          }
+          render json: { climb: ClimbPresenter.new(@climb).present }
         else
           render json: { error: @climb.errors.full_messages }, status: :unprocessable_entity
         end

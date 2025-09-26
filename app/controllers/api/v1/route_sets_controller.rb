@@ -14,10 +14,7 @@ module Api
         # Get past route sets (all except the most recent for each grade)
         old_route_sets = @place.grades.map(&:past_route_sets).flatten.compact
 
-        render json: {
-          active_route_sets: serialize_route_sets(active_route_sets),
-          past_route_sets: serialize_route_sets(old_route_sets)
-        }
+        render json: RouteSetsPresenter.new([], @user).present_grouped_by_status(active_route_sets, old_route_sets)
       end
 
       def show
@@ -27,9 +24,9 @@ module Api
         climbed_routes = @route_set.routes.where(id: climbed_route_ids)
 
         render json: {
-          route_set: serialize_route_set_detail(@route_set),
-          routes: serialize_routes(@route_set.routes),
-          climbed_routes: serialize_routes(climbed_routes),
+          route_set: RouteSetPresenter.new(@route_set, @user).present_with_details,
+          routes: @route_set.routes.map { |route| RoutePresenter.new(route, @user).present_summary },
+          climbed_routes: climbed_routes.map { |route| RoutePresenter.new(route, @user).present_summary },
           user_route_states: route_states.select { |rs|
             @route_set.routes.pluck(:id).include?(rs.route_id)
           }.map { |rs|
@@ -47,7 +44,7 @@ module Api
 
         if route_set.save
           render json: {
-            route_set: serialize_route_set_detail(route_set)
+            route_set: RouteSetPresenter.new(route_set, @user).present_with_details
           }, status: :created
         else
           render json: { error: route_set.errors.full_messages }, status: :unprocessable_entity
@@ -66,7 +63,7 @@ module Api
 
         if @route_set.update(update_params)
           render json: {
-            route_set: serialize_route_set_detail(@route_set)
+            route_set: RouteSetPresenter.new(@route_set, @user).present_with_details
           }
         else
           render json: { error: @route_set.errors.full_messages }, status: :unprocessable_entity
@@ -126,49 +123,6 @@ module Api
         end
       end
 
-      def serialize_route_sets(route_sets)
-        route_sets.map { |rs| serialize_route_set_summary(rs) }
-      end
-
-      def serialize_route_set_summary(route_set)
-        {
-          id: route_set.id,
-          name: route_set.name,
-          added: route_set.added,
-          expires_at: route_set.expires_at,
-          route_count: route_set.routes.count,
-          grade: {
-            id: route_set.grade.id,
-            name: route_set.grade.name,
-            grade: route_set.grade.grade,
-            map_tint_colour: route_set.grade.map_tint_colour
-          }
-        }
-      end
-
-      def serialize_route_set_detail(route_set)
-        serialize_route_set_summary(route_set).merge(
-          place: {
-            id: route_set.place.id,
-            name: route_set.place.name
-          },
-          can_edit: route_set.can_edit?(@user),
-          created_at: route_set.created_at,
-          updated_at: route_set.updated_at
-        )
-      end
-
-      def serialize_routes(routes)
-        routes.map do |route|
-          {
-            id: route.id,
-            pos_x: route.pos_x,
-            pos_y: route.pos_y,
-            floor: route.floor,
-            added: route.added
-          }
-        end
-      end
     end
   end
 end
