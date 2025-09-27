@@ -1,0 +1,67 @@
+# Multi-platform Dockerfile for better compatibility
+FROM ruby:3.3.4-alpine AS base
+
+# Set environment variables
+ENV RAILS_ENV=production \
+    BUNDLE_PATH="/usr/local/bundle" \
+    RAILS_SERVE_STATIC_FILES=true \
+    RAILS_LOG_TO_STDOUT=true
+
+# Install system dependencies
+RUN apk add --no-cache \
+    build-base \
+    postgresql-dev \
+    tzdata \
+    git \
+    nodejs \
+    npm \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy Gemfile and Gemfile.lock
+COPY Gemfile Gemfile.lock ./
+
+# Configure bundler for the current platform and install gems
+RUN bundle config set --local without 'development test' && \
+    bundle config set --local force_ruby_platform true && \
+    bundle install --jobs 4 --retry 3 && \
+    bundle clean --force && \
+    rm -rf /usr/local/bundle/cache
+
+# Copy the rest of the application
+COPY . .
+
+# Create directories that might be needed
+RUN mkdir -p tmp/pids tmp/cache tmp/sockets log
+
+# Create non-root user for security
+RUN addgroup -g 1000 -S appgroup && \
+    adduser -u 1000 -S appuser -G appgroup
+
+# Change ownership of app directory
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Expose port 3000
+EXPOSE 3000
+
+# Copy and set up entrypoint script
+COPY --chown=appuser:appgroup docker-entrypoint.sh /usr/local/bin/
+USER root
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+
+# Set entrypoint
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Default command
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3000"]

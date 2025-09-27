@@ -1,0 +1,89 @@
+# Git
+.git
+.gitignore
+README.md
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Development files
+.env.development
+.env.test
+.env.local
+
+# Logs
+log/*
+tmp/*
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Bundle cache
+vendor/bundle/
+
+# RSpec/Capybara artifacts
+capybara-*.html
+.rspec_status
+
+# Database
+*.sqlite3
+*.sqlite3-journal
+
+# Test files
+spec/
+test/
+
+# Documentation
+doc/
+.yardoc
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# OS generated files
+Thumbs.db
+
+# Rails specific
+/public/assets
+/public/packs
+/public/packs-test
+/storage/*
+!/storage/.keep
+
+# Secrets
+/config/master.key
+/config/credentials/production.key
+
+# Precompiled assets
+public/assets/
+public/packs/

@@ -1,0 +1,23 @@
+#!/bin/bash -e
+
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
+
+# Debug: Show database URL (masked)
+if [ ! -z "${DATABASE_URL}" ]; then
+    echo "Database URL is configured"
+else
+    echo "Warning: DATABASE_URL is not set"
+fi
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  echo "Preparing database..."
+  # Try to prepare database, but don't fail if it's not available
+  ./bin/rails db:prepare || echo "Database preparation failed, continuing anyway..."
+fi
+
+exec "${@}"

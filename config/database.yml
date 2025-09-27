@@ -17,6 +17,4 @@ test:
 
 production:
   <<: *default
-  database: dat_depot_production
-  username: dat_depot
-  password: <%= ENV['DAT_DEPOT_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>

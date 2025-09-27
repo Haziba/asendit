@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # Health check endpoint for deployment
+  get '/health', to: 'health#index'
+
   # API routes for React Native app
   namespace :api do
     namespace :v1 do
