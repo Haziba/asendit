@@ -5,9 +5,16 @@ module Api
       before_action :set_place, only: [:show, :update, :destroy]
 
       def index
-        places = Place.all.includes(:user, :grades)
+        places = if params[:latitude].present? && params[:longitude].present?
+                   Place.near(params[:latitude].to_f, params[:longitude].to_f, 20).includes(:user, :grades)
+                 else
+                   Place.all.includes(:user, :grades)
+                 end
 
-        render json: PlacesPresenter.new(places, current_user).present
+        render json: PlacesPresenter.new(places, current_user).present(
+          latitude: params[:latitude]&.to_f,
+          longitude: params[:longitude]&.to_f
+        )
       end
 
       def show
@@ -24,7 +31,12 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        place = Place.new(name: params[:name], user: current_user)
+        place = Place.new(
+          name: params[:name],
+          user: current_user,
+          latitude: params[:latitude],
+          longitude: params[:longitude]
+        )
 
         if place.save
           # Create initial floorplan like the form does
@@ -50,7 +62,11 @@ module Api
           }, status: :unprocessable_entity
         end
 
-        if @place.update(name: params[:name])
+        update_params = { name: params[:name] }
+        update_params[:latitude] = params[:latitude] if params[:latitude].present?
+        update_params[:longitude] = params[:longitude] if params[:longitude].present?
+
+        if @place.update(update_params)
           render json: {
             place: PlacePresenter.new(@place, current_user).present
           }

@@ -6,9 +6,14 @@ class PlacesPresenter
     @user = user
   end
 
-  def present
+  def present(latitude: nil, longitude: nil)
     {
-      places: places.map { |place| PlacePresenter.new(place, user).present_for_index }
+      places: places.map { |place|
+        PlacePresenter.new(place, user).present_for_index(
+          latitude: latitude,
+          longitude: longitude
+        )
+      }
     }
   end
 end

@@ -12,19 +12,37 @@ class PlacePresenter
       name: place.name,
       created_at: place.created_at,
       updated_at: place.updated_at,
+      latitude: place.latitude,
+      longitude: place.longitude,
       owner: place.user ? { id: place.user.id, email: place.user.token } : nil
     }
   end
 
-  def present_for_index
-    present.merge(
+  def present_for_index(latitude: nil, longitude: nil)
+    result = present.merge(
       owner: {
         id: place.user.id,
         email: place.user.token
       },
       grades_count: place.grades.count,
-      current_user_place: user && (place.id == user.place_id)
+      current_user_place: user && (place.id == user.place_id),
+      latitude: place.latitude,
+      longitude: place.longitude
     )
+
+    # Add distance if user location is provided and place has coordinates
+    if latitude && longitude && place.has_coordinates?
+      if place.respond_to?(:distance) && place.distance.present?
+        # Distance from SQL query (more accurate)
+        result[:distance_km] = place.distance.round(2)
+      else
+        # Calculate distance using model method
+        distance = place.distance_to(latitude, longitude)
+        result[:distance_km] = distance.round(2) if distance
+      end
+    end
+
+    result
   end
 
   def present_with_details

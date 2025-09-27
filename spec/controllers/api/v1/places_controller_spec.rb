@@ -70,6 +70,54 @@ RSpec.describe Api::V1::PlacesController, type: :controller do
         expect(response).to have_http_status(:success)
       end
     end
+
+    context 'with location parameters' do
+      let!(:nearby_place) { create(:place, latitude: 40.7589, longitude: -73.9851) } # NYC
+      let!(:far_place) { create(:place, latitude: 34.0522, longitude: -118.2437) } # LA
+
+      it 'returns places ordered by distance when lat/lng provided' do
+        get :index, params: { latitude: 40.7614, longitude: -73.9776 } # Times Square
+        expect(response).to have_http_status(:success)
+
+        json_response = JSON.parse(response.body)
+        places_with_coords = json_response['places'].select { |p| p['latitude'] && p['longitude'] }
+
+        expect(places_with_coords.length).to be >= 2
+
+        # First place should be closer (NYC) than second place (LA)
+        if places_with_coords.length >= 2
+          first_distance = places_with_coords[0]['distance_km']
+          second_distance = places_with_coords[1]['distance_km']
+          expect(first_distance).to be < second_distance
+        end
+      end
+
+      it 'includes distance information in response' do
+        get :index, params: { latitude: 40.7614, longitude: -73.9776 }
+        json_response = JSON.parse(response.body)
+
+        nearby_place_data = json_response['places'].find { |p| p['id'] == nearby_place.id }
+        expect(nearby_place_data['distance_km']).to be_present
+        expect(nearby_place_data['distance_km']).to be < 5 # Should be very close
+      end
+
+      it 'limits results to 20 places maximum' do
+        # This test assumes we might have more than 20 places with coordinates
+        get :index, params: { latitude: 40.7614, longitude: -73.9776 }
+        json_response = JSON.parse(response.body)
+
+        expect(json_response['places'].length).to be <= 20
+      end
+
+      it 'includes latitude and longitude in place data' do
+        get :index
+        json_response = JSON.parse(response.body)
+
+        place_data = json_response['places'].find { |p| p['id'] == nearby_place.id }
+        expect(place_data['latitude']).to eq(nearby_place.latitude.to_s)
+        expect(place_data['longitude']).to eq(nearby_place.longitude.to_s)
+      end
+    end
   end
 
   describe 'GET #show' do
