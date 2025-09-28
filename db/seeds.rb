@@ -37,37 +37,67 @@ users.each do |user_attrs|
   puts "✅ Created user: #{user.name}"
 end
 
-# Create sample climbing gyms (places) with coordinates
+# Create sample climbing gyms (places) with UK coordinates
 places_data = [
   {
-    name: "Boulder Rock Club",
-    latitude: 40.0150,
-    longitude: -105.2705,
+    name: "The Castle Climbing Centre",
+    latitude: 51.5333,
+    longitude: -0.1099,
     user: created_users[0]
   },
   {
-    name: "Vertical World Seattle",
-    latitude: 47.6062,
-    longitude: -122.3321,
+    name: "Harrowall Climbing Centre",
+    latitude: 51.8522,
+    longitude: -0.2002,
     user: created_users[1]
   },
   {
-    name: "Brooklyn Boulders",
-    latitude: 40.6782,
-    longitude: -73.9442,
+    name: "The Arch Climbing Wall",
+    latitude: 51.4905,
+    longitude: -0.0743,
     user: created_users[0]
   },
   {
-    name: "The Spot Bouldering Gym",
-    latitude: 39.7392,
-    longitude: -104.9903,
+    name: "Edinburgh International Climbing Arena",
+    latitude: 55.9391,
+    longitude: -3.2823,
     user: created_users[2]
   },
   {
-    name: "Planet Granite San Francisco",
-    latitude: 37.7749,
-    longitude: -122.4194,
+    name: "The Climbing Works Sheffield",
+    latitude: 53.3811,
+    longitude: -1.4701,
     user: created_users[1]
+  },
+  {
+    name: "Depot Manchester",
+    latitude: 53.4808,
+    longitude: -2.2426,
+    user: created_users[0]
+  },
+  {
+    name: "Awesome Walls Liverpool",
+    latitude: 53.4084,
+    longitude: -2.9916,
+    user: created_users[2]
+  },
+  {
+    name: "Boulder Brighton",
+    latitude: 50.8225,
+    longitude: -0.1372,
+    user: created_users[1]
+  },
+  {
+    name: "Flashpoint Bristol",
+    latitude: 51.4545,
+    longitude: -2.5879,
+    user: created_users[0]
+  },
+  {
+    name: "The Climbing Academy Glasgow",
+    latitude: 55.8642,
+    longitude: -4.2518,
+    user: created_users[2]
   }
 ]
 
@@ -174,4 +204,5 @@ puts "  Routes: #{Route.count}"
 puts "  Climbs: #{Climb.count}"
 puts "\n🧗 You can now test the API with sample data!"
 puts "Try: GET /api/v1/places"
-puts "Or with location: GET /api/v1/places?lat=40.0150&lng=-105.2705"
+puts "Or with location: GET /api/v1/places?lat=51.5074&lng=-0.1278"
+puts "(That's London coordinates for finding nearby climbing gyms!)"
