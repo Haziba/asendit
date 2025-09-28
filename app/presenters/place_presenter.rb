@@ -12,8 +12,8 @@ class PlacePresenter
       name: place.name,
       created_at: place.created_at,
       updated_at: place.updated_at,
-      latitude: place.latitude,
-      longitude: place.longitude,
+      latitude: place.latitude.to_f,
+      longitude: place.longitude.to_f,
       owner: place.user ? { id: place.user.id, email: place.user.token } : nil
     }
   end
@@ -26,8 +26,8 @@ class PlacePresenter
       },
       grades_count: place.grades.count,
       current_user_place: user && (place.id == user.place_id),
-      latitude: place.latitude,
-      longitude: place.longitude
+      latitude: place.latitude.to_f,
+      longitude: place.longitude.to_f
     )
 
     # Add distance if user location is provided and place has coordinates
