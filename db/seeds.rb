@@ -98,6 +98,12 @@ places_data = [
     latitude: 55.8642,
     longitude: -4.2518,
     user: created_users[2]
+  },
+  {
+    name: "Depot Nottingham",
+    latitude: 52.9548,
+    longitude: -1.1336,
+    user: created_users[0]
   }
 ]
 
