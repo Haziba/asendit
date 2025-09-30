@@ -81,10 +81,7 @@ module Api
         if current_user.update(place: place)
           render json: {
             message: 'Place selected successfully',
-            selected_place: {
-              id: place.id,
-              name: place.name
-            }
+            selected_place: PlacePresenter.new(place, current_user).present
           }
         else
           render json: { error: 'Failed to select place' }, status: :unprocessable_entity

@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: places
+#
+#  id         :bigint           not null, primary key
+#  latitude   :decimal(10, 6)   not null
+#  longitude  :decimal(10, 6)   not null
+#  name       :text
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  user_id    :bigint
+#
+# Indexes
+#
+#  index_places_on_latitude_and_longitude  (latitude,longitude)
+#  index_places_on_user_id                 (user_id)
+#
 class Place < ApplicationRecord
   has_many :route_sets, dependent: :destroy
   has_many :tournaments, dependent: :destroy
