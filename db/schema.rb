@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_27_183851) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_04_133222) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,6 +63,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_27_183851) do
     t.index ["climb_id", "route_set_id"], name: "index_climbs_route_sets_on_climb_id_and_route_set_id", unique: true
     t.index ["climb_id"], name: "index_climbs_route_sets_on_climb_id"
     t.index ["route_set_id"], name: "index_climbs_route_sets_on_route_set_id"
+  end
+
+  create_table "floorplan_images", force: :cascade do |t|
+    t.bigint "floorplan_id", null: false
+    t.string "name"
+    t.integer "order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["floorplan_id"], name: "index_floorplan_images_on_floorplan_id"
   end
 
   create_table "floorplans", force: :cascade do |t|
@@ -184,6 +193,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_27_183851) do
   add_foreign_key "climbs", "users"
   add_foreign_key "climbs_route_sets", "climbs"
   add_foreign_key "climbs_route_sets", "route_sets"
+  add_foreign_key "floorplan_images", "floorplans"
   add_foreign_key "floorplans", "places"
   add_foreign_key "grades", "places"
   add_foreign_key "route_sets", "grades"

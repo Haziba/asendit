@@ -1,8 +1,13 @@
 module Api
   class BaseController < ActionController::API
     before_action :authenticate_request
+    before_action :set_active_storage_url_options
 
     private
+
+    def set_active_storage_url_options
+      ActiveStorage::Current.url_options = { host: request.base_url }
+    end
 
     def authenticate_request
       render json: { error: 'Unauthorized' }, status: :unauthorized unless current_user

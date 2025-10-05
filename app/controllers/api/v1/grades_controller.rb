@@ -92,6 +92,8 @@ module Api
       end
 
       def ensure_can_edit
+        pp @place
+        pp current_user
         unless current_user.admin || @place.can_edit?(current_user)
           render json: { error: 'You do not have permission to modify grades at this place' }, status: :forbidden
         end

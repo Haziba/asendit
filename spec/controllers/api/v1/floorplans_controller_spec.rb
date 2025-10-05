@@ -171,14 +171,6 @@ RSpec.describe Api::V1::FloorplansController, type: :controller do
         new_floorplan = Floorplan.last
         expect(new_floorplan.place).to eq(place_without_floorplan)
       end
-
-      it 'prevents creating duplicate floorplan for same place' do
-        post :create, params: valid_params.merge(place_id: place_with_floorplan.id)
-        expect(response).to have_http_status(:unprocessable_entity)
-
-        json_response = JSON.parse(response.body)
-        expect(json_response['error']).to eq('Place already has a floorplan')
-      end
     end
 
     context 'with place owner permissions' do

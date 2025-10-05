@@ -23,14 +23,13 @@ class FloorplanPresenter
         id: floorplan.place.id,
         name: floorplan.place.name
       },
-      images: floorplan.images.map do |image|
+      images: floorplan.floorplan_images.order(:order).map do |floorplan_image|
         {
-          id: image.id,
-          url: Rails.application.routes.url_helpers.rails_blob_url(image, only_path: true),
-          filename: image.filename.to_s,
-          content_type: image.content_type,
-          byte_size: image.byte_size,
-          created_at: image.created_at
+          id: floorplan_image.id,
+          url: floorplan_image.image.attached? ? floorplan_image.image.url : nil,
+          name: floorplan_image.name,
+          order: floorplan_image.order,
+          created_at: floorplan_image.created_at
         }
       end,
       can_edit: user&.admin || floorplan.place.can_edit?(user)

@@ -1,36 +1,25 @@
 module Api
   module V1
     class FloorplansController < BaseController
-      before_action :set_place
       before_action :set_floorplan, only: [:show, :update, :destroy, :update_data, :upload_image]
+      before_action :set_place
       before_action :ensure_can_edit, only: [:create, :update, :destroy, :update_data, :upload_image]
 
       def index
-        floorplan = @place.floorplan
-
-        if floorplan
-          render json: {
-            floorplan: FloorplanPresenter.new(floorplan, current_user).present
-          }
+        if @place.floorplans.any?
+          render json: FloorplansPresenter.new(@place.floorplans, current_user).present
         else
-          render json: { floorplan: nil }
+          render json: FloorplansPresenter.new([], current_user).present
         end
       end
 
       def show
         render json: {
-          floorplan: FloorplanPresenter.new(@floorplan, @user).present_detail
+          floorplan: FloorplanPresenter.new(@floorplan, current_user).present_detail
         }
       end
 
       def create
-        existing_floorplan = @place.floorplan
-        if existing_floorplan
-          return render json: {
-            error: 'Place already has a floorplan'
-          }, status: :unprocessable_entity
-        end
-
         floorplan = Floorplan.new(
           place: @place,
           name: params[:name] || 'Main Floorplan',
@@ -38,6 +27,16 @@ module Api
         )
 
         if floorplan.save
+          if params[:images].present?
+            params[:images].each do |_, image_params|
+              floorplan.floorplan_images.create(
+                name: image_params["name"],
+                order: image_params["order"],
+                image: image_params["image"]
+              )
+            end
+          end
+
           render json: {
             floorplan: FloorplanPresenter.new(floorplan, current_user).present_detail
           }, status: :created
@@ -118,7 +117,9 @@ module Api
       private
 
       def set_place
-        if params[:place_id].present?
+        if @floorplan.present?
+          @place = @floorplan.place
+        elsif params[:place_id].present?
           @place = Place.find(params[:place_id])
         else
           @place = current_user.place
@@ -132,7 +133,7 @@ module Api
       end
 
       def set_floorplan
-        @floorplan = @place.floorplan
+        @floorplan = Floorplan.find(params[:id])
 
         if @floorplan.nil?
           render json: { error: 'Floorplan not found' }, status: :not_found

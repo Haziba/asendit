@@ -20,7 +20,7 @@ class Place < ApplicationRecord
   has_many :tournaments, dependent: :destroy
   has_many :grades, dependent: :destroy
   has_many :climbs, dependent: :destroy
-  has_one :floorplan, dependent: :destroy
+  has_many :floorplans, dependent: :destroy
   belongs_to :user
 
   validates :name, presence: true, length: { minimum: 4 }

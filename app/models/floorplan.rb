@@ -19,5 +19,6 @@
 #
 class Floorplan < ApplicationRecord
   has_many_attached :images
+  has_many :floorplan_images, dependent: :destroy
   belongs_to :place
 end
