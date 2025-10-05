@@ -32,6 +32,8 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Load environment variables from .env file
   gem 'dotenv-rails'
+  # Detect N+1 queries
+  gem 'bullet'
 end
 
 group :development do
