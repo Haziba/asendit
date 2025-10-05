@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  added      :datetime
 #  expires_at :date
+#  starts_on  :date
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  grade_id   :bigint

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_04_133222) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_05_125151) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -111,6 +111,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_04_133222) do
     t.bigint "place_id", null: false
     t.date "expires_at"
     t.bigint "grade_id"
+    t.date "starts_on"
     t.index ["grade_id"], name: "index_route_sets_on_grade_id"
     t.index ["place_id"], name: "index_route_sets_on_place_id"
   end
