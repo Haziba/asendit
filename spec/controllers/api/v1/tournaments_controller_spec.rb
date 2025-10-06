@@ -125,7 +125,7 @@ RSpec.describe Api::V1::TournamentsController, type: :controller do
         json_response = JSON.parse(response.body)
         route_data = json_response['tournament_routes'].first['route']
 
-        expect(route_data).to include('id', 'pos_x', 'pos_y', 'floor')
+        expect(route_data).to include('id', 'pos_x', 'pos_y', 'floorplan_image_id')
         expect(route_data['route_set']).to include('id', 'name', 'grade')
       end
     end

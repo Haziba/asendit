@@ -139,6 +139,15 @@ created_places.each do |place|
   end
 end
 
+created_places.each do |place|
+  [1, 2].each do |i|
+    floorplan = place.floorplans.create(name: "Floorplan #{i}", data: [], images: [])
+    floorplan.floorplan_images.create(order: 0, image: File.open(Rails.root.join('spec', 'fixtures', 'files', 'FloorLower.png')))
+    floorplan.floorplan_images.create(order: 1, image: File.open(Rails.root.join('spec', 'fixtures', 'files', 'FloorUpper.png')))
+  end
+  puts "✅ Created floorplans for #{place.name}"
+end
+
 # Create route sets for each place
 created_places.each do |place|
   place.grades.each do |grade|
@@ -147,6 +156,7 @@ created_places.each do |place|
       route_set = RouteSet.find_or_create_by(
         place: place,
         grade: grade,
+        floorplan: place.floorplans.sample,
         added: rand(30.days).seconds.ago
       ) do |rs|
         rs.expires_at = rand(30.days).seconds.from_now.to_date
@@ -159,7 +169,7 @@ created_places.each do |place|
           route_set: route_set,
           pos_x: rand(50..800),
           pos_y: rand(50..600),
-          floor: rand(0..2)
+          floorplan_image: route_set.floorplan.images.sample
         ) do |r|
           r.added = route_set.added + rand(1.day).seconds
         end

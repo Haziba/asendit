@@ -20,7 +20,7 @@ FactoryBot.define do
 
         t_rs = route_set.routes.first(2).map { |route| create(:tournament_route, route: route, tournament: tournament) }
         tournament.update(tournament_routes: t_rs)
-        t_rs.map(&:route).last.update(floor: 1)
+        t_rs.map(&:route).last.update(floorplan_image_id: 1)
       end
     end
 
@@ -137,7 +137,7 @@ FactoryBot.define do
     updated_at { Time.now }
 
     after(:create) do |route_set, evaluator|
-      route_set.routes = [create(:route, route_set: route_set, floor: 0), create(:route, route_set: route_set, floor: 1)] if evaluator.with_routes
+      route_set.routes = [create(:route, route_set: route_set, floorplan_image_id: 0), create(:route, route_set: route_set, floorplan_image_id: 1)] if evaluator.with_routes
     end
   end
 
@@ -145,7 +145,7 @@ FactoryBot.define do
     association :route_set
     pos_x { Faker::Number.between(from: 50, to: 200) }
     pos_y { Faker::Number.between(from: 50, to: 200) }
-    floor { 0 }
+    floorplan_image_id { 0 }
     added { Time.now }
     created_at { Time.now }
     updated_at { Time.now }

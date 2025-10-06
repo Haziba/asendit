@@ -34,7 +34,7 @@ module Api
         route = Route.new(
           pos_x: params[:pos_x],
           pos_y: params[:pos_y],
-          floor: params[:floor],
+          floorplan_image_id: params[:floorplan_image_id],
           route_set: route_set,
           added: Time.now
         )

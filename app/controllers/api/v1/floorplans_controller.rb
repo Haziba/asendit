@@ -6,11 +6,8 @@ module Api
       before_action :ensure_can_edit, only: [:create, :update, :destroy, :update_data, :upload_image]
 
       def index
-        if @place.floorplans.any?
-          render json: FloorplansPresenter.new(@place.floorplans, current_user).present
-        else
-          render json: FloorplansPresenter.new([], current_user).present
-        end
+        floorplans = @place.floorplans.includes(images_attachments: :blob)
+        render json: FloorplansPresenter.new(floorplans, current_user).present
       end
 
       def show

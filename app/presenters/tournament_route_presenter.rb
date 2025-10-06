@@ -14,7 +14,7 @@ class TournamentRoutePresenter
         id: tournament_route.route.id,
         pos_x: tournament_route.route.pos_x,
         pos_y: tournament_route.route.pos_y,
-        floor: tournament_route.route.floor,
+        floorplan_image_id: tournament_route.route.floorplan_image_id,
         route_set: {
           id: tournament_route.route.route_set.id,
           name: tournament_route.route.route_set.name,

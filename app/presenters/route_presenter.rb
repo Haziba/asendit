@@ -11,7 +11,7 @@ class RoutePresenter
       id: route.id,
       pos_x: route.pos_x,
       pos_y: route.pos_y,
-      floor: route.floor,
+      floorplan_image_id: route.floorplan_image_id,
       added: route.added,
       route_set: {
         id: route.route_set.id,
@@ -32,7 +32,7 @@ class RoutePresenter
       id: route.id,
       pos_x: route.pos_x,
       pos_y: route.pos_y,
-      floor: route.floor,
+      floorplan_image_id: route.floorplan_image_id,
       route_set_id: route.route_set_id
     }
   end

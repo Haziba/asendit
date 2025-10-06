@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_05_161653) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_06_172353) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -133,9 +133,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_161653) do
     t.integer "pos_x"
     t.integer "pos_y"
     t.datetime "added", precision: nil
-    t.integer "floor"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "floorplan_image_id", null: false
+    t.index ["floorplan_image_id"], name: "index_routes_on_floorplan_image_id"
     t.index ["route_set_id"], name: "index_routes_on_route_set_id"
   end
 
@@ -202,6 +203,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_161653) do
   add_foreign_key "route_sets", "floorplans"
   add_foreign_key "route_sets", "grades"
   add_foreign_key "route_sets", "places"
+  add_foreign_key "routes", "floorplan_images"
   add_foreign_key "tournament_entries", "places"
   add_foreign_key "tournament_entries", "tournaments"
   add_foreign_key "tournament_entries", "users"

@@ -12,7 +12,7 @@ class GradePresenter
       name: grade.name,
       grade: grade.grade,
       map_tint_colour: grade.map_tint_colour,
-      route_sets_count: grade.route_sets.count,
+      route_sets_count: grade.route_sets.length,
       active_route_set: grade.active_route_set ? {
         id: grade.active_route_set.id,
         name: grade.active_route_set.name,
@@ -33,7 +33,7 @@ class GradePresenter
           name: route_set.name,
           added: route_set.added,
           expires_at: route_set.expires_at,
-          routes_count: route_set.routes.count
+          routes_count: route_set.routes.length
         }
       end,
       can_edit: user&.admin || grade.place.can_edit?(user),

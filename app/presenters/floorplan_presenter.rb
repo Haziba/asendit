@@ -11,7 +11,7 @@ class FloorplanPresenter
       id: floorplan.id,
       name: floorplan.name,
       data: floorplan.data,
-      images_count: floorplan.images.count,
+      images_count: floorplan.images.length,
       created_at: floorplan.created_at,
       updated_at: floorplan.updated_at
     }

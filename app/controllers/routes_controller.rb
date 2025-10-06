@@ -3,8 +3,8 @@ class RoutesController < ApplicationController
     route = Route.new(
       pos_x: params["posX"],
       pos_y: params["posY"],
-      floor: params["floor"],
       route_set: RouteSet.find(params["routeSet"]),
+      floorplan_image_id: params["floorplanImageId"],
       added: Time.now
     )
     route.save

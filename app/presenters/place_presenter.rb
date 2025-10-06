@@ -24,7 +24,7 @@ class PlacePresenter
         id: place.user.id,
         email: place.user.token
       },
-      grades_count: place.grades.count,
+      grades_count: place.grades.length,
       current_user_place: user && (place.id == user.place_id),
       latitude: place.latitude.to_f,
       longitude: place.longitude.to_f

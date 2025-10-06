@@ -48,7 +48,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
         json_response = JSON.parse(response.body)
         route_data = json_response['routes'].first
 
-        expect(route_data).to include('id', 'pos_x', 'pos_y', 'floor', 'added')
+        expect(route_data).to include('id', 'pos_x', 'pos_y', 'floorplan_image_id', 'added')
         expect(route_data['route_set']).to include('id', 'name', 'grade')
       end
     end
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
   end
 
   describe 'GET #show' do
-    let!(:route) { create(:route, route_set: route_set, pos_x: 100, pos_y: 200, floor: 1) }
+    let!(:route) { create(:route, route_set: route_set, pos_x: 100, pos_y: 200, floorplan_image_id: 1) }
     let!(:other_place_route) { create(:route, route_set: another_route_set) }
 
     context 'when route belongs to user place' do
@@ -108,7 +108,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
         expect(route_data['id']).to eq(route.id)
         expect(route_data['pos_x']).to eq(100)
         expect(route_data['pos_y']).to eq(200)
-        expect(route_data['floor']).to eq(1)
+        expect(route_data['floorplan_image_id']).to eq(1)
         expect(route_data['route_set']['place']).to include('id', 'name')
       end
     end
@@ -146,7 +146,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
         route_set_id: route_set.id,
         pos_x: 300,
         pos_y: 400,
-        floor: 0
+        floorplan_image_id: 0
       }
     end
 
@@ -169,7 +169,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
 
         expect(route_data['pos_x']).to eq(300)
         expect(route_data['pos_y']).to eq(400)
-        expect(route_data['floor']).to eq(0)
+        expect(route_data['floorplan_image_id']).to eq(0)
         expect(route_data['route_set']['id']).to eq(route_set.id)
       end
 
@@ -279,7 +279,7 @@ RSpec.describe Api::V1::RoutesController, type: :controller do
         get :show, params: { id: route.id }
         expect(response).to have_http_status(:unauthorized)
 
-        post :create, params: { route_set_id: route_set.id, pos_x: 100, pos_y: 200, floor: 0 }
+        post :create, params: { route_set_id: route_set.id, pos_x: 100, pos_y: 200, floorplan_image_id: 0 }
         expect(response).to have_http_status(:unauthorized)
 
         delete :destroy, params: { id: route.id }

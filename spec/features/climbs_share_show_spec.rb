@@ -14,10 +14,10 @@ RSpec.feature 'ClimbsShare#show', type: :feature do
     let!(:route_set_blue) { create(:route_set, grade: grade_blue, place: place) }
     let!(:route_set_red) { create(:route_set, grade: grade_red, place: place) }
 
-    let!(:route_set_green_route_1) { create(:route, route_set: route_set_green, floor: 0) }
-    let!(:route_set_green_route_2) { create(:route, route_set: route_set_green, floor: 0) }
-    let!(:route_set_green_route_3) { create(:route, route_set: route_set_green, floor: 1) }
-    let!(:route_set_green_route_4) { create(:route, route_set: route_set_green, floor: 1) }
+    let!(:route_set_green_route_1) { create(:route, route_set: route_set_green, floorplan_image_id: 0) }
+    let!(:route_set_green_route_2) { create(:route, route_set: route_set_green, floorplan_image_id: 0) }
+    let!(:route_set_green_route_3) { create(:route, route_set: route_set_green, floorplan_image_id: 1) }
+    let!(:route_set_green_route_4) { create(:route, route_set: route_set_green, floorplan_image_id: 1) }
     let!(:route_set_red_route_1) { create(:route, route_set: route_set_red) }
 
     let!(:climb) { create(:climb, route_state_json: [

@@ -7,7 +7,7 @@ RSpec.describe RoutesController, type: :controller do
       {
         "posX" => 100,
         "posY" => 200,
-        "floor" => 1,
+        "floorplanImageId" => 1,
         "routeSet" => route_set.id
       }
     end
@@ -20,7 +20,7 @@ RSpec.describe RoutesController, type: :controller do
       route = Route.last
       expect(route.pos_x).to eq(100)
       expect(route.pos_y).to eq(200)
-      expect(route.floor).to eq(1)
+      expect(route.floorplan_image_id).to eq(1)
       expect(route.route_set).to eq(route_set)
       expect(route.added).not_to be_nil
     end
@@ -35,7 +35,7 @@ RSpec.describe RoutesController, type: :controller do
                                              "id" => route.id,
                                              "pos_x" => 100,
                                              "pos_y" => 200,
-                                             "floor" => 1,
+                                             "floorplan_image_id" => 1,
                                              "route_set_id" => route_set.id
                                            )
     end

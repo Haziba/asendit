@@ -42,6 +42,8 @@ module Api
         )
 
         if route_set.save
+          create_routes_for_route_set(route_set) if params[:routes].present?
+
           render json: {
             route_set: RouteSetPresenter.new(route_set, current_user).present_with_details
           }, status: :created
@@ -61,6 +63,8 @@ module Api
         end
 
         if @route_set.update(update_params)
+          create_routes_for_route_set(@route_set) if params[:routes].present?
+
           render json: {
             route_set: RouteSetPresenter.new(@route_set, current_user).present_with_details
           }
@@ -112,6 +116,19 @@ module Api
       def ensure_can_edit
         unless current_user.admin || @place.can_edit?(current_user)
           render json: { error: 'You do not have permission to modify route sets at this place' }, status: :forbidden
+        end
+      end
+
+      def create_routes_for_route_set(route_set)
+        return unless params[:routes].is_a?(Array)
+
+        params[:routes].each do |route_params|
+          route_set.routes.create(
+            pos_x: route_params[:pos_x],
+            pos_y: route_params[:pos_y],
+            floorplan_image_id: route_params[:floorplan_image_id],
+            added: route_params[:added] || route_set.added || Date.today
+          )
         end
       end
 
