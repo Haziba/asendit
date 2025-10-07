@@ -6,7 +6,7 @@ module Api
         current_climb = current_user.climbs.where(current: true).first
 
         # Get places owned by this user
-        owned_places = current_user.place ? [current_user.place] : []
+        owned_places = Place.where(user: current_user)
 
         # Get last 10 climbs
         recent_climbs = current_user.climbs

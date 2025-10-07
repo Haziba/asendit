@@ -19,11 +19,11 @@ class UserPresenter
           id: user.place.id,
           name: user.place.name
         } : nil,
-        admin: user.admin || false
+        admin: user.admin || false,
+        current_climb: current_climb ? ClimbPresenter.new(current_climb, user).present : nil,
+        owned_places: owned_places.map { |place| PlacePresenter.new(place, user).present },
+        recent_climbs: recent_climbs.map { |climb| ClimbPresenter.new(climb, user).present }
       },
-      current_climb: current_climb ? ClimbPresenter.new(current_climb, user).present : nil,
-      owned_places: owned_places.map { |place| PlacePresenter.new(place, user).present },
-      recent_climbs: recent_climbs.map { |climb| ClimbPresenter.new(climb, user).present }
     }
   end
 end
