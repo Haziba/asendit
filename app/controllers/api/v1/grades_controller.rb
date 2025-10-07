@@ -71,7 +71,7 @@ module Api
         if params[:place_id].present?
           @place = Place.find(params[:place_id])
         elsif params[:id].present?
-          # For show/update/destroy actions, find place through grade
+          # For non-nested routes, find place through grade
           grade = Grade.find(params[:id])
           @place = grade.place
         else
@@ -82,11 +82,15 @@ module Api
           render json: { error: 'No place selected or found' }, status: :unprocessable_entity
         end
       rescue ActiveRecord::RecordNotFound
-        render json: { error: 'Place not found' }, status: :not_found
+        render json: { error: 'Place or grade not found' }, status: :not_found
       end
 
       def set_grade
-        @grade = @place.grades.find(params[:id])
+        if @place
+          @grade = @place.grades.find(params[:id])
+        else
+          @grade = Grade.find(params[:id])
+        end
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Grade not found' }, status: :not_found
       end

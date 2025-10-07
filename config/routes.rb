@@ -12,15 +12,25 @@ Rails.application.routes.draw do
       resources :routes, only: [:index, :show, :create, :destroy]
       resources :places do
         post 'choose', on: :member
+        resources :grades, only: [:index, :show, :create, :update, :destroy] do
+          resources :route_sets, only: [:index, :show, :create, :update, :destroy]
+        end
+        resources :floorplans do
+          patch 'update_data', on: :member
+          post 'upload_image', on: :member
+        end
       end
-      resources :route_sets, only: [:index, :show, :create, :update, :destroy]
-      resources :tournaments do
-        patch 'update_routes', on: :member
+      # Non-nested routes for grades, route_sets, and floorplans (convenience aliases)
+      resources :grades, only: [:show, :update, :destroy] do
+        resources :route_sets, only: [:index, :show, :create, :update, :destroy]
       end
-      resources :grades
-      resources :floorplans do
+      resources :route_sets, only: [:show, :update, :destroy]
+      resources :floorplans, only: [:show, :update, :destroy] do
         patch 'update_data', on: :member
         post 'upload_image', on: :member
+      end
+      resources :tournaments do
+        patch 'update_routes', on: :member
       end
       resource :user, only: [:show]
     end

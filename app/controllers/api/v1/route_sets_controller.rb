@@ -2,18 +2,13 @@ module Api
   module V1
     class RouteSetsController < BaseController
       before_action :set_place
+      before_action :set_grade
       before_action :set_route_set, only: [:show, :update, :destroy]
       before_action :ensure_can_edit, only: [:create, :update, :destroy]
 
       def index
-        # Get active (most recent) route set for each grade
-        active_route_sets = @place.grades.map(&:active_route_set).compact
-          .sort_by { |route_set| -route_set.added.to_i }
-
-        # Get past route sets (all except the most recent for each grade)
-        old_route_sets = @place.grades.map(&:past_route_sets).flatten.compact
-
-        render json: RouteSetsPresenter.new([], current_user).present_grouped_by_status(active_route_sets, old_route_sets)
+        route_sets = @grade.route_sets.order(added: :desc)
+        render json: RouteSetsPresenter.new(route_sets, current_user).present
       end
 
       def show
@@ -36,7 +31,7 @@ module Api
 
       def create
         route_set = RouteSet.new(
-          grade_id: params[:grade_id],
+          grade: @grade,
           added: params[:added] || Date.today,
           place: @place
         )
@@ -84,31 +79,38 @@ module Api
       private
 
       def set_place
-        # Priority: explicit place_id param > route_set's place > user's current place
         if params[:place_id].present?
           @place = Place.find(params[:place_id])
-        elsif params[:id].present? && action_name != 'create'
-          route_set = RouteSet.find_by(id: params[:id])
-          if route_set
-            @place = route_set.place
-          else
-            return render json: { error: 'Route set not found' }, status: :not_found
-          end
+        elsif params[:grade_id].present?
+          # For /grades/:grade_id/route_sets routes
+          grade = Grade.find(params[:grade_id])
+          @place = grade.place
+        elsif params[:id].present?
+          # For /route_sets/:id routes
+          route_set = RouteSet.find(params[:id])
+          @place = route_set.place
         else
           @place = current_user.place
-        end
-
-        if @place.nil?
-          render json: { error: 'No place selected or found' }, status: :unprocessable_entity
         end
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Place not found' }, status: :not_found
       end
 
+      def set_grade
+        if params[:grade_id].present?
+          @grade = Grade.find(params[:grade_id])
+        elsif @place
+          # For nested routes, we need grade_id in params
+          return render json: { error: 'Grade ID required' }, status: :bad_request unless params[:grade_id]
+        end
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Grade not found' }, status: :not_found
+      end
+
       def set_route_set
         @route_set = RouteSet.find(params[:id])
-        # Allow access to route sets from other places for viewing
-        # Permission check is in ensure_can_edit for modifications
+        @grade ||= @route_set.grade
+        @place ||= @route_set.place
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Route set not found' }, status: :not_found
       end

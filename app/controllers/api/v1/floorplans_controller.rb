@@ -118,6 +118,10 @@ module Api
           @place = @floorplan.place
         elsif params[:place_id].present?
           @place = Place.find(params[:place_id])
+        elsif params[:id].present?
+          # For non-nested routes, find place through floorplan
+          floorplan = Floorplan.find(params[:id])
+          @place = floorplan.place
         else
           @place = current_user.place
         end
@@ -126,11 +130,15 @@ module Api
           render json: { error: 'No place selected or found' }, status: :unprocessable_entity
         end
       rescue ActiveRecord::RecordNotFound
-        render json: { error: 'Place not found' }, status: :not_found
+        render json: { error: 'Place or floorplan not found' }, status: :not_found
       end
 
       def set_floorplan
-        @floorplan = Floorplan.find(params[:id])
+        @floorplan = Floorplan.includes(
+          images_attachments: :blob,
+          floorplan_images: { image_attachment: :blob }
+        ).find(params[:id])
+        @place ||= @floorplan.place
 
         if @floorplan.nil?
           render json: { error: 'Floorplan not found' }, status: :not_found
