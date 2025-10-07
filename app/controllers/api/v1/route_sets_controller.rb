@@ -1,9 +1,9 @@
 module Api
   module V1
     class RouteSetsController < BaseController
+      before_action :set_route_set, only: [:show, :update, :destroy]
       before_action :set_place
       before_action :set_grade
-      before_action :set_route_set, only: [:show, :update, :destroy]
       before_action :ensure_can_edit, only: [:create, :update, :destroy]
 
       def index
@@ -79,7 +79,9 @@ module Api
       private
 
       def set_place
-        if params[:place_id].present?
+        if @route_set
+          @place = @route_set.place
+        elsif params[:place_id].present?
           @place = Place.find(params[:place_id])
         elsif params[:grade_id].present?
           # For /grades/:grade_id/route_sets routes
@@ -97,7 +99,9 @@ module Api
       end
 
       def set_grade
-        if params[:grade_id].present?
+        if @route_set
+          @grade = @route_set.grade
+        elsif params[:grade_id].present?
           @grade = Grade.find(params[:grade_id])
         elsif @place
           # For nested routes, we need grade_id in params
@@ -109,8 +113,6 @@ module Api
 
       def set_route_set
         @route_set = RouteSet.find(params[:id])
-        @grade ||= @route_set.grade
-        @place ||= @route_set.place
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Route set not found' }, status: :not_found
       end
