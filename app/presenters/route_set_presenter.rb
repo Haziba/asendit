@@ -29,6 +29,10 @@ class RouteSetPresenter
         id: route_set.place.id,
         name: route_set.place.name
       },
+      floorplan: {
+        id: route_set.floorplan.id,
+        name: route_set.floorplan.name
+      },
       routes: route_set.routes.map { |route| RoutePresenter.new(route).present_summary },
       can_edit: can_edit?,
       created_at: route_set.created_at,
