@@ -113,7 +113,7 @@ module Api
       private
 
       def set_place
-        @place = Place.find(params[:id])
+        @place = Place.includes(:route_sets).find(params[:id])
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Place not found' }, status: :not_found
       end

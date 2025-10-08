@@ -39,29 +39,20 @@ module Api
       end
 
       def create
-        existing_current = Climb.where(user: current_user, current: true).first
-
-        if existing_current
-          return render json: {
-            error: 'You already have an active climb session',
-            current_climb: {
-              id: existing_current.id,
-              name: existing_current.name,
-              climbed_at: existing_current.climbed_at
-            }
-          }, status: :unprocessable_entity
+        pp params
+        route_state_json = create_params[:route_sets].map { |rs| rs[:route_states] }.flatten.map do |route_state|
+          RouteStatus.new(
+            route_state[:route_id].to_i,
+            route_state[:status]
+          )
         end
 
-        place = current_user.place
-        return render json: { error: 'No place selected' }, status: :unprocessable_entity unless place
-
-        active_route_sets = place.grades.map(&:active_route_set).reject(&:nil?)
-
         climb = Climb.new(
-          climbed_at: Time.now,
+          climbed_at: create_params[:climbed_at],
           user: current_user,
-          route_sets: active_route_sets,
-          place: place,
+          route_sets: RouteSet.where(id: create_params[:route_sets].map { |rs| rs[:id] }),
+          route_state_json: route_state_json,
+          place: Place.find(create_params[:place_id]),
           current: true
         )
 
@@ -118,6 +109,20 @@ module Api
         unless @climb&.user == current_user
           render json: { error: 'Access denied' }, status: :forbidden
         end
+      end
+
+      def create_params
+        @create_params ||= params.permit([
+          :climbed_at,
+          :place_id,
+          route_sets: [
+            :id,
+            route_states: [
+              :route_id,
+              :status
+            ]
+          ]
+        ])
       end
     end
   end

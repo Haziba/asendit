@@ -56,7 +56,25 @@ class PlacePresenter
           id: grade.id,
           name: grade.name,
           grade: grade.grade,
-          map_tint_colour: grade.map_tint_colour
+          map_tint_colour: grade.map_tint_colour,
+          active_route_set: 
+          {
+            id: grade.active_route_set.id,
+            name: grade.active_route_set.name,
+            grade: grade.active_route_set.grade.grade,
+            routes: grade.active_route_set.routes,
+            floorplan: {
+              id: grade.active_route_set.floorplan.id,
+              name: grade.active_route_set.floorplan.name,
+              images: grade.active_route_set.floorplan.floorplan_images.map do |image|
+                {
+                  id: image.id,
+                  name: image.name,
+                  uri: image.image.url
+                }
+              end
+            }
+          }
         }
       end,
       current_user_place: user && (place.id == user.place_id)
