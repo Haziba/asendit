@@ -30,4 +30,11 @@ class ClimbPresenter
       end
     )
   end
+
+  def present_with_route_states_and_routes(routes:, route_sets:)
+    present_with_route_states.merge(
+      routes: routes,
+      route_sets: route_sets
+    )
+  end
 end

@@ -16,15 +16,25 @@ module Api
         route_sets = RouteSet.find(routes.keys)
 
         render json: {
-          climb: ClimbPresenter.new(@climb).present_with_route_states,
-          routes: routes,
-          route_sets: route_sets.map do |rs|
+          climb: ClimbPresenter.new(@climb).present_with_route_states_and_routes(routes: routes, route_sets: route_sets.map do |rs|
             {
               id: rs.id,
               name: rs.name,
-              grade: rs.grade
+              grade: rs.grade,
+              floorplan: {
+                id: rs.floorplan.id,
+                name: rs.floorplan.name,
+                images: rs.floorplan.floorplan_images.map do |fp_image|
+                  {
+                    id: fp_image.id,
+                    name: fp_image.name,
+                    order: fp_image.order,
+                    uri: fp_image.image.url
+                  }
+                end
+              }
             }
-          end
+          end),
         }
       end
 
